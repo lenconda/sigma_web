@@ -1,3 +1,3 @@
 module.exports = {
-  appName: '',
+  appName: 'sigma',
 };

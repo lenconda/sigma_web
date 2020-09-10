@@ -23,7 +23,7 @@ module.exports = {
     path: path.resolve(__dirname, '../dist'),
     filename: 'static/js/' + (env.isDev ? '[name].bundle.js' : '[name].[hash].bundle.js'),
     chunkFilename: 'static/js/' + (env.isDev ? '[name].chunk.js' : '[name].[contenthash].chunk.js'),
-    publicPath: env.isDev ? '/' : '/',
+    publicPath: env.isDev ? '/' : '//sigma.lenconda.top/',
   },
 
   optimization: {
