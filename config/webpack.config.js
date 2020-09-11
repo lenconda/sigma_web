@@ -125,10 +125,6 @@ module.exports = {
           },
           {
             loader: 'css-loader',
-            options: {
-              modules: true,
-              localIdentName: '_[hash:base64:5]',
-            },
           },
           'postcss-loader',
           'less-loader',
@@ -152,12 +148,10 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       filename: path.resolve(__dirname, '../dist/index.html'),
-      template: path.resolve(__dirname, '../public/index.html'),
+      template: path.resolve(__dirname, '../public/index.ejs'),
       templateParameters: {
         title: appConfig.appName.toUpperCase(),
       },
-      inject: true,
-      chunksSortMode: 'none',
     }),
     new MiniCssExtractPlugin({
       filename: env.isDev ? 'static/css/[name].css' : 'static/css/[name].[contenthash].css',
