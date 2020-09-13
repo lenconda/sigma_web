@@ -63,7 +63,7 @@ export default React.forwardRef((props: TaskItemProps, ref) => {
         button={true}
       >
         <Checkbox color="primary" checked={finished} onChange={event => onSelectionChange(event, taskItem)} />
-        <div className="task-item__content">
+        <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
           <div>
             {
               finished
