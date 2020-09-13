@@ -8,6 +8,9 @@ import './index.less';
 interface TaskList {
   listId: string;
   tasks: TaskItem[];
+  selectedTasks: TaskItem[];
+  onTasksChange: (newTasks: TaskItem[]) => void;
+  onSelectedTasksChange: (newSelectedTasks: TaskItem[]) => void;
   onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskItem) => void;
 }
 
@@ -31,9 +34,15 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 export default (props: TaskList) => {
-  const [tasks, setTasks] = useState<TaskItem[]>(props.tasks);
-  const [selectedTasks, setSelectedTasks] = useState<TaskItem[]>([]);
+  const {
+    tasks,
+    selectedTasks,
+    onTasksChange,
+    onSelectedTasksChange,
+    onCheckChange,
+  } = props;
   const taskListElement = useRef(null);
+  const [multiple, setMultiple] = useState<boolean>(false);
   const theme = useStyles();
 
   const onDragEnd = (result: DropResult) => {
@@ -43,14 +52,54 @@ export default (props: TaskList) => {
       return;
     }
     const currentList = reorder(tasks, source.index, destination.index);
-    setTasks(currentList);
+    onTasksChange(currentList);
+  };
+
+  const handleSelectionChange = (task: TaskItem) => {
+    const currentTaskIndex = selectedTasks.findIndex(currentTask => currentTask.taskId === task.taskId);
+    let newSelectedTasks = [];
+    if (multiple) {
+      if (currentTaskIndex === -1) {
+        onSelectedTasksChange(selectedTasks.concat(task));
+      } else {
+        newSelectedTasks = selectedTasks.slice(0, currentTaskIndex).concat(selectedTasks.slice(currentTaskIndex + 1));
+        onSelectedTasksChange(newSelectedTasks);
+      }
+    } else {
+      onSelectedTasksChange([task]);
+    }
+  };
+
+  const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>, task: TaskItem) => {
+    const processCurrentTasks = (e: React.ChangeEvent<HTMLInputElement>, currentTask: TaskItem) => {
+      if (currentTask.taskId === task.taskId) {
+        return {
+          ...currentTask,
+          finished: e.target.checked,
+        };
+      }
+      return currentTask;
+    };
+    const newTasks = tasks.map(currentTask => processCurrentTasks(e, currentTask));
+    const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask));
+    onTasksChange(newTasks);
+    onSelectedTasksChange(newSelectedTasks);
+    onCheckChange(e, task);
   };
 
   useEffect(() => {
-    // console.log(taskListElement.current.addEventListener);
-    window.addEventListener('keydown', event => {
-      console.log(event.key);
-    });
+    const handleMetaKey = (type: 'keydown' | 'keyup', event: KeyboardEvent) => {
+      const { metaKey, ctrlKey, key } = event;
+      if (metaKey || ctrlKey || key === 'Meta') {
+        if (type === 'keydown') {
+          setMultiple(true);
+        } else if (type === 'keyup') {
+          setMultiple(false);
+        }
+      }
+    };
+    window.addEventListener('keydown', event => handleMetaKey('keydown', event));
+    window.addEventListener('keyup', event => handleMetaKey('keyup', event));
   }, [taskListElement]);
 
   return (
@@ -72,14 +121,15 @@ export default (props: TaskList) => {
                             style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                           >
                             <Item
-                              selected={false}
+                              selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
                               isDragging={snapshot.isDragging}
                               content={item.content}
                               taskId={item.taskId}
                               order={item.order}
                               deadline={new Date().toISOString()}
-                              onSelectionChange={(e, task) => props.onCheckChange(e, task)}
                               finished={item.finished}
+                              onSelectionChange={handleSelectionChange}
+                              onCheckChange={handleCheckChange}
                             />
                           </div>
                         )

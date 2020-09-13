@@ -17,7 +17,8 @@ export interface TaskItem {
 export interface TaskItemProps extends TaskItem {
   isDragging: boolean;
   selected?: boolean;
-  onSelectionChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskItem) => void;
+  onSelectionChange: (taskInfo: TaskItem) => void;
+  onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskItem) => void;
 }
 
 const useStyles = makeStyles({
@@ -40,12 +41,13 @@ export default React.forwardRef((props: TaskItemProps, ref) => {
   const {
     content,
     isDragging,
-    onSelectionChange,
     taskId,
     deadline,
     order,
     finished,
     selected = false,
+    onSelectionChange,
+    onCheckChange,
   } = props;
   const styles = useStyles();
   const taskItem: TaskItem = {
@@ -57,12 +59,12 @@ export default React.forwardRef((props: TaskItemProps, ref) => {
   };
 
   return (
-    <div ref={ref as any}>
+    <div ref={ref as any} onClick={() => onSelectionChange(taskItem)}>
       <ListItem
         className={clsx(styles.root, { [styles.selected]: selected, [styles.dragging]: isDragging })}
         button={true}
       >
-        <Checkbox color="primary" checked={finished} onChange={event => onSelectionChange(event, taskItem)} />
+        <Checkbox color="primary" checked={finished} onChange={event => onCheckChange(event, taskItem)} />
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
           <div>
             {

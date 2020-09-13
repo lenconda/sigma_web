@@ -31,11 +31,13 @@ const theme = createMuiTheme({
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<TaskItem[]>(getItems(10));
+  const [selectedTasks, setSelectedTasks] = useState<TaskItem[]>([]);
 
   return (
     <ThemeProvider theme={theme}>
       <TaskList
         tasks={tasks}
+        selectedTasks={selectedTasks}
         listId={Math.random().toString(32).substring(2)}
         onCheckChange={(e, task) => {
           const currentTaskIndex = tasks.findIndex(value => value.taskId === task.taskId);
@@ -48,6 +50,8 @@ const App: React.FC = () => {
           });
           setTasks(newTasks);
         }}
+        onTasksChange={currentTasks => setTasks(currentTasks)}
+        onSelectedTasksChange={currentSelectedTasks => setSelectedTasks(currentSelectedTasks)}
       />
     </ThemeProvider>
   );
