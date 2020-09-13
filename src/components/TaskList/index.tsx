@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Item, { TaskItem } from './Item';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 import { makeStyles } from '@material-ui/core/styles';
@@ -31,7 +31,9 @@ const getItemStyle = (isDragging, draggableStyle) => ({
 });
 
 export default (props: TaskList) => {
-  const [tasks, setTasks] = React.useState<TaskItem[]>(props.tasks);
+  const [tasks, setTasks] = useState<TaskItem[]>(props.tasks);
+  const [selectedTasks, setSelectedTasks] = useState<TaskItem[]>([]);
+  const taskListElement = useRef(null);
   const theme = useStyles();
 
   const onDragEnd = (result: DropResult) => {
@@ -44,8 +46,15 @@ export default (props: TaskList) => {
     setTasks(currentList);
   };
 
+  useEffect(() => {
+    // console.log(taskListElement.current.addEventListener);
+    window.addEventListener('keydown', event => {
+      console.log(event.key);
+    });
+  }, [taskListElement]);
+
   return (
-    <List className={theme.root}>
+    <List className={theme.root} ref={taskListElement}>
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId={props.listId}>
           {
@@ -63,13 +72,13 @@ export default (props: TaskList) => {
                             style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
                           >
                             <Item
-                              selected={true}
+                              selected={false}
                               isDragging={snapshot.isDragging}
                               content={item.content}
                               taskId={item.taskId}
                               order={item.order}
                               deadline={new Date().toISOString()}
-                              onCheckChange={(e, task) => props.onCheckChange(e, task)}
+                              onSelectionChange={(e, task) => props.onCheckChange(e, task)}
                               finished={item.finished}
                             />
                           </div>
