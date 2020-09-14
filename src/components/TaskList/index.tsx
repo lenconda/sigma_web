@@ -90,7 +90,7 @@ export default (props: TaskList) => {
   useEffect(() => {
     const handleMetaKey = (type: 'keydown' | 'keyup', event: KeyboardEvent) => {
       const { metaKey, ctrlKey, key } = event;
-      if (metaKey || ctrlKey || key === 'Meta') {
+      if (metaKey || ctrlKey || key === 'Meta' || key === 'Control') {
         if (type === 'keydown') {
           setMultiple(true);
         } else if (type === 'keyup') {
