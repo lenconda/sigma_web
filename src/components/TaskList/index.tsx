@@ -7,6 +7,7 @@ import './index.less';
 
 interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
+  type: 'tasks' | 'sections';
   payload: TaskItem[] | any[];
 }
 
@@ -66,7 +67,7 @@ export default (props: TaskList) => {
         dispatchUpdateTasks.push(currentTask);
       }
     });
-    onDispatch({ action: 'UPDATE', payload: dispatchUpdateTasks });
+    onDispatch({ action: 'UPDATE', type: 'tasks', payload: dispatchUpdateTasks });
     onTasksChange(currentTasks);
   };
 
@@ -115,8 +116,8 @@ export default (props: TaskList) => {
           }
           return currentTask;
         });
-      onDispatch({ action: 'DELETE', payload: dispatchDeleteTasks });
-      onDispatch({ action: 'UPDATE', payload: dispatchUpdateTasks });
+      onDispatch({ action: 'DELETE', type: 'tasks', payload: dispatchDeleteTasks });
+      onDispatch({ action: 'UPDATE', type: 'tasks', payload: dispatchUpdateTasks });
       onTasksChange(newTasks);
       onSelectedTasksChange([]);
     }
