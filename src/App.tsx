@@ -52,6 +52,7 @@ const App: React.FC = () => {
         }}
         onTasksChange={currentTasks => setTasks(currentTasks)}
         onSelectedTasksChange={currentSelectedTasks => setSelectedTasks(currentSelectedTasks)}
+        onDispatch={dispatch => console.log(dispatch)}
       />
     </ThemeProvider>
   );

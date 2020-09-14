@@ -5,6 +5,11 @@ import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import './index.less';
 
+interface Dispatch {
+  action: 'UPDATE' | 'DELETE' | 'ADD';
+  payload: TaskItem[] | any[];
+}
+
 interface TaskList {
   listId: string;
   tasks: TaskItem[];
@@ -12,6 +17,7 @@ interface TaskList {
   onTasksChange: (newTasks: TaskItem[]) => void;
   onSelectedTasksChange: (newSelectedTasks: TaskItem[]) => void;
   onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskItem) => void;
+  onDispatch: (dispatch: Dispatch) => void;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -40,19 +46,28 @@ export default (props: TaskList) => {
     onTasksChange,
     onSelectedTasksChange,
     onCheckChange,
+    onDispatch,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
+  const [flag, setFlag] = useState<number>(0);
   const theme = useStyles();
 
-  const onDragEnd = (result: DropResult) => {
-    console.log(result);
+  const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
     if (!destination) {
       return;
     }
-    const currentList = reorder(tasks, source.index, destination.index);
-    onTasksChange(currentList);
+    const currentTasks = reorder(tasks, source.index, destination.index);
+    const dispatchUpdateTasks = [];
+    currentTasks.forEach((currentTask, index) => {
+      if (currentTask.order !== index) {
+        currentTask.order = index;
+        dispatchUpdateTasks.push(currentTask);
+      }
+    });
+    onDispatch({ action: 'UPDATE', payload: dispatchUpdateTasks });
+    onTasksChange(currentTasks);
   };
 
   const handleSelectionChange = (task: TaskItem) => {
@@ -87,9 +102,38 @@ export default (props: TaskList) => {
     onCheckChange(e, task);
   };
 
+  const handleDeleteTasks = () => {
+    if (selectedTasks.length > 0) {
+      const dispatchUpdateTasks = [];
+      const dispatchDeleteTasks = Array.from(selectedTasks);
+      const newTasks = Array.from(tasks)
+        .filter(currentTask => selectedTasks.findIndex(currentTask1 => currentTask1.taskId === currentTask.taskId) === -1)
+        .map((currentTask, index) => {
+          if (currentTask.order !== index) {
+            currentTask.order = index;
+            dispatchUpdateTasks.push(currentTask);
+          }
+          return currentTask;
+        });
+      onDispatch({ action: 'DELETE', payload: dispatchDeleteTasks });
+      onDispatch({ action: 'UPDATE', payload: dispatchUpdateTasks });
+      onTasksChange(newTasks);
+      onSelectedTasksChange([]);
+    }
+  };
+
   useEffect(() => {
-    const handleMetaKey = (type: 'keydown' | 'keyup', event: KeyboardEvent) => {
+    const handleMetaKey = (type: 'keydown' | 'keyup' | string, event: KeyboardEvent) => {
       const { metaKey, ctrlKey, key } = event;
+      if (key === 'Backspace') {
+        if (type === 'keydown') {
+          setFlag(flag + 1);
+        }
+        if (type === 'keyup') {
+          setFlag(flag - 1);
+          handleDeleteTasks();
+        }
+      }
       if (metaKey || ctrlKey || key === 'Meta' || key === 'Control') {
         if (type === 'keydown') {
           setMultiple(true);
@@ -98,13 +142,18 @@ export default (props: TaskList) => {
         }
       }
     };
-    window.addEventListener('keydown', event => handleMetaKey('keydown', event));
-    window.addEventListener('keyup', event => handleMetaKey('keyup', event));
-  }, [taskListElement]);
+    const metaKeyEventHandler = (event: KeyboardEvent) => handleMetaKey(event.type, event);
+    window.addEventListener('keydown', metaKeyEventHandler);
+    window.addEventListener('keyup', metaKeyEventHandler);
+    return () => {
+      window.removeEventListener('keydown', metaKeyEventHandler);
+      window.removeEventListener('keyup', metaKeyEventHandler);
+    };
+  }, [taskListElement, flag]);
 
   return (
     <List className={theme.root} ref={taskListElement}>
-      <DragDropContext onDragEnd={onDragEnd}>
+      <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId={props.listId}>
           {
             (provided, snapshot) => (
