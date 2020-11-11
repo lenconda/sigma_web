@@ -89,10 +89,16 @@ export default (props: TaskList) => {
   const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>, task: TaskItem) => {
     const processCurrentTasks = (e: React.ChangeEvent<HTMLInputElement>, currentTask: TaskItem) => {
       if (currentTask.taskId === task.taskId) {
-        return {
+        const currentFinishedTask = {
           ...currentTask,
           finished: e.target.checked,
         };
+        onDispatch({
+          action: 'UPDATE',
+          type: 'tasks',
+          payload: [currentFinishedTask],
+        });
+        return currentFinishedTask;
       }
       return currentTask;
     };
