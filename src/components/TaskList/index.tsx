@@ -19,6 +19,8 @@ import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
+import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
+import Input from '@material-ui/core/Input';
 import './index.less';
 
 interface Dispatch {
@@ -28,13 +30,7 @@ interface Dispatch {
 }
 
 interface TaskList {
-  title: string;
-  listId: string;
-  tasks: TaskItem[];
-  selectedTasks: TaskItem[];
-  onTasksChange: (newTasks: TaskItem[]) => void;
-  onSelectedTasksChange: (newSelectedTasks: TaskItem[]) => void;
-  onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskItem) => void;
+  currentTask: TaskItem;
   onDispatch: (dispatch: Dispatch) => void;
 }
 
@@ -60,18 +56,46 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
   ...draggableStyle,
 });
 
+const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
+  taskId: k.toString(),
+  content: Math.random().toString(32),
+  deadline: new Date().toISOString(),
+  originalDeadline: new Date().toISOString(),
+  order: k,
+  finished: false,
+  parentTaskId: Math.floor(Math.random() * 10).toString(),
+}));
+
+// const generateStatus: React.FC = (task: TaskItem) => {
+//   const {
+//     deadline,
+//     originalDeadline,
+//     finished,
+//   } = task;
+//   // const delayDays = d
+//   return (
+//     <>
+//       <Button
+//         size="small"
+//         startIcon={<AccessAlarmIcon fontSize="small" />}
+//       >
+//         19:20
+//       </Button>
+//     </>
+//   );
+// };
+
 export default (props: TaskList) => {
   const {
-    tasks,
-    selectedTasks,
-    onTasksChange,
-    onSelectedTasksChange,
-    onCheckChange,
+    currentTask,
     onDispatch,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
   const [flag, setFlag] = useState<number>(0);
+  const [addTaskInputVisible, setAddTaskInputVisible] = useState<boolean>(false);
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [selectedTasks, setSelectedTasks] = useState<TaskItem[]>([]);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -88,7 +112,7 @@ export default (props: TaskList) => {
       }
     });
     onDispatch({ action: 'UPDATE', type: 'TASKS', payload: dispatchUpdateTasks });
-    onTasksChange(currentTasks);
+    setTasks(currentTasks);
   };
 
   const handleSelectionChange = (task: TaskItem) => {
@@ -96,13 +120,13 @@ export default (props: TaskList) => {
     let newSelectedTasks = [];
     if (multiple) {
       if (currentTaskIndex === -1) {
-        onSelectedTasksChange(selectedTasks.concat(task));
+        setSelectedTasks(selectedTasks.concat(task));
       } else {
         newSelectedTasks = selectedTasks.slice(0, currentTaskIndex).concat(selectedTasks.slice(currentTaskIndex + 1));
-        onSelectedTasksChange(newSelectedTasks);
+        setSelectedTasks(newSelectedTasks);
       }
     } else {
-      onSelectedTasksChange([task]);
+      setSelectedTasks([task]);
     }
   };
 
@@ -129,8 +153,16 @@ export default (props: TaskList) => {
       payload: [checkChangeTask],
     });
     const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask));
-    onSelectedTasksChange(newSelectedTasks);
-    onCheckChange(e, task);
+    setSelectedTasks(newSelectedTasks);
+    const currentTaskIndex = tasks.findIndex(value => value.taskId === task.taskId);
+    tasks[currentTaskIndex].finished = e.target.checked;
+    const newTasks = tasks.map(current => {
+      if (current.taskId === task.taskId) {
+        current.finished = e.target.checked;
+      }
+      return current;
+    });
+    setTasks(newTasks);
   };
 
   const handleDeleteTasks = () => {
@@ -148,8 +180,8 @@ export default (props: TaskList) => {
         });
       onDispatch({ action: 'DELETE', type: 'TASKS', payload: dispatchDeleteTasks });
       onDispatch({ action: 'UPDATE', type: 'TASKS', payload: dispatchUpdateTasks });
-      onTasksChange(newTasks);
-      onSelectedTasksChange([]);
+      setTasks(newTasks);
+      setSelectedTasks([]);
     }
   };
 
@@ -182,11 +214,15 @@ export default (props: TaskList) => {
     };
   }, [taskListElement, flag]);
 
+  useEffect(() => {
+    setTasks(getItems(10));
+  }, []);
+
   return (
     <div className="task-list">
       <div className="task-list__title-bar">
         <Typography variant="h6">
-          {props.title}&nbsp;
+          {props.currentTask.content}&nbsp;
           <IconButton aria-label="edit" size="medium">
             <EditIcon fontSize="small" />
           </IconButton>
@@ -198,12 +234,6 @@ export default (props: TaskList) => {
         </div>
       </div>
       <div className="task-list__deadline">
-        <Button
-          size="small"
-          startIcon={<AccessAlarmIcon fontSize="small" />}
-        >
-          19:20
-        </Button>
       </div>
       <List className={theme.root} ref={taskListElement}>
         <DragDropContext
@@ -216,7 +246,7 @@ export default (props: TaskList) => {
             taskListElement.current.style.height = `${currentClientHeight}px`;
           }}
         >
-          <Droppable droppableId={props.listId}>
+          <Droppable droppableId={props.currentTask.taskId}>
             {
               (provided, snapshot) => (
                 <div ref={provided.innerRef}>
@@ -238,9 +268,11 @@ export default (props: TaskList) => {
                                 taskId={item.taskId}
                                 order={item.order}
                                 deadline={item.deadline}
+                                originalDeadline={item.originalDeadline}
                                 finished={item.finished}
                                 onSelectionChange={handleSelectionChange}
                                 onCheckChange={handleCheckChange}
+                                parentTaskId={item.parentTaskId}
                               />
                             </div>
                           )
@@ -269,7 +301,20 @@ export default (props: TaskList) => {
         >
           <MoveToInboxIcon fontSize="small" />
         </IconButton>
-        <IconButton size="medium" aria-label="add"><AddCircleIcon fontSize="small" /></IconButton>
+        <IconButton
+          size="medium"
+          aria-label="add"
+          onClick={() => setAddTaskInputVisible(!addTaskInputVisible)}
+        >
+          {
+            addTaskInputVisible
+              ? <AddCircleIcon fontSize="small" />
+              : <RemoveCircleIcon fontSize="small" color="primary" />
+          }
+        </IconButton>
+        {
+          !addTaskInputVisible && <Input placeholder="键入 Enter 以添加新任务..." className="task-topic" />
+        }
       </div>
       <div className="task-list__log-wrapper">
         <textarea placeholder="在这里写下任务描述..."></textarea>

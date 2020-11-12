@@ -10,9 +10,11 @@ export interface TaskItem {
   content: string;
   taskId: string;
   deadline: string;
+  originalDeadline: string;
   order: number;
   finished: boolean;
   description?: string;
+  parentTaskId: string;
 }
 
 export interface TaskItemProps extends TaskItem {
@@ -44,11 +46,13 @@ export default React.forwardRef((props: TaskItemProps, ref) => {
     isDragging,
     taskId,
     deadline,
+    originalDeadline,
     order,
     finished,
     selected = false,
     onSelectionChange,
     onCheckChange,
+    parentTaskId,
   } = props;
   const styles = useStyles();
   const taskItem: TaskItem = {
@@ -57,6 +61,8 @@ export default React.forwardRef((props: TaskItemProps, ref) => {
     deadline,
     order,
     finished,
+    originalDeadline,
+    parentTaskId,
   };
 
   return (

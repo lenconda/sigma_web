@@ -4,12 +4,14 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import { TaskItem } from './components/TaskList/Item';
 import TaskList from './components/TaskList';
 
-const getItems = (count: number, offset = 0): TaskItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
+const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: k.toString(),
   content: Math.random().toString(32),
   deadline: new Date().toISOString(),
+  originalDeadline: new Date().toISOString(),
   order: k,
   finished: false,
+  parentTaskId: Math.floor(Math.random() * 10).toString(),
 }));
 
 const theme = createMuiTheme({
@@ -36,23 +38,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <TaskList
-        tasks={tasks}
-        title="测试：该任务"
-        selectedTasks={selectedTasks}
-        listId={Math.random().toString(32).substring(2)}
-        onCheckChange={(e, task) => {
-          const currentTaskIndex = tasks.findIndex(value => value.taskId === task.taskId);
-          tasks[currentTaskIndex].finished = e.target.checked;
-          const newTasks = tasks.map(current => {
-            if (current.taskId === task.taskId) {
-              current.finished = e.target.checked;
-            }
-            return current;
-          });
-          setTasks(newTasks);
-        }}
-        onTasksChange={currentTasks => setTasks(currentTasks)}
-        onSelectedTasksChange={currentSelectedTasks => setSelectedTasks(currentSelectedTasks)}
+        currentTask={getItems(1)[0]}
         onDispatch={dispatch => console.log(dispatch)}
       />
     </ThemeProvider>
