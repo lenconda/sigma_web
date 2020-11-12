@@ -20,7 +20,7 @@ const theme = createMuiTheme({
   },
   palette: {
     primary: {
-      main: '#0052cc',
+      main: '#03a9f4',
     },
     tonalOffset: 0.3,
   },
