@@ -16,6 +16,9 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
+import AddCircleIcon from '@material-ui/icons/AddCircle';
+import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
+import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
 import './index.less';
 
 interface Dispatch {
@@ -190,7 +193,7 @@ export default (props: TaskList) => {
         </Typography>
         <div className="task-list__log-wrapper__controls">
           <IconButton aria-label="edit" size="medium">
-            <DeleteIcon fontSize="small" />
+            <DeleteSweepIcon fontSize="small" />
           </IconButton>
         </div>
       </div>
@@ -234,7 +237,7 @@ export default (props: TaskList) => {
                                 content={item.content}
                                 taskId={item.taskId}
                                 order={item.order}
-                                deadline={new Date().toISOString()}
+                                deadline={item.deadline}
                                 finished={item.finished}
                                 onSelectionChange={handleSelectionChange}
                                 onCheckChange={handleCheckChange}
@@ -251,6 +254,23 @@ export default (props: TaskList) => {
           </Droppable>
         </DragDropContext>
       </List>
+      <div className="task-list__buttons">
+        <IconButton
+          size="medium"
+          aria-label="delete"
+          disabled={selectedTasks.length === 0}
+        >
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+        <IconButton
+          size="medium"
+          aria-label="delete"
+          disabled={selectedTasks.length === 0}
+        >
+          <MoveToInboxIcon fontSize="small" />
+        </IconButton>
+        <IconButton size="medium" aria-label="add"><AddCircleIcon fontSize="small" /></IconButton>
+      </div>
       <div className="task-list__log-wrapper">
         <textarea placeholder="在这里写下任务描述..."></textarea>
       </div>
