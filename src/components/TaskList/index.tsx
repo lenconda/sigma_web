@@ -27,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.paper,
     flexShrink: 0,
     flexGrow: 0,
+    boxSizing: 'border-box',
   },
 }));
 
@@ -163,7 +164,16 @@ export default (props: TaskList) => {
   return (
     <div className="task-list">
       <List className={theme.root} ref={taskListElement}>
-        <DragDropContext onDragEnd={handleDragEnd}>
+        <DragDropContext
+          onDragEnd={handleDragEnd}
+          onBeforeDragStart={() => {
+            const currentClientHeight =
+              taskListElement.current.style.height
+              || taskListElement.current.clientHeight
+              || 0;
+            taskListElement.current.style.height = `${currentClientHeight}px`;
+          }}
+        >
           <Droppable droppableId={props.listId}>
             {
               (provided, snapshot) => (
