@@ -217,7 +217,7 @@ export default (props: TaskList) => {
         </DragDropContext>
       </List>
       <div className="task-list__log-wrapper">
-        <textarea></textarea>
+        <textarea placeholder="在这里写下任务描述..."></textarea>
       </div>
     </div>
   );
