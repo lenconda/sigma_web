@@ -90,8 +90,12 @@ export default (props: TaskList) => {
   };
 
   const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>, task: TaskItem) => {
-    const processCurrentTasks = (e: React.ChangeEvent<HTMLInputElement>, currentTask: TaskItem) => {
-      if (currentTask.taskId === task.taskId) {
+    const processCurrentTasks = (
+      e: React.ChangeEvent<HTMLInputElement>,
+      currentTask: TaskItem,
+      type: 'NEW_TASKS' | 'SELECTED_TASKS',
+    ) => {
+      if (currentTask.taskId === task.taskId && type === 'SELECTED_TASKS') {
         const currentFinishedTask = {
           ...currentTask,
           finished: e.target.checked,
@@ -105,8 +109,8 @@ export default (props: TaskList) => {
       }
       return currentTask;
     };
-    const newTasks = tasks.map(currentTask => processCurrentTasks(e, currentTask));
-    const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask));
+    const newTasks = tasks.map(currentTask => processCurrentTasks(e, currentTask, 'NEW_TASKS'));
+    const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask, 'SELECTED_TASKS'));
     onTasksChange(newTasks);
     onSelectedTasksChange(newSelectedTasks);
     onCheckChange(e, task);
