@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Item, { TaskItem } from './Item';
-import { DragDropContext, Droppable, Draggable, DropResult, DraggingStyle, NotDraggingStyle } from 'react-beautiful-dnd';
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+  DraggingStyle,
+  NotDraggingStyle,
+} from 'react-beautiful-dnd';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
 import './index.less';
 
 interface Dispatch {
@@ -12,6 +20,7 @@ interface Dispatch {
 }
 
 interface TaskList {
+  title: string;
   listId: string;
   tasks: TaskItem[];
   selectedTasks: TaskItem[];
@@ -93,25 +102,25 @@ export default (props: TaskList) => {
     const processCurrentTasks = (
       e: React.ChangeEvent<HTMLInputElement>,
       currentTask: TaskItem,
-      type: 'NEW_TASKS' | 'SELECTED_TASKS',
     ) => {
-      if (currentTask.taskId === task.taskId && type === 'SELECTED_TASKS') {
+      if (currentTask.taskId === task.taskId && e.target.checked !== currentTask.finished) {
         const currentFinishedTask = {
           ...currentTask,
           finished: e.target.checked,
         };
-        onDispatch({
-          action: 'UPDATE',
-          type: 'tasks',
-          payload: [currentFinishedTask],
-        });
         return currentFinishedTask;
       }
       return currentTask;
     };
-    const newTasks = tasks.map(currentTask => processCurrentTasks(e, currentTask, 'NEW_TASKS'));
-    const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask, 'SELECTED_TASKS'));
-    onTasksChange(newTasks);
+    const checkChangeTaskIndex = tasks.findIndex(currentTask => currentTask.taskId === task.taskId);
+    const checkChangeTask = tasks[checkChangeTaskIndex];
+    checkChangeTask.finished = e.target.checked;
+    onDispatch({
+      action: 'UPDATE',
+      type: 'tasks',
+      payload: [checkChangeTask],
+    });
+    const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask));
     onSelectedTasksChange(newSelectedTasks);
     onCheckChange(e, task);
   };
@@ -167,6 +176,10 @@ export default (props: TaskList) => {
 
   return (
     <div className="task-list">
+      <div className="task-list__title-bar">
+        <Typography variant="h6">{props.title}</Typography>
+        <div className="task-list__log-wrapper__controls"></div>
+      </div>
       <List className={theme.root} ref={taskListElement}>
         <DragDropContext
           onDragEnd={handleDragEnd}

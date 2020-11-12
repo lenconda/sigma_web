@@ -37,6 +37,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <TaskList
         tasks={tasks}
+        title="测试：该任务"
         selectedTasks={selectedTasks}
         listId={Math.random().toString(32).substring(2)}
         onCheckChange={(e, task) => {
