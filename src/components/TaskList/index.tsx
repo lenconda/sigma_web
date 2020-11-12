@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Item, { TaskItem } from './Item';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable, DropResult, DraggingStyle, NotDraggingStyle } from 'react-beautiful-dnd';
 import { makeStyles } from '@material-ui/core/styles';
 import List from '@material-ui/core/List';
 import './index.less';
@@ -38,7 +38,7 @@ const reorder = (list: TaskItem[], startIndex, endIndex): TaskItem[] => {
   return result;
 };
 
-const getItemStyle = (isDragging, draggableStyle) => ({
+const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
   // styles we need to apply on draggables
   ...draggableStyle,
 });
@@ -187,7 +187,7 @@ export default (props: TaskList) => {
                               ref={provided.innerRef}
                               {...provided.draggableProps}
                               {...provided.dragHandleProps}
-                              style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                              style={getItemStyle(provided.draggableProps.style)}
                             >
                               <Item
                                 selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
