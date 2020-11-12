@@ -25,6 +25,8 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
     backgroundColor: theme.palette.background.paper,
+    flexShrink: 0,
+    flexGrow: 0,
   },
 }));
 
@@ -159,45 +161,50 @@ export default (props: TaskList) => {
   }, [taskListElement, flag]);
 
   return (
-    <List className={theme.root} ref={taskListElement}>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId={props.listId}>
-          {
-            (provided, snapshot) => (
-              <div ref={provided.innerRef}>
-                {
-                  tasks.map((item, index) => (
-                    <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
-                      {
-                        (provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
-                          >
-                            <Item
-                              selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
-                              isDragging={snapshot.isDragging}
-                              content={item.content}
-                              taskId={item.taskId}
-                              order={item.order}
-                              deadline={new Date().toISOString()}
-                              finished={item.finished}
-                              onSelectionChange={handleSelectionChange}
-                              onCheckChange={handleCheckChange}
-                            />
-                          </div>
-                        )
-                      }
-                    </Draggable>
-                  ))
-                }
-              </div>
-            )
-          }
-        </Droppable>
-      </DragDropContext>
-    </List>
+    <div className="task-list">
+      <List className={theme.root} ref={taskListElement}>
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId={props.listId}>
+            {
+              (provided, snapshot) => (
+                <div ref={provided.innerRef}>
+                  {
+                    tasks.map((item, index) => (
+                      <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
+                        {
+                          (provided, snapshot) => (
+                            <div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              style={getItemStyle(snapshot.isDragging, provided.draggableProps.style)}
+                            >
+                              <Item
+                                selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
+                                isDragging={snapshot.isDragging}
+                                content={item.content}
+                                taskId={item.taskId}
+                                order={item.order}
+                                deadline={new Date().toISOString()}
+                                finished={item.finished}
+                                onSelectionChange={handleSelectionChange}
+                                onCheckChange={handleCheckChange}
+                              />
+                            </div>
+                          )
+                        }
+                      </Draggable>
+                    ))
+                  }
+                </div>
+              )
+            }
+          </Droppable>
+        </DragDropContext>
+      </List>
+      <div className="task-list__log-wrapper">
+        <textarea></textarea>
+      </div>
+    </div>
   );
 };
