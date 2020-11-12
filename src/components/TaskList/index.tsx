@@ -9,13 +9,18 @@ import {
   NotDraggingStyle,
 } from 'react-beautiful-dnd';
 import { makeStyles } from '@material-ui/core/styles';
+import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
+import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import './index.less';
 
 interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
-  type: 'tasks' | 'sections';
+  type: 'TASKS' | 'SECTIONS';
   payload: TaskItem[] | any[];
 }
 
@@ -79,7 +84,7 @@ export default (props: TaskList) => {
         dispatchUpdateTasks.push(currentTask);
       }
     });
-    onDispatch({ action: 'UPDATE', type: 'tasks', payload: dispatchUpdateTasks });
+    onDispatch({ action: 'UPDATE', type: 'TASKS', payload: dispatchUpdateTasks });
     onTasksChange(currentTasks);
   };
 
@@ -117,7 +122,7 @@ export default (props: TaskList) => {
     checkChangeTask.finished = e.target.checked;
     onDispatch({
       action: 'UPDATE',
-      type: 'tasks',
+      type: 'TASKS',
       payload: [checkChangeTask],
     });
     const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask));
@@ -138,8 +143,8 @@ export default (props: TaskList) => {
           }
           return currentTask;
         });
-      onDispatch({ action: 'DELETE', type: 'tasks', payload: dispatchDeleteTasks });
-      onDispatch({ action: 'UPDATE', type: 'tasks', payload: dispatchUpdateTasks });
+      onDispatch({ action: 'DELETE', type: 'TASKS', payload: dispatchDeleteTasks });
+      onDispatch({ action: 'UPDATE', type: 'TASKS', payload: dispatchUpdateTasks });
       onTasksChange(newTasks);
       onSelectedTasksChange([]);
     }
@@ -177,8 +182,25 @@ export default (props: TaskList) => {
   return (
     <div className="task-list">
       <div className="task-list__title-bar">
-        <Typography variant="h6">{props.title}</Typography>
-        <div className="task-list__log-wrapper__controls"></div>
+        <Typography variant="h6">
+          {props.title}&nbsp;
+          <IconButton aria-label="edit" size="medium">
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Typography>
+        <div className="task-list__log-wrapper__controls">
+          <IconButton aria-label="edit" size="medium">
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </div>
+      </div>
+      <div className="task-list__deadline">
+        <Button
+          size="small"
+          startIcon={<AccessAlarmIcon fontSize="small" />}
+        >
+          19:20
+        </Button>
       </div>
       <List className={theme.root} ref={taskListElement}>
         <DragDropContext

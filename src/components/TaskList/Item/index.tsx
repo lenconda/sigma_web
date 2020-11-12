@@ -12,6 +12,7 @@ export interface TaskItem {
   deadline: string;
   order: number;
   finished: boolean;
+  description?: string;
 }
 
 export interface TaskItemProps extends TaskItem {
