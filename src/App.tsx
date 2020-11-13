@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import Hub from './core/hub';
 
 import { TaskItem } from './components/TaskList/Item';
 import TaskList from './components/TaskList';
@@ -32,6 +33,7 @@ const theme = createMuiTheme({
 });
 
 const App: React.FC = () => {
+  const hub = new Hub();
   return (
     <ThemeProvider theme={theme}>
       <TaskList
