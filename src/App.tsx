@@ -32,9 +32,6 @@ const theme = createMuiTheme({
 });
 
 const App: React.FC = () => {
-  const [tasks, setTasks] = useState<TaskItem[]>(getItems(10));
-  const [selectedTasks, setSelectedTasks] = useState<TaskItem[]>([]);
-
   return (
     <ThemeProvider theme={theme}>
       <TaskList

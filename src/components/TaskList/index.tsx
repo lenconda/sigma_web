@@ -8,6 +8,9 @@ import {
   DraggingStyle,
   NotDraggingStyle,
 } from 'react-beautiful-dnd';
+import {
+  getDaysDifference,
+} from '../../utils/date';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
@@ -66,24 +69,33 @@ const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v
   parentTaskId: Math.floor(Math.random() * 10).toString(),
 }));
 
-// const generateStatus: React.FC = (task: TaskItem) => {
-//   const {
-//     deadline,
-//     originalDeadline,
-//     finished,
-//   } = task;
-//   // const delayDays = d
-//   return (
-//     <>
-//       <Button
-//         size="small"
-//         startIcon={<AccessAlarmIcon fontSize="small" />}
-//       >
-//         19:20
-//       </Button>
-//     </>
-//   );
-// };
+const generateStatus = (task: TaskItem): JSX.Element => {
+  const {
+    originalDeadline,
+    finished,
+    finishedDate,
+  } = task;
+  console.log(originalDeadline);
+  const delayDays = getDaysDifference(
+    (finished && finishedDate ? new Date(finishedDate) : new Date()),
+    new Date(originalDeadline),
+  );
+  console.log(delayDays);
+  const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
+
+  return (
+    <Button
+      size="small"
+      startIcon={<AccessAlarmIcon fontSize="small" />}
+    >
+      <Typography
+        color={delayDays > 0 ? 'error' : 'textPrimary'}
+      >
+        {`${status}${delayDays > 0 ? `，已过期 ${Math.abs(delayDays)} 天` : ''}`}
+      </Typography>
+    </Button>
+  );
+};
 
 export default (props: TaskList) => {
   const {
@@ -234,6 +246,7 @@ export default (props: TaskList) => {
         </div>
       </div>
       <div className="task-list__deadline">
+        {generateStatus(currentTask)}
       </div>
       <List className={theme.root} ref={taskListElement}>
         <DragDropContext

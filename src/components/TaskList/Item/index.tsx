@@ -13,6 +13,7 @@ export interface TaskItem {
   originalDeadline: string;
   order: number;
   finished: boolean;
+  finishedDate?: string;
   description?: string;
   parentTaskId: string;
 }
