@@ -307,13 +307,13 @@ export default (props: TaskList) => {
           onClick={() => setAddTaskInputVisible(!addTaskInputVisible)}
         >
           {
-            addTaskInputVisible
+            !addTaskInputVisible
               ? <AddCircleIcon fontSize="small" />
               : <RemoveCircleIcon fontSize="small" color="primary" />
           }
         </IconButton>
         {
-          !addTaskInputVisible && <Input placeholder="键入 Enter 以添加新任务..." className="task-topic" />
+          addTaskInputVisible && <Input placeholder="键入 Enter 以添加新任务..." className="task-topic" />
         }
       </div>
       <div className="task-list__log-wrapper">
