@@ -75,12 +75,10 @@ const generateStatus = (task: TaskItem): JSX.Element => {
     finished,
     finishedDate,
   } = task;
-  console.log(originalDeadline);
   const delayDays = getDaysDifference(
     (finished && finishedDate ? new Date(finishedDate) : new Date()),
     new Date(originalDeadline),
   );
-  console.log(delayDays);
   const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
 
   return (
