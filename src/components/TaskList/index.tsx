@@ -61,13 +61,13 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
 });
 
 const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
-  taskId: k.toString(),
+  taskId: Math.random().toString(32),
   content: Math.random().toString(32),
   deadline: new Date().toISOString(),
   originalDeadline: new Date().toISOString(),
   order: k,
   finished: false,
-  parentTaskId: Math.floor(Math.random() * 10).toString(),
+  parentTaskId: '0',
 }));
 
 const generateStatus = (task: TaskItem): JSX.Element => {
@@ -226,6 +226,9 @@ export default (props: TaskList) => {
 
   useEffect(() => {
     setTasks(getItems(10));
+  }, []);
+
+  useEffect(() => {
     hub.on('push', (dispatch: Dispatch) => {
       switch (dispatch.action) {
       case 'ADD': {
@@ -242,28 +245,24 @@ export default (props: TaskList) => {
       }
       case 'UPDATE': {
         const tasksToBeUpdated = [];
-        dispatch.payload.forEach(payload => {
-          if (payload.parentTaskId === currentTask.taskId) {
-            const newTasks = tasks.map((task, index) => {
-              if (task.taskId === payload.taskId) {
-                payload.order = index + 1;
-                tasksToBeUpdated.push(payload);
-                return payload;
-              } else if (task.order !== index + 1) {
-                task.order = index + 1;
-                tasksToBeUpdated.push(task);
-                return task;
-              }
-              return task;
-            });
-            setTasks(newTasks);
-            hub.emit('dispatch', { action: 'UPDATE', payload: tasksToBeUpdated });
+        const newTasks = tasks.map(task => {
+          const payloadIndex =
+            dispatch.payload.findIndex(payload => payload.taskId === task.taskId && payload.parentTaskId === currentTask.taskId);
+          if (payloadIndex !== -1) {
+            const currentNewTask = dispatch.payload[payloadIndex];
+            tasksToBeUpdated.push(currentNewTask);
+            return currentNewTask;
+          } else {
+            return task;
           }
         });
+        setTasks(newTasks);
+        hub.emit('dispatch', { action: 'UPDATE', payload: tasksToBeUpdated });
         break;
       }
       case 'DELETE': {
-        const newTasks = tasks.filter(task => dispatch.payload.findIndex(payload => payload.taskId === task.taskId) !== -1);
+        const newTasks = tasks.filter(task => dispatch.payload.findIndex(payload => payload.taskId === task.taskId
+                && payload.parentTaskId === currentTask.taskId) === -1);
         setTasks(newTasks);
         hub.emit('dispatch', { action: 'DELETE', payload: dispatch.payload });
         break;
@@ -272,7 +271,7 @@ export default (props: TaskList) => {
         break;
       }
     });
-  }, []);
+  }, [tasks]);
 
   return (
     <div className="task-list">

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Hub from './core/hub';
 
@@ -34,12 +34,18 @@ const theme = createMuiTheme({
 
 const App: React.FC = () => {
   const hub = new Hub<Dispatch>();
+
+  useEffect(() => {
+    hub.on('dispatch', (dispatch: Dispatch) => {
+      console.log(dispatch);
+    });
+  }, [hub]);
+
   return (
     <ThemeProvider theme={theme}>
       <TaskList
         hub={hub}
         currentTask={getItems(1)[0]}
-        // onDispatch={dispatch => console.log(dispatch)}
       />
     </ThemeProvider>
   );
