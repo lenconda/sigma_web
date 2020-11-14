@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import React, { useState, useEffect, useRef } from 'react';
 import Item, { TaskItem } from './Item';
 import {
@@ -24,17 +25,17 @@ import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import Input from '@material-ui/core/Input';
+import Hub from '../../core/hub';
 import './index.less';
 
-interface Dispatch {
+export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
-  type: 'TASKS' | 'SECTIONS';
-  payload: TaskItem[] | any[];
+  payload: TaskItem[];
 }
 
-interface TaskList {
+export interface TaskList {
   currentTask: TaskItem;
-  onDispatch: (dispatch: Dispatch) => void;
+  hub: Hub<Dispatch>;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -47,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const reorder = (list: TaskItem[], startIndex, endIndex): TaskItem[] => {
+const reorder = (list: TaskItem[], startIndex: number, endIndex: number): TaskItem[] => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
@@ -98,7 +99,7 @@ const generateStatus = (task: TaskItem): JSX.Element => {
 export default (props: TaskList) => {
   const {
     currentTask,
-    onDispatch,
+    hub,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
@@ -121,7 +122,7 @@ export default (props: TaskList) => {
         dispatchUpdateTasks.push(currentTask);
       }
     });
-    onDispatch({ action: 'UPDATE', type: 'TASKS', payload: dispatchUpdateTasks });
+    hub.emit('push', { action: 'UPDATE', payload: dispatchUpdateTasks });
     setTasks(currentTasks);
   };
 
@@ -157,9 +158,8 @@ export default (props: TaskList) => {
     const checkChangeTaskIndex = tasks.findIndex(currentTask => currentTask.taskId === task.taskId);
     const checkChangeTask = tasks[checkChangeTaskIndex];
     checkChangeTask.finished = e.target.checked;
-    onDispatch({
+    hub.emit('push', {
       action: 'UPDATE',
-      type: 'TASKS',
       payload: [checkChangeTask],
     });
     const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask));
@@ -188,8 +188,8 @@ export default (props: TaskList) => {
           }
           return currentTask;
         });
-      onDispatch({ action: 'DELETE', type: 'TASKS', payload: dispatchDeleteTasks });
-      onDispatch({ action: 'UPDATE', type: 'TASKS', payload: dispatchUpdateTasks });
+      hub.emit('push', { action: 'DELETE', payload: dispatchDeleteTasks });
+      hub.emit('push', { action: 'UPDATE', payload: dispatchUpdateTasks });
       setTasks(newTasks);
       setSelectedTasks([]);
     }
@@ -226,6 +226,52 @@ export default (props: TaskList) => {
 
   useEffect(() => {
     setTasks(getItems(10));
+    hub.on('push', (dispatch: Dispatch) => {
+      switch (dispatch.action) {
+      case 'ADD': {
+        const tasksToBeAdded = [];
+        dispatch.payload.forEach(payload => {
+          if (payload.parentTaskId === currentTask.taskId) {
+            payload.order = tasks[tasks.length - 1].order + 1;
+            tasksToBeAdded.push(payload);
+          }
+        });
+        setTasks(tasks.concat(tasksToBeAdded));
+        hub.emit('dispatch', { action: 'ADD', payload: tasksToBeAdded });
+        break;
+      }
+      case 'UPDATE': {
+        const tasksToBeUpdated = [];
+        dispatch.payload.forEach(payload => {
+          if (payload.parentTaskId === currentTask.taskId) {
+            const newTasks = tasks.map((task, index) => {
+              if (task.taskId === payload.taskId) {
+                payload.order = index + 1;
+                tasksToBeUpdated.push(payload);
+                return payload;
+              } else if (task.order !== index + 1) {
+                task.order = index + 1;
+                tasksToBeUpdated.push(task);
+                return task;
+              }
+              return task;
+            });
+            setTasks(newTasks);
+            hub.emit('dispatch', { action: 'UPDATE', payload: tasksToBeUpdated });
+          }
+        });
+        break;
+      }
+      case 'DELETE': {
+        const newTasks = tasks.filter(task => dispatch.payload.findIndex(payload => payload.taskId === task.taskId) !== -1);
+        setTasks(newTasks);
+        hub.emit('dispatch', { action: 'DELETE', payload: dispatch.payload });
+        break;
+      }
+      default:
+        break;
+      }
+    });
   }, []);
 
   return (

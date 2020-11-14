@@ -1,20 +1,20 @@
-export type EventSubscribersType = Record<string, Array<EventSubscriberCallbackType>>;
-export type EventSubscriberCallbackType = (data: any) => any;
+export type EventSubscribersType<T> = Record<string, Array<EventSubscriberCallbackType<T>>>;
+export type EventSubscriberCallbackType<T> = (data: T) => any;
 
 /**
  * an event emitter based on publisher-subscriber pattern
  * @class
  * @constructor
  */
-class Hub {
-  private subscribers: EventSubscribersType = {};
+class Hub<T> {
+  private subscribers: EventSubscribersType<T> = {};
 
   /**
    * emit an event
    * @param key
    * @param data
    */
-  public emit(key: string, data: any) {
+  public emit(key: string, data: T) {
     const currentSubscribers = this.subscribers[key];
     if (!Array.isArray(currentSubscribers)) {
       return;
@@ -28,7 +28,7 @@ class Hub {
    * @param key
    * @param callback
    */
-  public on(key: string, callback: EventSubscriberCallbackType) {
+  public on(key: string, callback: EventSubscriberCallbackType<T>) {
     if (!Array.isArray(this.subscribers[key])) {
       this.subscribers[key] = [];
     }
@@ -42,7 +42,7 @@ class Hub {
    * @param key
    * @param callback
    */
-  public off(key: string, callback: EventSubscriberCallbackType) {
+  public off(key: string, callback: EventSubscriberCallbackType<T>) {
     if (!Array.isArray(this.subscribers[key]) || !callback) {
       return;
     }
@@ -55,7 +55,7 @@ class Hub {
    * @param key
    * @returns
    */
-  public has(key: string, callback: EventSubscriberCallbackType) {
+  public has(key: string, callback: EventSubscriberCallbackType<T>) {
     const currentSubscribers = this.subscribers[key];
     if (callback) {
       return Array.isArray(currentSubscribers) && currentSubscribers.includes(callback);

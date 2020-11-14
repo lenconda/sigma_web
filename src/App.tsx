@@ -3,7 +3,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Hub from './core/hub';
 
 import { TaskItem } from './components/TaskList/Item';
-import TaskList from './components/TaskList';
+import TaskList, { Dispatch } from './components/TaskList';
 
 const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: k.toString(),
@@ -33,12 +33,13 @@ const theme = createMuiTheme({
 });
 
 const App: React.FC = () => {
-  const hub = new Hub();
+  const hub = new Hub<Dispatch>();
   return (
     <ThemeProvider theme={theme}>
       <TaskList
+        hub={hub}
         currentTask={getItems(1)[0]}
-        onDispatch={dispatch => console.log(dispatch)}
+        // onDispatch={dispatch => console.log(dispatch)}
       />
     </ThemeProvider>
   );
