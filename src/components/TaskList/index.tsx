@@ -229,7 +229,7 @@ export default (props: TaskList) => {
   }, []);
 
   useEffect(() => {
-    hub.on('push', (dispatch: Dispatch) => {
+    const hubHandler = (dispatch: Dispatch) => {
       switch (dispatch.action) {
       case 'ADD': {
         const tasksToBeAdded = [];
@@ -270,7 +270,11 @@ export default (props: TaskList) => {
       default:
         break;
       }
-    });
+    };
+    hub.on('push', hubHandler);
+    return () => {
+      hub.off('push', hubHandler);
+    };
   }, [tasks]);
 
   return (
