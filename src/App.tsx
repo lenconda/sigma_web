@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Hub from './core/hub';
-
-import { TaskItem } from './components/TaskList/Item';
+import IDGen from './core/idgen';
+import { TaskListItem } from './components/TaskListItem';
 import TaskList, { Dispatch } from './components/TaskList';
 
-const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
+const getItems = (count: number): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: k.toString(),
   content: Math.random().toString(32),
   deadline: new Date().toISOString(),
@@ -34,6 +34,14 @@ const theme = createMuiTheme({
 
 const App: React.FC = () => {
   const hub = new Hub<Dispatch>();
+  const [idGen, setIdGen] = useState<IDGen | undefined>(undefined);
+
+  useEffect(() => {
+    const idGenInstance = new IDGen();
+    idGenInstance.load().then(() => {
+      setIdGen(idGenInstance);
+    });
+  }, []);
 
   useEffect(() => {
     hub.on('dispatch', (dispatch: Dispatch) => {
@@ -46,6 +54,7 @@ const App: React.FC = () => {
       <TaskList
         hub={hub}
         currentTask={getItems(1)[0]}
+        idGenerator={idGen}
       />
     </ThemeProvider>
   );

@@ -1,14 +1,11 @@
 import React from 'react';
 import './index.less';
-import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 
-export interface TaskItem {
+export interface TaskListItemBase {
   content: string;
-  taskId: string;
   deadline: string;
   originalDeadline: string;
   order: number;
@@ -18,30 +15,18 @@ export interface TaskItem {
   parentTaskId: string;
 }
 
-export interface TaskItemProps extends TaskItem {
-  isDragging: boolean;
-  selected?: boolean;
-  onSelectionChange: (taskInfo: TaskItem) => void;
-  onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskItem) => void;
+export interface TaskListItem extends TaskListItemBase {
+  taskId: string;
 }
 
-const useStyles = makeStyles({
-  root: {
-    boxSizing: 'border-box',
-    display: 'flex',
-    justifyContent: 'space-between',
-    padding: 0,
-    backgroundColor: '#fff',
-  },
-  selected: {
-    backgroundColor: '#f5f5f5',
-  },
-  dragging: {
-    boxShadow: '0 0 10px rgba(0, 0, 0, .12)',
-  },
-});
+export interface TaskListItemProps extends TaskListItem {
+  isDragging: boolean;
+  selected?: boolean;
+  onSelectionChange: (taskInfo: TaskListItem) => void;
+  onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskListItem) => void;
+}
 
-export default React.forwardRef((props: TaskItemProps, ref) => {
+export default React.forwardRef((props: TaskListItemProps, ref) => {
   const {
     content,
     isDragging,
@@ -55,8 +40,8 @@ export default React.forwardRef((props: TaskItemProps, ref) => {
     onCheckChange,
     parentTaskId,
   } = props;
-  const styles = useStyles();
-  const taskItem: TaskItem = {
+
+  const taskItem: TaskListItem = {
     content,
     taskId,
     deadline,
@@ -69,7 +54,16 @@ export default React.forwardRef((props: TaskItemProps, ref) => {
   return (
     <div ref={ref as any} onClick={() => onSelectionChange(taskItem)}>
       <ListItem
-        className={clsx(styles.root, { [styles.selected]: selected, [styles.dragging]: isDragging })}
+        style={
+          {
+            boxSizing: 'border-box',
+            display: 'flex',
+            justifyContent: 'space-between',
+            padding: 0,
+            backgroundColor: selected ? '#f5f5f5' : '#fff',
+            boxShadow: isDragging ? '0 0 10px rgba(0, 0, 0, .12)' : null,
+          }
+        }
         button={true}
       >
         <Checkbox color="primary" checked={finished} onChange={event => onCheckChange(event, taskItem)} />

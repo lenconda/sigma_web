@@ -1,6 +1,12 @@
 /* eslint-disable max-nested-callbacks */
-import React, { useState, useEffect, useRef } from 'react';
-import Item, { TaskItem } from './Item';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
+import Item, {
+  TaskListItem,
+} from '../TaskListItem';
 import {
   DragDropContext,
   Droppable,
@@ -26,16 +32,19 @@ import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
 import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import Input from '@material-ui/core/Input';
 import Hub from '../../core/hub';
+import moment from 'moment';
 import './index.less';
+import IDGen from '../../core/idgen';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
-  payload: TaskItem[];
+  payload: TaskListItem[];
 }
 
 export interface TaskList {
-  currentTask: TaskItem;
+  currentTask: TaskListItem;
   hub: Hub<Dispatch>;
+  idGenerator: IDGen;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -48,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const reorder = (list: TaskItem[], startIndex: number, endIndex: number): TaskItem[] => {
+const reorder = (list: TaskListItem[], startIndex: number, endIndex: number): TaskListItem[] => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
@@ -60,7 +69,7 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
   ...draggableStyle,
 });
 
-const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
+const getItems = (count: number): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: Math.random().toString(32),
   content: Math.random().toString(32),
   deadline: new Date().toISOString(),
@@ -70,7 +79,7 @@ const getItems = (count: number): TaskItem[] => Array.from({ length: count }, (v
   parentTaskId: '0',
 }));
 
-const generateStatus = (task: TaskItem): JSX.Element => {
+const generateStatus = (task: TaskListItem): JSX.Element => {
   const {
     originalDeadline,
     finished,
@@ -100,13 +109,15 @@ export default (props: TaskList) => {
   const {
     currentTask,
     hub,
+    idGenerator,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
   const [flag, setFlag] = useState<number>(0);
   const [addTaskInputVisible, setAddTaskInputVisible] = useState<boolean>(false);
-  const [tasks, setTasks] = useState<TaskItem[]>([]);
-  const [selectedTasks, setSelectedTasks] = useState<TaskItem[]>([]);
+  const [addTaskContent, setAddTaskContent] = useState<string>('');
+  const [tasks, setTasks] = useState<TaskListItem[]>([]);
+  const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -126,7 +137,7 @@ export default (props: TaskList) => {
     setTasks(currentTasks);
   };
 
-  const handleSelectionChange = (task: TaskItem) => {
+  const handleSelectionChange = (task: TaskListItem) => {
     const currentTaskIndex = selectedTasks.findIndex(currentTask => currentTask.taskId === task.taskId);
     let newSelectedTasks = [];
     if (multiple) {
@@ -141,10 +152,10 @@ export default (props: TaskList) => {
     }
   };
 
-  const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>, task: TaskItem) => {
+  const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>, task: TaskListItem) => {
     const processCurrentTasks = (
       e: React.ChangeEvent<HTMLInputElement>,
-      currentTask: TaskItem,
+      currentTask: TaskListItem,
     ) => {
       if (currentTask.taskId === task.taskId && e.target.checked !== currentTask.finished) {
         const currentFinishedTask = {
@@ -192,6 +203,23 @@ export default (props: TaskList) => {
       hub.emit('push', { action: 'UPDATE', payload: dispatchUpdateTasks });
       setTasks(newTasks);
       setSelectedTasks([]);
+    }
+  };
+
+  const handleInputKeyPress = (event: React.KeyboardEvent<HTMLElement>) => {
+    if (event.keyCode === 13 || event.key.toLowerCase() === 'enter') {
+      const deadline = moment().add(1, 'day').startOf('day').toISOString();
+      const taskToBeAdded: TaskListItem = {
+        content: addTaskContent,
+        deadline,
+        finished: false,
+        order: tasks.length,
+        originalDeadline: deadline,
+        parentTaskId: currentTask.taskId,
+        taskId: idGenerator.generate(),
+      };
+      hub.emit('push', { action: 'ADD', payload: [taskToBeAdded] });
+      setAddTaskContent('');
     }
   };
 
@@ -275,7 +303,7 @@ export default (props: TaskList) => {
     return () => {
       hub.off('push', hubHandler);
     };
-  }, [tasks]);
+  }, [tasks, idGenerator]);
 
   return (
     <div className="task-list">
@@ -365,7 +393,14 @@ export default (props: TaskList) => {
           }
         </IconButton>
         {
-          addTaskInputVisible && <Input placeholder="键入 Enter 以添加新任务..." className="task-topic" />
+          addTaskInputVisible &&
+            <Input
+              value={addTaskContent}
+              placeholder="键入 Enter 以添加新任务..."
+              className="task-topic"
+              onChange={event => setAddTaskContent(event.target.value)}
+              onKeyUp={handleInputKeyPress}
+            />
         }
       </div>
       <div className="task-list__log-wrapper">
