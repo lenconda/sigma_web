@@ -296,16 +296,7 @@ export default (props: TaskList) => {
         {generateStatus(currentTask)}
       </div>
       <List className={theme.root} ref={taskListElement}>
-        <DragDropContext
-          onDragEnd={handleDragEnd}
-          onBeforeDragStart={() => {
-            const currentClientHeight =
-              taskListElement.current.style.height
-              || taskListElement.current.clientHeight
-              || 0;
-            taskListElement.current.style.height = `${currentClientHeight}px`;
-          }}
-        >
+        <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId={props.currentTask.taskId}>
             {
               (provided, snapshot) => (
@@ -340,6 +331,7 @@ export default (props: TaskList) => {
                       </Draggable>
                     ))
                   }
+                  {provided.placeholder}
                 </div>
               )
             }
