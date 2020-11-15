@@ -29,7 +29,6 @@ import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
-import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
 import Input from '@material-ui/core/Input';
 import Hub from '../../core/hub';
 import moment from 'moment';
@@ -386,11 +385,7 @@ export default (props: TaskList) => {
           aria-label="add"
           onClick={() => setAddTaskInputVisible(!addTaskInputVisible)}
         >
-          {
-            !addTaskInputVisible
-              ? <AddCircleIcon fontSize="small" />
-              : <RemoveCircleIcon fontSize="small" color="primary" />
-          }
+          <AddCircleIcon fontSize="small" color={addTaskInputVisible ? 'primary' : 'inherit'} />
         </IconButton>
         {
           addTaskInputVisible &&
