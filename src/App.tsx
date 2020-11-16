@@ -5,16 +5,6 @@ import IDGen from './core/idgen';
 import { TaskListItem } from './components/TaskListItem';
 import TaskList, { Dispatch } from './components/TaskList';
 
-const getItems = (count: number): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
-  taskId: k.toString(),
-  content: Math.random().toString(32),
-  deadline: new Date().toISOString(),
-  originalDeadline: new Date().toISOString(),
-  order: k,
-  finished: false,
-  parentTaskId: Math.floor(Math.random() * 10).toString(),
-}));
-
 const theme = createMuiTheme({
   props: {
     MuiButtonBase: {
@@ -53,7 +43,7 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <TaskList
         hub={hub}
-        currentTask={getItems(1)[0]}
+        currentTaskId="0"
         idGenerator={idGen}
       />
     </ThemeProvider>

@@ -42,7 +42,7 @@ export interface Dispatch {
 }
 
 export interface TaskList {
-  currentTask: TaskListItem;
+  currentTaskId: string;
   hub: Hub<Dispatch>;
   idGenerator: IDGen;
 }
@@ -69,8 +69,8 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
   ...draggableStyle,
 });
 
-const getItems = (count: number): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
-  taskId: Math.random().toString(32),
+const getItems = (count: number, id?: string): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
+  taskId: id || Math.random().toString(32),
   content: Math.random().toString(32),
   deadline: new Date().toISOString(),
   originalDeadline: new Date().toISOString(),
@@ -80,6 +80,9 @@ const getItems = (count: number): TaskListItem[] => Array.from({ length: count }
 }));
 
 const generateStatus = (task: TaskListItem): JSX.Element => {
+  if (!task) {
+    return null;
+  }
   const {
     originalDeadline,
     finished,
@@ -107,7 +110,7 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
 
 export default (props: TaskList) => {
   const {
-    currentTask,
+    currentTaskId,
     hub,
     idGenerator,
   } = props;
@@ -118,6 +121,7 @@ export default (props: TaskList) => {
   const [addTaskContent, setAddTaskContent] = useState<string>('');
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
+  const [currentTask, setCurrentTask] = useState<TaskListItem | undefined>(undefined);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -127,10 +131,10 @@ export default (props: TaskList) => {
     }
     const currentTasks = reorder(tasks, source.index, destination.index);
     const dispatchUpdateTasks = [];
-    currentTasks.forEach((currentTask, index) => {
-      if (currentTask.order !== index) {
-        currentTask.order = index;
-        dispatchUpdateTasks.push(currentTask);
+    currentTasks.forEach((task, index) => {
+      if (task.order !== index) {
+        task.order = index;
+        dispatchUpdateTasks.push(task);
       }
     });
     hub.emit('push', { action: 'UPDATE', payload: dispatchUpdateTasks });
@@ -157,7 +161,7 @@ export default (props: TaskList) => {
       e: React.ChangeEvent<HTMLInputElement>,
       currentTask: TaskListItem,
     ) => {
-      if (currentTask.taskId === task.taskId && e.target.checked !== currentTask.finished) {
+      if (currentTask.taskId === task.taskId && e.target.checked !== (currentTask && currentTask.finished)) {
         const currentFinishedTask = {
           ...currentTask,
           finished: e.target.checked,
@@ -224,7 +228,11 @@ export default (props: TaskList) => {
   };
 
   const handleCurrentTaskFinishedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.target.checked);
+    const newCurrentTaskInfo: TaskListItem = {
+      ...currentTask,
+      finished: event.target.checked,
+    };
+    hub.emit('push', { action: 'UPDATE', payload: [newCurrentTaskInfo] });
   };
 
   useEffect(() => {
@@ -257,6 +265,7 @@ export default (props: TaskList) => {
   }, [taskListElement, flag]);
 
   useEffect(() => {
+    setCurrentTask(getItems(1, '0')[0]);
     setTasks(getItems(10));
   }, []);
 
@@ -277,15 +286,18 @@ export default (props: TaskList) => {
       }
       case 'UPDATE': {
         const tasksToBeUpdated = [];
-        const newTasks = tasks.map(task => {
-          const payloadIndex =
-            dispatch.payload.findIndex(payload => payload.taskId === task.taskId && payload.parentTaskId === currentTask.taskId);
-          if (payloadIndex !== -1) {
-            const currentNewTask = dispatch.payload[payloadIndex];
-            tasksToBeUpdated.push(currentNewTask);
-            return currentNewTask;
-          } else {
-            return task;
+        const newTasks = Array.from(tasks);
+        dispatch.payload.forEach(payload => {
+          const currentTaskIndex = newTasks.findIndex(task => task.taskId === payload.taskId);
+          if (payload.taskId === (currentTask && currentTask.taskId)) {
+            setCurrentTask(payload);
+            tasksToBeUpdated.push(payload);
+          } else if (
+            currentTaskIndex !== -1
+            && payload.parentTaskId === (currentTask && currentTask.taskId)
+          ) {
+            tasksToBeUpdated.push(payload);
+            newTasks.splice(currentTaskIndex, 1, payload);
           }
         });
         setTasks(newTasks);
@@ -313,8 +325,8 @@ export default (props: TaskList) => {
     <div className="task-list">
       <div className="task-list__title-bar">
         <Typography variant="h6" style={{ display: 'flex', alignItems: 'center' }}>
-          <Checkbox color="primary" checked={currentTask.finished} onChange={handleCurrentTaskFinishedChange} />
-          {props.currentTask.content}&nbsp;
+          <Checkbox color="primary" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
+          {currentTask && (currentTask.content) || '加载中...'}&nbsp;
           <IconButton aria-label="edit" size="medium">
             <EditIcon fontSize="small" />
           </IconButton>
@@ -330,7 +342,7 @@ export default (props: TaskList) => {
       </div>
       <List className={theme.root} ref={taskListElement}>
         <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId={props.currentTask.taskId}>
+          <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
             {
               (provided, snapshot) => (
                 <div ref={provided.innerRef}>
