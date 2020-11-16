@@ -30,6 +30,7 @@ import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
 import Input from '@material-ui/core/Input';
+import Checkbox from '@material-ui/core/Checkbox';
 import Hub from '../../core/hub';
 import moment from 'moment';
 import './index.less';
@@ -222,6 +223,10 @@ export default (props: TaskList) => {
     }
   };
 
+  const handleCurrentTaskFinishedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(event.target.checked);
+  };
+
   useEffect(() => {
     const handleMetaKey = (type: 'keydown' | 'keyup' | string, event: KeyboardEvent) => {
       const { metaKey, ctrlKey, key } = event;
@@ -307,7 +312,8 @@ export default (props: TaskList) => {
   return (
     <div className="task-list">
       <div className="task-list__title-bar">
-        <Typography variant="h6">
+        <Typography variant="h6" style={{ display: 'flex', alignItems: 'center' }}>
+          <Checkbox color="primary" checked={currentTask.finished} onChange={handleCurrentTaskFinishedChange} />
           {props.currentTask.content}&nbsp;
           <IconButton aria-label="edit" size="medium">
             <EditIcon fontSize="small" />
