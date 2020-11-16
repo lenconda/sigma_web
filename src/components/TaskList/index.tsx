@@ -24,7 +24,6 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
@@ -35,6 +34,8 @@ import Hub from '../../core/hub';
 import moment from 'moment';
 import './index.less';
 import IDGen from '../../core/idgen';
+import _debounce from 'lodash/debounce';
+import { useDebouncedEffect } from '../../core/hooks';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -122,6 +123,7 @@ export default (props: TaskList) => {
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
   const [currentTask, setCurrentTask] = useState<TaskListItem | undefined>(undefined);
+  const [currentTaskTitle, setCurrentTaskTitle] = useState<string>('');
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -235,6 +237,13 @@ export default (props: TaskList) => {
     hub.emit('push', { action: 'UPDATE', payload: [newCurrentTaskInfo] });
   };
 
+  const handleTitleInputChange = (content: string) => {
+    hub.emit('push', {
+      action: 'UPDATE',
+      payload: [{ ...currentTask, content }],
+    });
+  };
+
   useEffect(() => {
     const handleMetaKey = (type: 'keydown' | 'keyup' | string, event: KeyboardEvent) => {
       const { metaKey, ctrlKey, key } = event;
@@ -268,6 +277,8 @@ export default (props: TaskList) => {
     setCurrentTask(getItems(1, '0')[0]);
     setTasks(getItems(10));
   }, []);
+
+  useDebouncedEffect(handleTitleInputChange, 500, [currentTaskTitle]);
 
   useEffect(() => {
     const hubHandler = (dispatch: Dispatch) => {
@@ -324,12 +335,14 @@ export default (props: TaskList) => {
   return (
     <div className="task-list">
       <div className="task-list__title-bar">
-        <Typography variant="h6" style={{ display: 'flex', alignItems: 'center' }}>
+        <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <Checkbox color="primary" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
-          {currentTask && (currentTask.content) || '加载中...'}&nbsp;
-          <IconButton aria-label="edit" size="medium">
-            <EditIcon fontSize="small" />
-          </IconButton>
+          <input
+            type="text"
+            className="title-input"
+            defaultValue={(currentTask && currentTask.content)}
+            onChange={event => setCurrentTaskTitle(event.target.value)}
+          />
         </Typography>
         <div className="task-list__log-wrapper__controls">
           <IconButton aria-label="edit" size="medium">
