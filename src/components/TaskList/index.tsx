@@ -34,7 +34,6 @@ import Hub from '../../core/hub';
 import moment from 'moment';
 import './index.less';
 import IDGen from '../../core/idgen';
-import _debounce from 'lodash/debounce';
 import { useDebouncedEffect } from '../../core/hooks';
 
 export interface Dispatch {
