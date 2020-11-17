@@ -44,7 +44,6 @@ export interface Dispatch {
 export interface TaskList {
   currentTaskId: string;
   hub: Hub<Dispatch>;
-  // idGenerator: IDGen;
 }
 
 const useStyles = makeStyles((theme) => ({
