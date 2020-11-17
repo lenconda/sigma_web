@@ -2,7 +2,6 @@ import React from 'react';
 import './index.less';
 import ListItem from '@material-ui/core/ListItem';
 import Checkbox from '@material-ui/core/Checkbox';
-import Typography from '@material-ui/core/Typography';
 
 export interface TaskListItemBase {
   content: string;

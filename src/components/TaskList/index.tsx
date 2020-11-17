@@ -33,8 +33,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Hub from '../../core/hub';
 import moment from 'moment';
 import './index.less';
-import IDGen from '../../core/idgen';
 import { useDebouncedEffect } from '../../core/hooks';
+import idGen from '../../core/idgen';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -44,7 +44,7 @@ export interface Dispatch {
 export interface TaskList {
   currentTaskId: string;
   hub: Hub<Dispatch>;
-  idGenerator: IDGen;
+  // idGenerator: IDGen;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -70,13 +70,13 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
 });
 
 const getItems = (count: number, id?: string): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
-  taskId: id || Math.random().toString(32),
+  taskId: idGen(),
   content: Math.random().toString(32),
   deadline: new Date().toISOString(),
   originalDeadline: new Date().toISOString(),
   order: k,
   finished: false,
-  parentTaskId: '0',
+  parentTaskId: id || idGen(),
 }));
 
 const generateStatus = (task: TaskListItem): JSX.Element => {
@@ -107,7 +107,6 @@ export default (props: TaskList) => {
   const {
     currentTaskId,
     hub,
-    idGenerator,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
@@ -215,7 +214,7 @@ export default (props: TaskList) => {
         order: tasks.length,
         originalDeadline: deadline,
         parentTaskId: currentTask.taskId,
-        taskId: idGenerator.generate(),
+        taskId: idGen(),
       };
       hub.emit('push', { action: 'ADD', payload: [taskToBeAdded] });
       setAddTaskContent('');
@@ -231,10 +230,12 @@ export default (props: TaskList) => {
   };
 
   const handleTitleInputChange = (content: string) => {
-    hub.emit('push', {
-      action: 'UPDATE',
-      payload: [{ ...currentTask, content }],
-    });
+    if (content || content === '') {
+      hub.emit('push', {
+        action: 'UPDATE',
+        payload: [{ ...currentTask, content: content || '未命名任务' }],
+      });
+    }
   };
 
   useEffect(() => {
@@ -280,6 +281,7 @@ export default (props: TaskList) => {
         break;
       }
       case 'UPDATE': {
+        console.log(dispatch);
         const tasksToBeUpdated = [];
         const newTasks = Array.from(tasks);
         dispatch.payload.forEach(payload => {
@@ -314,7 +316,7 @@ export default (props: TaskList) => {
     return () => {
       hub.off('push', hubHandler);
     };
-  }, [tasks, idGenerator]);
+  }, [tasks]);
 
   return (
     <div className="task-list">

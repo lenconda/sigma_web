@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Hub from './core/hub';
-import IDGen from './core/idgen';
-import { TaskListItem } from './components/TaskListItem';
 import TaskList, { Dispatch } from './components/TaskList';
 
 const theme = createMuiTheme({
@@ -24,14 +22,6 @@ const theme = createMuiTheme({
 
 const App: React.FC = () => {
   const hub = new Hub<Dispatch>();
-  const [idGen, setIdGen] = useState<IDGen | undefined>(undefined);
-
-  useEffect(() => {
-    const idGenInstance = new IDGen();
-    idGenInstance.load().then(() => {
-      setIdGen(idGenInstance);
-    });
-  }, []);
 
   useEffect(() => {
     hub.on('dispatch', (dispatch: Dispatch) => {
@@ -44,7 +34,6 @@ const App: React.FC = () => {
       <TaskList
         hub={hub}
         currentTaskId="0"
-        idGenerator={idGen}
       />
     </ThemeProvider>
   );

@@ -1,21 +1,8 @@
-const generateIds = async (): Promise<string[]> => Promise.resolve([]);
+import { v3 as uuid, v4 as random } from 'uuid';
 
-export default class IDGen {
-  private idList: string[];
+const generateUuid = (email: string = 'example@example.com') => {
+  const namespace = random();
+  return uuid(`${email}${Date.now().toString}${namespace}`, namespace);
+};
 
-  // public async load(url: string) {
-  public async load() {
-    const result = await generateIds();
-    this.idList = result;
-  }
-
-  public generate() {
-    const randomString = Math.random().toString(36).substr(2);
-    if (this.idList.indexOf(randomString) === -1) {
-      this.idList.push(randomString);
-      return randomString;
-    } else {
-      return this.generate();
-    }
-  }
-}
+export default generateUuid;
