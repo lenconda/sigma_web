@@ -95,13 +95,8 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
   const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
 
   return (
-    <Button
-      size="small"
-      startIcon={<AccessAlarmIcon fontSize="small" />}
-    >
-      <Typography
-        color={delayDays > 0 ? 'error' : 'textPrimary'}
-      >
+    <Button size="small" startIcon={<AccessAlarmIcon fontSize="small" />}>
+      <Typography color={delayDays > 0 ? 'error' : 'textPrimary'}>
         {`${status}${delayDays > 0 ? `，已过期 ${Math.abs(delayDays)} 天` : ''}`}
       </Typography>
     </Button>
@@ -116,7 +111,6 @@ export default (props: TaskList) => {
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
-  const [flag, setFlag] = useState<number>(0);
   const [addTaskInputVisible, setAddTaskInputVisible] = useState<boolean>(false);
   const [addTaskContent, setAddTaskContent] = useState<string>('');
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
@@ -246,15 +240,6 @@ export default (props: TaskList) => {
   useEffect(() => {
     const handleMetaKey = (type: 'keydown' | 'keyup' | string, event: KeyboardEvent) => {
       const { metaKey, ctrlKey, key } = event;
-      if (key === 'Backspace') {
-        if (type === 'keydown') {
-          setFlag(flag + 1);
-        }
-        if (type === 'keyup') {
-          setFlag(flag - 1);
-          handleDeleteTasks();
-        }
-      }
       if (metaKey || ctrlKey || key === 'Meta' || key === 'Control') {
         if (type === 'keydown') {
           setMultiple(true);
@@ -270,7 +255,7 @@ export default (props: TaskList) => {
       window.removeEventListener('keydown', metaKeyEventHandler);
       window.removeEventListener('keyup', metaKeyEventHandler);
     };
-  }, [taskListElement, flag]);
+  }, [taskListElement]);
 
   useEffect(() => {
     setCurrentTask(getItems(1, '0')[0]);
@@ -400,6 +385,7 @@ export default (props: TaskList) => {
           size="medium"
           aria-label="delete"
           disabled={selectedTasks.length === 0}
+          onClick={handleDeleteTasks}
         >
           <DeleteIcon fontSize="small" />
         </IconButton>

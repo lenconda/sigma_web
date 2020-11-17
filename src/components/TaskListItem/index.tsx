@@ -69,11 +69,10 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
         <Checkbox color="primary" checked={finished} onChange={event => onCheckChange(event, taskItem)} />
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
           <div>
-            {
-              finished
-                ? <Typography variant="body2" color="textSecondary" className="finished">{content}</Typography>
-                : <Typography variant="body2">{content}</Typography>
-            }
+            <input
+              defaultValue={content}
+              className="task-item__content__task_title"
+            />
           </div>
         </div>
       </ListItem>
