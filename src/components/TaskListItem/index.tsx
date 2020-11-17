@@ -86,7 +86,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
           <div>
             <input
               defaultValue={content}
-              className="task-item__content__task_title"
+              className={`task-item__content__task_title ${finished ? 'finished' : ''}`}
               onChange={event => setCurrentTaskContent(event.target.value)}
             />
           </div>
