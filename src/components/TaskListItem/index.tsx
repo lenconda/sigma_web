@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './index.less';
 import ListItem from '@material-ui/core/ListItem';
 import Checkbox from '@material-ui/core/Checkbox';
+import {
+  useUpdateEffect,
+  useDebouncedValue,
+} from '../../core/hooks';
 
 export interface TaskListItemBase {
   content: string;
@@ -23,6 +27,7 @@ export interface TaskListItemProps extends TaskListItem {
   selected?: boolean;
   onSelectionChange: (taskInfo: TaskListItem) => void;
   onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskListItem) => void;
+  onContentChange: (taskInfo: TaskListItem) => void;
 }
 
 export default React.forwardRef((props: TaskListItemProps, ref) => {
@@ -37,8 +42,11 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
     selected = false,
     onSelectionChange,
     onCheckChange,
+    onContentChange,
     parentTaskId,
   } = props;
+
+  const [currentTaskContent, setCurrentTaskContent] = useState<string>('');
 
   const taskItem: TaskListItem = {
     content,
@@ -49,6 +57,16 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
     originalDeadline,
     parentTaskId,
   };
+
+  const debouncedCurrentTaskTitle = useDebouncedValue(currentTaskContent, 500);
+
+  useUpdateEffect(() => {
+    const newTaskInfo = {
+      ...taskItem,
+      content: debouncedCurrentTaskTitle,
+    };
+    onContentChange(newTaskInfo);
+  }, [debouncedCurrentTaskTitle]);
 
   return (
     <div ref={ref as any} onClick={() => onSelectionChange(taskItem)}>
@@ -71,6 +89,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
             <input
               defaultValue={content}
               className="task-item__content__task_title"
+              onChange={event => setCurrentTaskContent(event.target.value)}
             />
           </div>
         </div>

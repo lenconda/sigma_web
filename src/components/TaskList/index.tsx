@@ -71,14 +71,15 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
   ...draggableStyle,
 });
 
-const getItems = (count: number, id?: string): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
+// TODO: Mock
+const getItems = (count: number, id: string): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: idGen(),
   content: Math.random().toString(32),
   deadline: new Date().toISOString(),
   originalDeadline: new Date().toISOString(),
   order: k,
   finished: false,
-  parentTaskId: id || idGen(),
+  parentTaskId: id,
 }));
 
 const generateStatus = (task: TaskListItem): JSX.Element => {
@@ -262,8 +263,9 @@ export default (props: TaskList) => {
   }, [taskListElement]);
 
   useEffect(() => {
-    setCurrentTask(getItems(1, '0')[0]);
-    setTasks(getItems(10));
+    const currentTaskInfo = getItems(1, '0')[0];
+    setCurrentTask(currentTaskInfo);
+    setTasks(getItems(10, (currentTaskInfo && currentTaskInfo.taskId)));
   }, []);
 
   useUpdateEffect(() => {
@@ -371,6 +373,7 @@ export default (props: TaskList) => {
                                 finished={item.finished}
                                 onSelectionChange={handleSelectionChange}
                                 onCheckChange={handleCheckChange}
+                                onContentChange={task => hub.emit('push', { action: 'UPDATE', payload: [task] })}
                                 parentTaskId={item.parentTaskId}
                               />
                             </div>
