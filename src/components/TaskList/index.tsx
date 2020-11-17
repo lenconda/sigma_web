@@ -33,7 +33,10 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Hub from '../../core/hub';
 import moment from 'moment';
 import './index.less';
-import { useDebouncedValue } from '../../core/hooks';
+import {
+  useDebouncedValue,
+  useUpdateEffect,
+} from '../../core/hooks';
 import idGen from '../../core/idgen';
 
 export interface Dispatch {
@@ -263,7 +266,7 @@ export default (props: TaskList) => {
     setTasks(getItems(10));
   }, []);
 
-  useEffect(() => {
+  useUpdateEffect(() => {
     handleTitleInputChange(debouncedCurrentTaskTitle);
   }, [debouncedCurrentTaskTitle]);
 
