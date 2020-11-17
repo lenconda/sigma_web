@@ -118,8 +118,10 @@ export default (props: TaskList) => {
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
   const [currentTask, setCurrentTask] = useState<TaskListItem | undefined>(undefined);
-  const [currentTaskTitle, setCurrentTaskTitle] = useState<string>('');
-  const debouncedCurrentTaskTitle = useDebouncedValue(currentTaskTitle, 500);
+  const [currentTaskContent, setCurrentTaskContent] = useState<string>('');
+  const debouncedCurrentTaskContent = useDebouncedValue(currentTaskContent, 500);
+  const [currentTaskDescription, setCurrentTaskDescription] = useState<string>('');
+  const debouncedCurrentTaskDescription = useDebouncedValue(currentTaskDescription, 500);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -199,11 +201,20 @@ export default (props: TaskList) => {
     hub.emit('push', { action: 'UPDATE', payload: [newCurrentTaskInfo] });
   };
 
-  const handleTitleInputChange = (content: string) => {
+  const handleContentInputChange = (content: string) => {
     if (content || content === '') {
       hub.emit('push', {
         action: 'UPDATE',
         payload: [{ ...currentTask, content: content || '未命名任务' }],
+      });
+    }
+  };
+
+  const handleDescriptionInputChange = (description: string) => {
+    if (description || description === '') {
+      hub.emit('push', {
+        action: 'UPDATE',
+        payload: [{ ...currentTask, description }],
       });
     }
   };
@@ -235,8 +246,12 @@ export default (props: TaskList) => {
   }, []);
 
   useUpdateEffect(() => {
-    handleTitleInputChange(debouncedCurrentTaskTitle);
-  }, [debouncedCurrentTaskTitle]);
+    handleContentInputChange(debouncedCurrentTaskContent);
+  }, [debouncedCurrentTaskContent]);
+
+  useUpdateEffect(() => {
+    handleDescriptionInputChange(debouncedCurrentTaskDescription);
+  }, [debouncedCurrentTaskDescription]);
 
   useEffect(() => {
     const hubHandler = (dispatch: Dispatch) => {
@@ -299,7 +314,7 @@ export default (props: TaskList) => {
             type="text"
             className="title-input"
             defaultValue={(currentTask && currentTask.content)}
-            onChange={event => setCurrentTaskTitle(event.target.value)}
+            onChange={event => setCurrentTaskContent(event.target.value)}
           />
         </Typography>
         <div className="task-list__log-wrapper__controls">
@@ -393,7 +408,11 @@ export default (props: TaskList) => {
         }
       </div>
       <div className="task-list__log-wrapper">
-        <textarea placeholder="在这里写下任务描述..."></textarea>
+        <textarea
+          placeholder="在这里写下任务描述..."
+          defaultValue={(currentTask && currentTask.description) || ''}
+          onChange={event => setCurrentTaskDescription(event.target.value)}
+        ></textarea>
       </div>
     </div>
   );
