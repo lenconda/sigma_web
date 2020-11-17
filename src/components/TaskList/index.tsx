@@ -154,40 +154,6 @@ export default (props: TaskList) => {
     }
   };
 
-  const handleCheckChange = (e: React.ChangeEvent<HTMLInputElement>, task: TaskListItem) => {
-    const processCurrentTasks = (
-      e: React.ChangeEvent<HTMLInputElement>,
-      currentTask: TaskListItem,
-    ) => {
-      if (currentTask.taskId === task.taskId && e.target.checked !== (currentTask && currentTask.finished)) {
-        const currentFinishedTask = {
-          ...currentTask,
-          finished: e.target.checked,
-        };
-        return currentFinishedTask;
-      }
-      return currentTask;
-    };
-    const checkChangeTaskIndex = tasks.findIndex(currentTask => currentTask.taskId === task.taskId);
-    const checkChangeTask = tasks[checkChangeTaskIndex];
-    checkChangeTask.finished = e.target.checked;
-    hub.emit('push', {
-      action: 'UPDATE',
-      payload: [checkChangeTask],
-    });
-    const newSelectedTasks = selectedTasks.map(currentTask => processCurrentTasks(e, currentTask));
-    setSelectedTasks(newSelectedTasks);
-    const currentTaskIndex = tasks.findIndex(value => value.taskId === task.taskId);
-    tasks[currentTaskIndex].finished = e.target.checked;
-    const newTasks = tasks.map(current => {
-      if (current.taskId === task.taskId) {
-        current.finished = e.target.checked;
-      }
-      return current;
-    });
-    setTasks(newTasks);
-  };
-
   const handleDeleteTasks = () => {
     if (selectedTasks.length > 0) {
       const dispatchUpdateTasks = [];
@@ -376,8 +342,7 @@ export default (props: TaskList) => {
                                 originalDeadline={item.originalDeadline}
                                 finished={item.finished}
                                 onSelectionChange={handleSelectionChange}
-                                onCheckChange={handleCheckChange}
-                                onContentChange={task => hub.emit('push', { action: 'UPDATE', payload: [task] })}
+                                onChange={task => hub.emit('push', { action: 'UPDATE', payload: [task] })}
                                 parentTaskId={item.parentTaskId}
                               />
                             </div>

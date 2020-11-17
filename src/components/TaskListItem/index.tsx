@@ -26,8 +26,7 @@ export interface TaskListItemProps extends TaskListItem {
   isDragging: boolean;
   selected?: boolean;
   onSelectionChange: (taskInfo: TaskListItem) => void;
-  onCheckChange: (e: React.ChangeEvent<HTMLInputElement>, taskInfo: TaskListItem) => void;
-  onContentChange: (taskInfo: TaskListItem) => void;
+  onChange: (taskInfo: TaskListItem) => void;
 }
 
 export default React.forwardRef((props: TaskListItemProps, ref) => {
@@ -41,8 +40,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
     finished,
     selected = false,
     onSelectionChange,
-    onCheckChange,
-    onContentChange,
+    onChange,
     parentTaskId,
   } = props;
 
@@ -65,7 +63,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
       ...taskItem,
       content: debouncedCurrentTaskTitle,
     };
-    onContentChange(newTaskInfo);
+    onChange(newTaskInfo);
   }, [debouncedCurrentTaskTitle]);
 
   return (
@@ -83,7 +81,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
         }
         button={true}
       >
-        <Checkbox color="primary" checked={finished} onChange={event => onCheckChange(event, taskItem)} />
+        <Checkbox color="primary" checked={finished} onChange={event => onChange({ ...taskItem, finished: event.target.checked })} />
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
           <div>
             <input
