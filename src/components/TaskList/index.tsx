@@ -337,7 +337,11 @@ export default (props: TaskList) => {
           />
         </Typography>
         <div className="task-list__log-wrapper__controls">
-          <IconButton aria-label="edit" size="medium">
+          <IconButton
+            aria-label="edit"
+            size="medium"
+            onClick={() => hub.emit('push', { action: 'DELETE', payload: [currentTask] })}
+          >
             <DeleteSweepIcon fontSize="small" />
           </IconButton>
         </div>
