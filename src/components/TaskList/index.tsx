@@ -33,7 +33,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Hub from '../../core/hub';
 import moment from 'moment';
 import './index.less';
-import { useDebouncedEffect } from '../../core/hooks';
+import { useDebouncedValue } from '../../core/hooks';
 import idGen from '../../core/idgen';
 
 export interface Dispatch {
@@ -116,6 +116,7 @@ export default (props: TaskList) => {
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
   const [currentTask, setCurrentTask] = useState<TaskListItem | undefined>(undefined);
   const [currentTaskTitle, setCurrentTaskTitle] = useState<string>('');
+  const debouncedCurrentTaskTitle = useDebouncedValue(currentTaskTitle, 500);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -263,7 +264,9 @@ export default (props: TaskList) => {
     setTasks(getItems(10));
   }, []);
 
-  useDebouncedEffect(handleTitleInputChange, 500, [currentTaskTitle]);
+  useEffect(() => {
+    handleTitleInputChange(debouncedCurrentTaskTitle);
+  }, [debouncedCurrentTaskTitle]);
 
   useEffect(() => {
     const hubHandler = (dispatch: Dispatch) => {
@@ -281,7 +284,6 @@ export default (props: TaskList) => {
         break;
       }
       case 'UPDATE': {
-        console.log(dispatch);
         const tasksToBeUpdated = [];
         const newTasks = Array.from(tasks);
         dispatch.payload.forEach(payload => {
