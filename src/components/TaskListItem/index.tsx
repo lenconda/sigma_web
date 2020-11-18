@@ -90,12 +90,8 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
           <Checkbox
             color="primary" checked={finished}
-            onChange={event => {
-              event.stopPropagation();
-              event.preventDefault();
-              onChange({ ...taskItem, finished: event.target.checked });
-              return false;
-            }}
+            onChange={event => onChange({ ...taskItem, finished: event.target.checked })}
+            onClick={event => event.stopPropagation()}
           />
           <input
             defaultValue={content}
