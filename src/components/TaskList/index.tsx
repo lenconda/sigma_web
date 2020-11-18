@@ -25,10 +25,8 @@ import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
-import Input from '@material-ui/core/Input';
 import Checkbox from '@material-ui/core/Checkbox';
 import Hub from '../../core/hub';
 import moment from 'moment';
@@ -114,7 +112,6 @@ export default (props: TaskList) => {
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
-  const [addTaskInputVisible, setAddTaskInputVisible] = useState<boolean>(false);
   const [addTaskContent, setAddTaskContent] = useState<string>('');
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
@@ -375,37 +372,31 @@ export default (props: TaskList) => {
         </DragDropContext>
       </List>
       <div className="task-list__buttons">
-        <IconButton
-          size="medium"
-          aria-label="delete"
-          disabled={selectedTasks.length === 0}
-          onClick={handleDeleteTasks}
-        >
-          <DeleteIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          size="medium"
-          aria-label="delete"
-          disabled={selectedTasks.length === 0}
-        >
-          <MoveToInboxIcon fontSize="small" />
-        </IconButton>
-        <IconButton
-          size="medium"
-          aria-label="add"
-          onClick={() => setAddTaskInputVisible(!addTaskInputVisible)}
-        >
-          <AddCircleIcon fontSize="small" color={addTaskInputVisible ? 'primary' : 'inherit'} />
-        </IconButton>
+        <input
+          value={addTaskContent}
+          className="add-task-content"
+          placeholder="键入 Enter 以添加新的子任务..."
+          onChange={event => setAddTaskContent(event.target.value)}
+          onKeyUp={handleInputKeyPress}
+        />
         {
-          addTaskInputVisible &&
-            <Input
-              value={addTaskContent}
-              placeholder="键入 Enter 以添加新任务..."
-              className="task-topic"
-              onChange={event => setAddTaskContent(event.target.value)}
-              onKeyUp={handleInputKeyPress}
-            />
+          selectedTasks.length !== 0 &&
+            <>
+              <IconButton
+                size="medium"
+                aria-label="delete"
+                style={{ marginLeft: 10 }}
+              >
+                <MoveToInboxIcon fontSize="small" />
+              </IconButton>
+              <IconButton
+                size="medium"
+                aria-label="delete"
+                onClick={handleDeleteTasks}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </>
         }
       </div>
       <div className="task-list__log-wrapper">

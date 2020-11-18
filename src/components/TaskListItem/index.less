@@ -14,6 +14,7 @@
   background-color: #fff;
   box-shadow: @box-shadow;
   margin-bottom: 10px;
+  transition: all @transition-duration;
 
   &:hover &__drag-control > .icon,
   &.dragging &__drag-control > .icon {
@@ -21,10 +22,12 @@
   }
 
   &.selected {
-    background-color: #e0e0e0;
+    transition: all @transition-duration;
+    background-color: #f0f0f0;
   }
 
   &.dragging {
+    transition: all @transition-duration;
     box-shadow: @box-shadow-focus;
   }
 
