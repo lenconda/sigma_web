@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './index.less';
 import ListItem from '@material-ui/core/ListItem';
 import Checkbox from '@material-ui/core/Checkbox';
+import DehazeIcon from '@material-ui/icons/Dehaze';
 import {
   useUpdateEffect,
   useDebouncedValue,
@@ -79,17 +80,19 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
             boxShadow: isDragging ? '0 0 10px rgba(0, 0, 0, .12)' : null,
           }
         }
+        className={`task-item ${isDragging ? 'dragging' : ''}`}
         button={true}
       >
-        <Checkbox color="primary" checked={finished} onChange={event => onChange({ ...taskItem, finished: event.target.checked })} />
+        <div className="task-item__drag-control">
+          <DehazeIcon fontSize="small" className="icon" />
+        </div>
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
-          <div>
-            <input
-              defaultValue={content}
-              className={`task-item__content__task_title ${finished ? 'finished' : ''}`}
-              onChange={event => setCurrentTaskContent(event.target.value)}
-            />
-          </div>
+          <Checkbox color="primary" checked={finished} onChange={event => onChange({ ...taskItem, finished: event.target.checked })} />
+          <input
+            defaultValue={content}
+            className={`task-item__content__task_title ${finished ? 'finished' : ''}`}
+            onChange={event => setCurrentTaskContent(event.target.value)}
+          />
         </div>
       </ListItem>
     </div>

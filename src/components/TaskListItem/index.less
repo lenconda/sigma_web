@@ -1,32 +1,57 @@
 @import '../../global.less';
 
-.task-item__content {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  flex-grow: 1;
-  flex-shrink: 0;
-  height: 100%;
-
-  &.dragging {
-    border-bottom: 0;
+.task-item {
+  &:hover &__drag-control > .icon,
+  &.dragging &__drag-control > .icon {
+    display: block;
   }
 
-  .finished {
-    text-decoration: line-through;
-  }
+  &__content {
+    border-bottom: 1px solid #eee;
+    flex-grow: 1;
+    flex-shrink: 0;
+    height: 100%;
+    display: flex;
 
-  &__task_title {
-    outline: 0;
-    border: 0;
-    background-color: transparent;
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 1.43;
-    width: 100%;
+    &.dragging {
+      border-bottom: 0;
+    }
 
-    &.finished {
-      color: @text-color-gray;
+    .finished {
       text-decoration: line-through;
+    }
+
+    &__task_title {
+      box-sizing: border-box;
+      padding: 10px;
+      outline: 0;
+      border: 0;
+      background-color: transparent;
+      font-size: 13px;
+      font-weight: 400;
+      line-height: 1.43;
+      flex-grow: 1;
+      flex-shrink: 1;
+
+      &.finished {
+        color: @text-color-gray;
+        text-decoration: line-through;
+      }
+    }
+  }
+
+  &__drag-control {
+    width: 36px;
+    height: 40px;
+    position: relative;
+
+    .icon {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateY(-50%);
+      color: #b0b0b0;
     }
   }
 }
