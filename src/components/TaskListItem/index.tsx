@@ -88,7 +88,15 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
           <DehazeIcon fontSize="small" className="icon" />
         </div>
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
-          <Checkbox color="primary" checked={finished} onChange={event => onChange({ ...taskItem, finished: event.target.checked })} />
+          <Checkbox
+            color="primary" checked={finished}
+            onChange={event => {
+              event.stopPropagation();
+              event.preventDefault();
+              onChange({ ...taskItem, finished: event.target.checked });
+              return false;
+            }}
+          />
           <input
             defaultValue={content}
             className={`task-item__content__task_title ${finished ? 'finished' : ''}`}
