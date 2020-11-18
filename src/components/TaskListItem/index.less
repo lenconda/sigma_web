@@ -1,5 +1,10 @@
 @import '../../global.less';
 
+.task-item-wrapper {
+  margin-bottom: 10px;
+  box-shadow: @box-shadow;
+}
+
 .task-item {
   &:hover &__drag-control > .icon,
   &.dragging &__drag-control > .icon {
@@ -7,7 +12,6 @@
   }
 
   &__content {
-    border-bottom: 1px solid #eee;
     flex-grow: 1;
     flex-shrink: 0;
     height: 100%;

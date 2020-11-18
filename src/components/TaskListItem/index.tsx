@@ -68,7 +68,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
   }, [debouncedCurrentTaskTitle]);
 
   return (
-    <div ref={ref as any} onClick={() => onSelectionChange(taskItem)}>
+    <div ref={ref as any} onClick={() => onSelectionChange(taskItem)} className="task-item-wrapper">
       <ListItem
         style={
           {
@@ -76,8 +76,9 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
             display: 'flex',
             justifyContent: 'space-between',
             padding: 0,
-            backgroundColor: selected ? '#f5f5f5' : '#fff',
-            boxShadow: isDragging ? '0 0 10px rgba(0, 0, 0, .12)' : null,
+            borderRadius: 5,
+            backgroundColor: selected ? '#eaeaea' : '#fff',
+            boxShadow: isDragging ? '0 10px 30px 5px rgba(0, 0, 0, .08)' : null,
           }
         }
         className={`task-item ${isDragging ? 'dragging' : ''}`}

@@ -52,10 +52,11 @@ export interface TaskList {
 const useStyles = makeStyles((theme) => ({
   root: {
     width: '100%',
-    backgroundColor: theme.palette.background.paper,
+    backgroundColor: 'transparent',
     flexShrink: 0,
     flexGrow: 0,
     boxSizing: 'border-box',
+    padding: '0 25px',
   },
 }));
 
