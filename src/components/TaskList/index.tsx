@@ -49,7 +49,7 @@ export interface TaskList {
   hub: Hub<Dispatch>;
 }
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
     backgroundColor: 'transparent',

@@ -7,6 +7,7 @@ import {
   useUpdateEffect,
   useDebouncedValue,
 } from '../../core/hooks';
+import { makeStyles } from '@material-ui/core/styles';
 
 export interface TaskListItemBase {
   content: string;
@@ -30,6 +31,12 @@ export interface TaskListItemProps extends TaskListItem {
   onChange: (taskInfo: TaskListItem) => void;
 }
 
+const useStyles = makeStyles(() => ({
+  taskListItem: {
+    padding: 0,
+  },
+}));
+
 export default React.forwardRef((props: TaskListItemProps, ref) => {
   const {
     content,
@@ -46,6 +53,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
   } = props;
 
   const [currentTaskContent, setCurrentTaskContent] = useState<string>('');
+  const theme = useStyles();
 
   const taskItem: TaskListItem = {
     content,
@@ -68,22 +76,12 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
   }, [debouncedCurrentTaskTitle]);
 
   return (
-    <div ref={ref as any} onClick={() => onSelectionChange(taskItem)} className="task-item-wrapper">
-      <ListItem
-        style={
-          {
-            boxSizing: 'border-box',
-            display: 'flex',
-            justifyContent: 'space-between',
-            padding: 0,
-            borderRadius: 5,
-            backgroundColor: selected ? '#eaeaea' : '#fff',
-            boxShadow: isDragging ? '0 10px 30px 5px rgba(0, 0, 0, .08)' : null,
-          }
-        }
-        className={`task-item ${isDragging ? 'dragging' : ''}`}
-        button={true}
-      >
+    <div
+      ref={ref as any}
+      className={`task-item ${isDragging ? 'dragging' : ''} ${selected ? 'selected' : ''}`}
+      onClick={() => onSelectionChange(taskItem)}
+    >
+      <ListItem className={theme.taskListItem}>
         <div className="task-item__drag-control">
           <DehazeIcon fontSize="small" className="icon" />
         </div>
