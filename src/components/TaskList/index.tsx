@@ -333,7 +333,7 @@ export default (props: TaskList) => {
           <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
             {
               (provided, snapshot) => (
-                <div ref={provided.innerRef}>
+                <div ref={provided.innerRef} className="task-items">
                   {
                     tasks.map((item, index) => (
                       <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
@@ -346,6 +346,7 @@ export default (props: TaskList) => {
                               style={getItemStyle(provided.draggableProps.style)}
                             >
                               <Item
+                                className="task-item-wrapper"
                                 selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
                                 isDragging={snapshot.isDragging}
                                 content={item.content}

@@ -29,6 +29,7 @@ export interface TaskListItemProps extends TaskListItem {
   selected?: boolean;
   onSelectionChange: (taskInfo: TaskListItem) => void;
   onChange: (taskInfo: TaskListItem) => void;
+  className?: string;
 }
 
 const useStyles = makeStyles(() => ({
@@ -50,6 +51,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
     onSelectionChange,
     onChange,
     parentTaskId,
+    className = '',
   } = props;
 
   const [currentTaskContent, setCurrentTaskContent] = useState<string>('');
@@ -78,7 +80,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
   return (
     <div
       ref={ref as any}
-      className={`task-item ${isDragging ? 'dragging' : ''} ${selected ? 'selected' : ''}`}
+      className={`${className} task-item ${isDragging ? 'dragging' : ''} ${selected ? 'selected' : ''}`}
       onClick={() => onSelectionChange(taskItem)}
     >
       <ListItem className={theme.taskListItem}>

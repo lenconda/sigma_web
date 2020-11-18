@@ -16,6 +16,21 @@
   background-color: @bg-gray;
   min-width: 420px;
 
+  .task-items {
+    & > div:last-child {
+      & .task-item-wrapper {
+        border-bottom-left-radius: @border-radius;
+        border-bottom-right-radius: @border-radius;
+      }
+    }
+    & > div:first-child {
+      & .task-item-wrapper {
+        border-top-left-radius: @border-radius;
+        border-bottom-right-radius: @border-radius;
+      }
+    }
+  }
+
   &__title-bar {
     box-sizing: border-box;
     padding: 15px;
