@@ -17,16 +17,23 @@
   min-width: 420px;
 
   .task-items {
+    background-color: white;
+    border-radius: @border-radius;
+
     & > div:last-child {
       & .task-item-wrapper {
         border-bottom-left-radius: @border-radius;
         border-bottom-right-radius: @border-radius;
+
+        .task-item__content {
+          border-bottom: 0;
+        }
       }
     }
     & > div:first-child {
       & .task-item-wrapper {
         border-top-left-radius: @border-radius;
-        border-bottom-right-radius: @border-radius;
+        border-top-right-radius: @border-radius;
       }
     }
   }
@@ -45,6 +52,13 @@
       flex-grow: 1;
       background-color: transparent;
     }
+  }
+
+  &__items-wrapper {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0 25px;
+    background-color: transparent;
   }
 
   &__log-wrapper {

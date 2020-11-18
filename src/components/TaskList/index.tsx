@@ -50,11 +50,9 @@ export interface TaskList {
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
-    backgroundColor: 'transparent',
-    flexShrink: 0,
-    flexGrow: 0,
-    boxSizing: 'border-box',
-    padding: '0 25px',
+    padding: 0,
+    boxShadow: '0 5px 15px 2.5px rgba(0, 0, 0, .03)',
+    borderRadius: 6,
   },
 }));
 
@@ -328,50 +326,52 @@ export default (props: TaskList) => {
       <div className="task-list__deadline">
         {generateStatus(currentTask)}
       </div>
-      <List className={theme.root} ref={taskListElement}>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
-            {
-              (provided, snapshot) => (
-                <div ref={provided.innerRef} className="task-items">
-                  {
-                    tasks.map((item, index) => (
-                      <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
-                        {
-                          (provided, snapshot) => (
-                            <div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              style={getItemStyle(provided.draggableProps.style)}
-                            >
-                              <Item
-                                className="task-item-wrapper"
-                                selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
-                                isDragging={snapshot.isDragging}
-                                content={item.content}
-                                taskId={item.taskId}
-                                order={item.order}
-                                deadline={item.deadline}
-                                originalDeadline={item.originalDeadline}
-                                finished={item.finished}
-                                onSelectionChange={handleSelectionChange}
-                                onChange={task => hub.emit('push', { action: 'UPDATE', payload: [task] })}
-                                parentTaskId={item.parentTaskId}
-                              />
-                            </div>
-                          )
-                        }
-                      </Draggable>
-                    ))
-                  }
-                  {provided.placeholder}
-                </div>
-              )
-            }
-          </Droppable>
-        </DragDropContext>
-      </List>
+      <div className="task-list__items-wrapper">
+        <List className={theme.root} ref={taskListElement}>
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
+              {
+                (provided, snapshot) => (
+                  <div ref={provided.innerRef} className="task-items">
+                    {
+                      tasks.map((item, index) => (
+                        <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
+                          {
+                            (provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                                style={getItemStyle(provided.draggableProps.style)}
+                              >
+                                <Item
+                                  className="task-item-wrapper"
+                                  selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
+                                  isDragging={snapshot.isDragging}
+                                  content={item.content}
+                                  taskId={item.taskId}
+                                  order={item.order}
+                                  deadline={item.deadline}
+                                  originalDeadline={item.originalDeadline}
+                                  finished={item.finished}
+                                  onSelectionChange={handleSelectionChange}
+                                  onChange={task => hub.emit('push', { action: 'UPDATE', payload: [task] })}
+                                  parentTaskId={item.parentTaskId}
+                                />
+                              </div>
+                            )
+                          }
+                        </Draggable>
+                      ))
+                    }
+                    {provided.placeholder}
+                  </div>
+                )
+              }
+            </Droppable>
+          </DragDropContext>
+        </List>
+      </div>
       <div className="task-list__buttons">
         <input
           value={addTaskContent}
