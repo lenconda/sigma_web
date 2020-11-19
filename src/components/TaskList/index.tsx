@@ -36,6 +36,7 @@ import {
   useUpdateEffect,
 } from '../../core/hooks';
 import idGen from '../../core/idgen';
+import TaskSelector from '../TaskSelector';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -118,6 +119,7 @@ export default (props: TaskList) => {
   const debouncedCurrentTaskContent = useDebouncedValue(currentTaskContent, 500);
   const [currentTaskDescription, setCurrentTaskDescription] = useState<string>('');
   const debouncedCurrentTaskDescription = useDebouncedValue(currentTaskDescription, 500);
+  const [taskSelectorVisible, setTaskSelectorVisible] = useState<boolean>(false);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -303,6 +305,7 @@ export default (props: TaskList) => {
 
   return (
     <div className="task-list">
+      <button onClick={() => setTaskSelectorVisible(true)}>test</button>
       <div className="task-list__title-bar">
         <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <Checkbox color="primary" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
@@ -407,6 +410,7 @@ export default (props: TaskList) => {
           onChange={event => setCurrentTaskDescription(event.target.value)}
         ></textarea>
       </div>
+      <TaskSelector visible={taskSelectorVisible} onClose={() => setTaskSelectorVisible(false)} />
     </div>
   );
 };
