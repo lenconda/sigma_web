@@ -24,7 +24,7 @@ export interface TaskSelectorMenuItem extends TaskListItem {
 // TODO: Mock
 const getItems = (count: number, id: string): TaskSelectorMenuItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: Math.random().toString(32),
-  content: Math.random().toString(32),
+  content: `${Math.random().toString(32)}aisjdaosijdaosidjaosidjaosidjaosidjaosijdoasijdoaisjdaosijdaosijdoaisj`,
   deadline: new Date().toISOString(),
   originalDeadline: new Date().toISOString(),
   order: k,
@@ -61,7 +61,9 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
       key={currentIndex}
       nodeId={`${currentIndex}`}
       label={
-        <Typography noWrap={true} variant="body1">{menuItem.content}</Typography>
+        <div className="text-wrapper">
+          <Typography noWrap={true} variant="body1">{menuItem.content}</Typography>
+        </div>
       }
       classes={{ label: 'tree-view__item__label' }}
       onLabelClick={() => {
