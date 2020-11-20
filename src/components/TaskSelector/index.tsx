@@ -89,7 +89,8 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           }).finally(() => setLoading(false));
         }
       }}
-      onLabelClick={() => {
+      onLabelClick={event => {
+        event.preventDefault();
         const currentTaskItem = Object.keys(menuItem).reduce<TaskListItem>((result, key) => {
           if (key !== 'children') {
             result[key] = menuItem[key];
