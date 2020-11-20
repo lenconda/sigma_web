@@ -48,6 +48,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [menus, setMenus] = useState<TaskSelectorMenuItem[]>([]);
   const [selectedTask, setSelectedTask] = useState<TaskListItem | undefined>(undefined);
+  const [expanded, setExpanded] = useState<string[]>([]);
 
   useEffect(() => {
     if (visible) {
@@ -66,6 +67,28 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
         </div>
       }
       classes={{ label: 'tree-view__item__label' }}
+      onIconClick={() => {
+        if (expanded.indexOf(currentIndex) === -1) {
+          setLoading(true);
+          generateTaskMenu().then(res => {
+            const currentMenus = Array.from(menus);
+            const indexes = currentIndex.split('-');
+            const firstIndexMenu = currentMenus[indexes.shift()];
+            const currentSelectedTaskMenu: TaskSelectorMenuItem | undefined = indexes.length === 0
+              ? firstIndexMenu
+              : indexes.reduce<TaskSelectorMenuItem>((result, key) => {
+                if (result) {
+                  return result.children[key] || null;
+                }
+                return null;
+              }, firstIndexMenu);
+            if (currentSelectedTaskMenu) {
+              currentSelectedTaskMenu.children = res;
+            }
+            setMenus(currentMenus);
+          }).finally(() => setLoading(false));
+        }
+      }}
       onLabelClick={() => {
         const currentTaskItem = Object.keys(menuItem).reduce<TaskListItem>((result, key) => {
           if (key !== 'children') {
@@ -74,26 +97,9 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           return result;
         }, {} as TaskListItem);
         setSelectedTask(currentTaskItem);
-        setLoading(true);
-        generateTaskMenu().then(res => {
-          const currentMenus = Array.from(menus);
-          const indexes = currentIndex.split('-');
-          const firstIndexMenu = currentMenus[indexes.shift()];
-          const currentSelectedTaskMenu: TaskSelectorMenuItem | undefined = indexes.length === 0
-            ? firstIndexMenu
-            : indexes.reduce<TaskSelectorMenuItem>((result, key) => {
-              if (result) {
-                return result.children[key] || null;
-              }
-              return null;
-            }, firstIndexMenu);
-          if (currentSelectedTaskMenu) {
-            currentSelectedTaskMenu.children = res;
-          }
-          setMenus(currentMenus);
-        }).finally(() => setLoading(false));
       }}
     >
+      <TreeItem nodeId="placeholder"></TreeItem>
       {
         (Array.isArray(menuItem.children) && menuItem.children.length !== 0)
           && menuItem.children.map((menuItem1, currentIndex1) => renderTree(menuItem1, `${currentIndex}-${currentIndex1}`))
@@ -119,6 +125,11 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           className="tree-view"
           defaultCollapseIcon={<ExpandMoreIcon />}
           defaultExpandIcon={<ChevronRightIcon />}
+          expanded={expanded}
+          onNodeToggle={(event, nodeIds) => {
+            event.preventDefault();
+            setExpanded(nodeIds);
+          }}
         >
           {
             menus.map((menu, index) => renderTree(menu, index.toString()))
