@@ -15,6 +15,7 @@ import './index.less';
 export interface TaskSelectorProps {
   visible: boolean;
   onClose: () => void;
+  onSelectTask: (task: TaskListItem) => void;
 }
 
 export interface TaskSelectorMenuItem extends TaskListItem {
@@ -44,6 +45,7 @@ const generateTaskMenu = async (): Promise<TaskSelectorMenuItem[]> => {
 const TaskSelector: React.FC<TaskSelectorProps> = ({
   visible,
   onClose,
+  onSelectTask,
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [menus, setMenus] = useState<TaskSelectorMenuItem[]>([]);
@@ -139,7 +141,15 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>放弃</Button>
-        <Button disabled={!selectedTask}>好</Button>
+        <Button
+          disabled={!selectedTask}
+          onClick={() => {
+            onClose();
+            onSelectTask(selectedTask);
+          }}
+        >
+          好
+        </Button>
       </DialogActions>
     </Dialog>
   );

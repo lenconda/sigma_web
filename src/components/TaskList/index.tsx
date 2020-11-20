@@ -217,6 +217,10 @@ export default (props: TaskList) => {
     }
   };
 
+  const handleMoveTasks = (newParentTask: TaskListItem) => {
+    console.log(selectedTasks, newParentTask);
+  };
+
   useEffect(() => {
     const handleMetaKey = (type: 'keydown' | 'keyup' | string, event: KeyboardEvent) => {
       const { metaKey, ctrlKey, key } = event;
@@ -410,7 +414,7 @@ export default (props: TaskList) => {
           onChange={event => setCurrentTaskDescription(event.target.value)}
         ></textarea>
       </div>
-      <TaskSelector visible={taskSelectorVisible} onClose={() => setTaskSelectorVisible(false)} />
+      <TaskSelector visible={taskSelectorVisible} onClose={() => setTaskSelectorVisible(false)} onSelectTask={handleMoveTasks} />
     </div>
   );
 };
