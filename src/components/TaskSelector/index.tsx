@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import TreeView from '@material-ui/lab/TreeView';
@@ -48,9 +50,11 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
   const [selectedTask, setSelectedTask] = useState<TaskListItem | undefined>(undefined);
 
   useEffect(() => {
-    setLoading(true);
-    generateTaskMenu().then(res => setMenus(res)).finally(() => setLoading(false));
-  }, []);
+    if (visible) {
+      setLoading(true);
+      generateTaskMenu().then(res => setMenus(res)).finally(() => setLoading(false));
+    }
+  }, [visible]);
 
   const renderTree = (menuItem: TaskSelectorMenuItem, currentIndex: string) => (
     <TreeItem
@@ -119,6 +123,10 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           }
         </TreeView>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>放弃</Button>
+        <Button disabled={!selectedTask}>好</Button>
+      </DialogActions>
     </Dialog>
   );
 };

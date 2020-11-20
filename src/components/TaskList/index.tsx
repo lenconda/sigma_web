@@ -305,7 +305,6 @@ export default (props: TaskList) => {
 
   return (
     <div className="task-list">
-      <button onClick={() => setTaskSelectorVisible(true)}>test</button>
       <div className="task-list__title-bar">
         <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <Checkbox color="primary" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
@@ -390,6 +389,7 @@ export default (props: TaskList) => {
                 size="medium"
                 aria-label="delete"
                 style={{ marginLeft: 10 }}
+                onClick={() => setTaskSelectorVisible(true)}
               >
                 <MoveToInboxIcon fontSize="small" />
               </IconButton>
