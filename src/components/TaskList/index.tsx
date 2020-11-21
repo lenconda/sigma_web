@@ -40,7 +40,7 @@ import TaskSelector from '../TaskSelector';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
-  payload: TaskListItem[];
+  payloads: TaskListItem[];
 }
 
 export interface TaskList {
@@ -135,7 +135,7 @@ export default (props: TaskList) => {
         dispatchUpdateTasks.push(task);
       }
     });
-    bus.emit('push', { action: 'UPDATE', payload: dispatchUpdateTasks });
+    bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
     setTasks(currentTasks);
   };
 
@@ -167,8 +167,8 @@ export default (props: TaskList) => {
           }
           return currentTask;
         });
-      bus.emit('push', { action: 'DELETE', payload: dispatchDeleteTasks });
-      bus.emit('push', { action: 'UPDATE', payload: dispatchUpdateTasks });
+      bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
+      bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
       setTasks(newTasks);
       setSelectedTasks([]);
     }
@@ -186,7 +186,7 @@ export default (props: TaskList) => {
         parentTaskId: currentTask.taskId,
         taskId: idGen(),
       };
-      bus.emit('push', { action: 'ADD', payload: [taskToBeAdded] });
+      bus.emit('push', { action: 'ADD', payloads: [taskToBeAdded] });
       setAddTaskContent('');
     }
   };
@@ -196,14 +196,14 @@ export default (props: TaskList) => {
       ...currentTask,
       finished: event.target.checked,
     };
-    bus.emit('push', { action: 'UPDATE', payload: [newCurrentTaskInfo] });
+    bus.emit('push', { action: 'UPDATE', payloads: [newCurrentTaskInfo] });
   };
 
   const handleContentInputChange = (content: string) => {
     if (content || content === '') {
       bus.emit('push', {
         action: 'UPDATE',
-        payload: [{ ...currentTask, content: content || '未命名任务' }],
+        payloads: [{ ...currentTask, content: content || '未命名任务' }],
       });
     }
   };
@@ -212,7 +212,7 @@ export default (props: TaskList) => {
     if (description || description === '') {
       bus.emit('push', {
         action: 'UPDATE',
-        payload: [{ ...currentTask, description }],
+        payloads: [{ ...currentTask, description }],
       });
     }
   };
@@ -260,20 +260,20 @@ export default (props: TaskList) => {
       switch (dispatch.action) {
       case 'ADD': {
         const tasksToBeAdded = [];
-        dispatch.payload.forEach(payload => {
+        dispatch.payloads.forEach(payload => {
           if (payload.parentTaskId === currentTask.taskId) {
             payload.order = tasks[tasks.length - 1].order + 1;
             tasksToBeAdded.push(payload);
           }
         });
         setTasks(tasks.concat(tasksToBeAdded));
-        bus.emit('dispatch', { action: 'ADD', payload: tasksToBeAdded });
+        bus.emit('dispatch', { action: 'ADD', payloads: tasksToBeAdded });
         break;
       }
       case 'UPDATE': {
         const tasksToBeUpdated = [];
         const newTasks = Array.from(tasks);
-        dispatch.payload.forEach(payload => {
+        dispatch.payloads.forEach(payload => {
           const currentTaskIndex = newTasks.findIndex(task => task.taskId === payload.taskId);
           if (payload.taskId === (currentTask && currentTask.taskId)) {
             setCurrentTask(payload);
@@ -287,14 +287,14 @@ export default (props: TaskList) => {
           }
         });
         setTasks(newTasks);
-        bus.emit('dispatch', { action: 'UPDATE', payload: tasksToBeUpdated });
+        bus.emit('dispatch', { action: 'UPDATE', payloads: tasksToBeUpdated });
         break;
       }
       case 'DELETE': {
-        const newTasks = tasks.filter(task => dispatch.payload.findIndex(payload => payload.taskId === task.taskId
+        const newTasks = tasks.filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId
                 && payload.parentTaskId === currentTask.taskId) === -1);
         setTasks(newTasks);
-        bus.emit('dispatch', { action: 'DELETE', payload: dispatch.payload });
+        bus.emit('dispatch', { action: 'DELETE', payloads: dispatch.payloads });
         break;
       }
       default:
@@ -323,7 +323,7 @@ export default (props: TaskList) => {
           <IconButton
             aria-label="edit"
             size="medium"
-            onClick={() => bus.emit('push', { action: 'DELETE', payload: [currentTask] })}
+            onClick={() => bus.emit('push', { action: 'DELETE', payloads: [currentTask] })}
           >
             <DeleteSweepIcon fontSize="small" />
           </IconButton>
@@ -361,7 +361,7 @@ export default (props: TaskList) => {
                                   originalDeadline={item.originalDeadline}
                                   finished={item.finished}
                                   onSelectionChange={handleSelectionChange}
-                                  onChange={task => bus.emit('push', { action: 'UPDATE', payload: [task] })}
+                                  onChange={task => bus.emit('push', { action: 'UPDATE', payloads: [task] })}
                                   parentTaskId={item.parentTaskId}
                                 />
                               </div>
