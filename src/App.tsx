@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Bus from './core/bus';
+import Dispatcher from './core/dispatcher';
 import TaskList, { Dispatch } from './components/TaskList';
 
 const theme = createMuiTheme({
@@ -22,12 +23,17 @@ const theme = createMuiTheme({
 
 const App: React.FC = () => {
   const bus = new Bus<Dispatch>();
+  const dispatcher = new Dispatcher();
 
   useEffect(() => {
+    dispatcher.start(3000);
     bus.on('dispatch', (dispatch: Dispatch) => {
       console.log(dispatch);
     });
-  }, [bus]);
+    return () => {
+      dispatcher.stop();
+    };
+  }, [bus, dispatcher]);
 
   return (
     <ThemeProvider theme={theme}>
