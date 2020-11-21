@@ -46,6 +46,7 @@ export interface Dispatch {
 export interface TaskList {
   currentTaskId: string;
   bus: Bus<Dispatch>;
+  currentActiveTaskIds?: string[];
 }
 
 const useStyles = makeStyles(() => ({
@@ -70,14 +71,13 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
 });
 
 // TODO: Mock
-const getItems = (count: number, id: string): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
+const getItems = (count: number, id: string, isDefault = false): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: idGen(),
-  content: Math.random().toString(32),
-  deadline: new Date().toISOString(),
-  originalDeadline: new Date().toISOString(),
-  order: k,
+  content: isDefault ? '全部事项' : Math.random().toString(32),
+  deadline: isDefault ? '' : new Date().toISOString(),
+  order: isDefault ? 0 : k,
   finished: false,
-  parentTaskId: id,
+  parentTaskId: isDefault ? 'default' : id,
 }));
 
 const generateStatus = (task: TaskListItem): JSX.Element => {
@@ -85,13 +85,13 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
     return null;
   }
   const {
-    originalDeadline,
+    deadline,
     finished,
     finishedDate,
   } = task;
   const delayDays = getDaysDifference(
     (finished && finishedDate ? new Date(finishedDate) : new Date()),
-    new Date(originalDeadline),
+    new Date(deadline),
   );
   const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
 
@@ -108,6 +108,7 @@ export default (props: TaskList) => {
   const {
     currentTaskId,
     bus,
+    currentActiveTaskIds = [],
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
@@ -120,6 +121,7 @@ export default (props: TaskList) => {
   const [currentTaskDescription, setCurrentTaskDescription] = useState<string>('');
   const debouncedCurrentTaskDescription = useDebouncedValue(currentTaskDescription, 500);
   const [taskSelectorVisible, setTaskSelectorVisible] = useState<boolean>(false);
+  const [isDefaultTask, setIsDefaultTask] = useState<boolean>(false);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -182,7 +184,6 @@ export default (props: TaskList) => {
         deadline,
         finished: false,
         order: tasks.length,
-        originalDeadline: deadline,
         parentTaskId: currentTask.taskId,
         taskId: idGen(),
       };
@@ -242,10 +243,25 @@ export default (props: TaskList) => {
   }, [taskListElement]);
 
   useEffect(() => {
-    const currentTaskInfo = getItems(1, '0')[0];
+    const defaultTaskFlag = currentTaskId === 'default';
+    setIsDefaultTask(defaultTaskFlag);
+    // TODO: request current task info
+    const currentTaskInfo = getItems(1, '0', defaultTaskFlag)[0];
     setCurrentTask(currentTaskInfo);
-    setTasks(getItems(10, (currentTaskInfo && currentTaskInfo.taskId)));
+    if (!defaultTaskFlag) {
+      // TODO: request sub-tasks info
+      setTasks(getItems(10, (currentTaskInfo && currentTaskInfo.taskId)));
+    }
   }, []);
+
+  useEffect(() => {
+    currentActiveTaskIds.forEach(currentActiveTaskId => {
+      const currentActiveTask = tasks.find(currentTask => currentTask.taskId === currentActiveTaskId);
+      if (currentActiveTask) {
+        setSelectedTasks(selectedTasks.concat(currentActiveTask));
+      }
+    });
+  }, [currentActiveTaskIds, tasks]);
 
   useUpdateEffect(() => {
     handleContentInputChange(debouncedCurrentTaskContent);
@@ -262,7 +278,8 @@ export default (props: TaskList) => {
         const tasksToBeAdded = [];
         dispatch.payloads.forEach(payload => {
           if (payload.parentTaskId === currentTask.taskId) {
-            payload.order = tasks[tasks.length - 1].order + 1;
+            const lastTask = tasks[tasks.length - 1];
+            payload.order = (lastTask && lastTask.order || 0) + 1;
             tasksToBeAdded.push(payload);
           }
         });
@@ -305,13 +322,17 @@ export default (props: TaskList) => {
     return () => {
       bus.off('push', hubHandler);
     };
-  }, [tasks]);
+  }, [tasks, currentTask]);
 
   return (
     <div className="task-list">
       <div className="task-list__title-bar">
         <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <Checkbox color="primary" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
+          {
+            !isDefaultTask
+              ? <Checkbox color="primary" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
+              : <div style={{ width: 10 }}></div>
+          }
           <input
             type="text"
             className="title-input"
@@ -319,64 +340,73 @@ export default (props: TaskList) => {
             onChange={event => setCurrentTaskContent(event.target.value)}
           />
         </Typography>
-        <div className="task-list__log-wrapper__controls">
-          <IconButton
-            aria-label="edit"
-            size="medium"
-            onClick={() => bus.emit('push', { action: 'DELETE', payloads: [currentTask] })}
-          >
-            <DeleteSweepIcon fontSize="small" />
-          </IconButton>
+        {
+          !isDefaultTask
+          && <div className="task-list__log-wrapper__controls">
+            <IconButton
+              aria-label="edit"
+              size="medium"
+              onClick={() => bus.emit('push', { action: 'DELETE', payloads: [currentTask] })}
+            >
+              <DeleteSweepIcon fontSize="small" />
+            </IconButton>
+          </div>
+        }
+      </div>
+      {
+        !isDefaultTask
+        && <div className="task-list__deadline">
+          {generateStatus(currentTask)}
         </div>
-      </div>
-      <div className="task-list__deadline">
-        {generateStatus(currentTask)}
-      </div>
+      }
       <div className="task-list__items-wrapper">
-        <List className={theme.root} ref={taskListElement}>
-          <DragDropContext onDragEnd={handleDragEnd}>
-            <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
-              {
-                (provided, snapshot) => (
-                  <div ref={provided.innerRef} className="task-items">
-                    {
-                      tasks.map((item, index) => (
-                        <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
-                          {
-                            (provided, snapshot) => (
-                              <div
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                                {...provided.dragHandleProps}
-                                style={getItemStyle(provided.draggableProps.style)}
-                              >
-                                <Item
-                                  className="task-item-wrapper"
-                                  selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
-                                  isDragging={snapshot.isDragging}
-                                  content={item.content}
-                                  taskId={item.taskId}
-                                  order={item.order}
-                                  deadline={item.deadline}
-                                  originalDeadline={item.originalDeadline}
-                                  finished={item.finished}
-                                  onSelectionChange={handleSelectionChange}
-                                  onChange={task => bus.emit('push', { action: 'UPDATE', payloads: [task] })}
-                                  parentTaskId={item.parentTaskId}
-                                />
-                              </div>
-                            )
-                          }
-                        </Draggable>
-                      ))
-                    }
-                    {provided.placeholder}
-                  </div>
-                )
-              }
-            </Droppable>
-          </DragDropContext>
-        </List>
+        {
+          tasks.length !== 0
+            ? <List className={theme.root} ref={taskListElement}>
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
+                  {
+                    (provided, snapshot) => (
+                      <div ref={provided.innerRef} className="task-items">
+                        {
+                          tasks.map((item, index) => (
+                            <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
+                              {
+                                (provided, snapshot) => (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    style={getItemStyle(provided.draggableProps.style)}
+                                  >
+                                    <Item
+                                      className="task-item-wrapper"
+                                      selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
+                                      isDragging={snapshot.isDragging}
+                                      content={item.content}
+                                      taskId={item.taskId}
+                                      order={item.order}
+                                      deadline={item.deadline}
+                                      finished={item.finished}
+                                      onSelectionChange={handleSelectionChange}
+                                      onChange={task => bus.emit('push', { action: 'UPDATE', payloads: [task] })}
+                                      parentTaskId={item.parentTaskId}
+                                    />
+                                  </div>
+                                )
+                              }
+                            </Draggable>
+                          ))
+                        }
+                        {provided.placeholder}
+                      </div>
+                    )
+                  }
+                </Droppable>
+              </DragDropContext>
+            </List>
+            : <div className="no-content">暂无任务</div>
+        }
       </div>
       <div className="task-list__buttons">
         <input
@@ -407,13 +437,16 @@ export default (props: TaskList) => {
             </>
         }
       </div>
-      <div className="task-list__log-wrapper">
-        <textarea
-          placeholder="在这里写下任务描述..."
-          defaultValue={(currentTask && currentTask.description) || ''}
-          onChange={event => setCurrentTaskDescription(event.target.value)}
-        ></textarea>
-      </div>
+      {
+        !isDefaultTask
+        && <div className="task-list__log-wrapper">
+          <textarea
+            placeholder="在这里写下任务描述..."
+            defaultValue={(currentTask && currentTask.description) || ''}
+            onChange={event => setCurrentTaskDescription(event.target.value)}
+          ></textarea>
+        </div>
+      }
       <TaskSelector visible={taskSelectorVisible} onClose={() => setTaskSelectorVisible(false)} onSelectTask={handleMoveTasks} />
     </div>
   );

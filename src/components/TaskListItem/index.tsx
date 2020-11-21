@@ -12,7 +12,6 @@ import { makeStyles } from '@material-ui/core/styles';
 export interface TaskListItemBase {
   content: string;
   deadline: string;
-  originalDeadline: string;
   order: number;
   finished: boolean;
   finishedDate?: string;
@@ -44,7 +43,6 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
     isDragging,
     taskId,
     deadline,
-    originalDeadline,
     order,
     finished,
     selected = false,
@@ -63,7 +61,6 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
     deadline,
     order,
     finished,
-    originalDeadline,
     parentTaskId,
   };
 

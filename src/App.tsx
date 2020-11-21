@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
@@ -24,6 +24,7 @@ const theme = createMuiTheme({
 const App: React.FC = () => {
   const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
+  const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
 
   useEffect(() => {
     dispatcher.start();
