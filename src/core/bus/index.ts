@@ -6,7 +6,7 @@ export type EventSubscriberCallbackType<T> = (data: T) => any;
  * @class
  * @constructor
  */
-class Hub<T> {
+class Bus<T> {
   private subscribers: EventSubscribersType<T> = {};
 
   /**
@@ -64,4 +64,4 @@ class Hub<T> {
   }
 }
 
-export default Hub;
+export default Bus;
