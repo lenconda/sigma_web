@@ -28,7 +28,9 @@ const App: React.FC = () => {
   useEffect(() => {
     dispatcher.start(3000);
     bus.on('dispatch', (dispatch: Dispatch) => {
-      console.log(dispatch);
+      if (dispatch.payloads.length !== 0) {
+        dispatcher.enqueue(dispatch);
+      }
     });
     return () => {
       dispatcher.stop();

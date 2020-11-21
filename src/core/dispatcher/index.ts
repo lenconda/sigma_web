@@ -7,10 +7,12 @@ class Dispatcher {
 
   public start(intervalMilliseconds: number = 1000) {
     this.interval = setInterval(() => {
-      if (!this.isDispatching) {
+      if (!this.isDispatching && this.dispatchQueue.length !== 0) {
         this.isDispatching = true;
+        const dispatches = Array.from(this.dispatchQueue);
+        this.dispatchQueue = [];
         this.dispatch().then(res => {
-          console.log('dispatch');
+          console.log('dispatching: ', dispatches);
         }).finally(() => {
           this.isDispatching = false;
         });
