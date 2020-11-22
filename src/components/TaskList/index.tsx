@@ -24,10 +24,8 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
-import AccessAlarmIcon from '@material-ui/icons/AccessAlarm';
 import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
 import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
-import Checkbox from '@material-ui/core/Checkbox';
 import Bus from '../../core/bus';
 import moment from 'moment';
 import './index.less';
@@ -37,6 +35,8 @@ import {
 } from '../../core/hooks';
 import idGen from '../../core/idgen';
 import TaskSelector from '../TaskSelector';
+import DatePicker from '../DatePicker';
+import ProgressClockIcon from 'mdi-material-ui/ProgressClock';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -55,6 +55,11 @@ const useStyles = makeStyles(() => ({
     padding: 0,
     boxShadow: '0 5px 15px 2.5px rgba(0, 0, 0, .03)',
     borderRadius: 6,
+  },
+  title: {
+    display: 'flex',
+    alignItems: 'center',
+    flexGrow: 1,
   },
 }));
 
@@ -94,10 +99,20 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
     new Date(deadline),
   );
   const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
+  const deadlineDate = new Date(deadline);
+  const [year, month, date] = [
+    deadlineDate.getFullYear(),
+    deadlineDate.getMonth() + 1,
+    deadlineDate.getDate(),
+  ];
 
   return (
-    <Button size="small" startIcon={<AccessAlarmIcon fontSize="small" />}>
-      <Typography color={delayDays > 0 ? 'error' : 'textPrimary'}>
+    <Button size="small" startIcon={<ProgressClockIcon />}>
+      <Typography color="textPrimary" variant="subtitle2">
+        {year}-{month}-{date}
+      </Typography>
+      &nbsp;
+      <Typography color={delayDays > 0 ? 'error' : 'textPrimary'} variant="subtitle2">
         {`${status}${delayDays > 0 ? `，已过期 ${Math.abs(delayDays)} 天` : ''}`}
       </Typography>
     </Button>
@@ -327,10 +342,10 @@ export default (props: TaskList) => {
   return (
     <div className="task-list">
       <div className="task-list__title-bar">
-        <Typography variant="h6" style={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+        <Typography variant="h6" className={theme.title}>
           {
             !isDefaultTask
-              ? <Checkbox color="primary" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
+              ? <input type="checkbox" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
               : <div style={{ width: 10 }}></div>
           }
           <input
@@ -356,7 +371,19 @@ export default (props: TaskList) => {
       {
         !isDefaultTask
         && <div className="task-list__deadline">
-          {generateStatus(currentTask)}
+          <DatePicker
+            startDate={currentTask ? new Date(currentTask.deadline) : new Date()}
+            customComponent={generateStatus(currentTask)}
+            onChange={date => {
+              if (date instanceof Date) {
+                const newCurrentTaskInfo: TaskListItem = {
+                  ...currentTask,
+                  deadline: date.toISOString(),
+                };
+                bus.emit('push', { action: 'UPDATE', payloads: [newCurrentTaskInfo] });
+              }
+            }}
+          />
         </div>
       }
       <div className="task-list__items-wrapper">

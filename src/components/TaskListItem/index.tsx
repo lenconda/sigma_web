@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './index.less';
 import ListItem from '@material-ui/core/ListItem';
-import Checkbox from '@material-ui/core/Checkbox';
 import DehazeIcon from '@material-ui/icons/Dehaze';
 import {
   useUpdateEffect,
@@ -85,8 +84,8 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
           <DehazeIcon fontSize="small" className="icon" />
         </div>
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
-          <Checkbox
-            color="primary" checked={finished}
+          <input
+            type="checkbox"
             onChange={event => onChange({ ...taskItem, finished: event.target.checked })}
             onClick={event => event.stopPropagation()}
           />
