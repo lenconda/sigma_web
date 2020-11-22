@@ -37,6 +37,10 @@ import idGen from '../../core/idgen';
 import TaskSelector from '../TaskSelector';
 import DatePicker from '../DatePicker';
 import ProgressClockIcon from 'mdi-material-ui/ProgressClock';
+import {
+  getTaskInfo,
+  getTaskListFromTask,
+} from '../../services/task';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -47,8 +51,8 @@ export interface TaskList {
   currentTaskId: string;
   bus: Bus<Dispatch>;
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
-  onInit?: (task: TaskListItem) => void;
   currentActiveTaskIds?: string[];
+  isDefault?: boolean;
 }
 
 const useStyles = makeStyles(() => ({
@@ -73,19 +77,8 @@ const reorder = (list: TaskListItem[], startIndex: number, endIndex: number): Ta
 };
 
 const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
-  // styles we need to apply on draggables
   ...draggableStyle,
 });
-
-// TODO: Mock
-const getItems = (count: number, id: string, isDefault = false): TaskListItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
-  taskId: idGen(),
-  content: isDefault ? '全部事项' : Math.random().toString(32),
-  deadline: isDefault ? '' : new Date().toISOString(),
-  order: isDefault ? 0 : k,
-  finished: false,
-  parentTaskId: isDefault ? 'default' : id,
-}));
 
 const generateStatus = (task: TaskListItem): JSX.Element => {
   if (!task) {
@@ -127,7 +120,7 @@ export default (props: TaskList) => {
     bus,
     currentActiveTaskIds = [],
     onSelectedTasksChange,
-    onInit,
+    isDefault = false,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
@@ -140,7 +133,6 @@ export default (props: TaskList) => {
   const [currentTaskDescription, setCurrentTaskDescription] = useState<string>('');
   const debouncedCurrentTaskDescription = useDebouncedValue(currentTaskDescription, 500);
   const [taskSelectorVisible, setTaskSelectorVisible] = useState<boolean>(false);
-  const [isDefaultTask, setIsDefaultTask] = useState<boolean>(false);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -278,25 +270,23 @@ export default (props: TaskList) => {
   }, [selectedTasks]);
 
   useEffect(() => {
-    const defaultTaskFlag = currentTaskId === 'default';
-    setIsDefaultTask(defaultTaskFlag);
     // TODO: request current task info
-    const currentTaskInfo = getItems(1, '0', defaultTaskFlag)[0];
-    setCurrentTask(currentTaskInfo);
-    if (!defaultTaskFlag) {
-      // TODO: request sub-tasks info
-      setTasks(getItems(10, (currentTaskInfo && currentTaskInfo.taskId)));
-    }
-  }, []);
-
-  useEffect(() => {
-    currentActiveTaskIds.forEach(currentActiveTaskId => {
-      const currentActiveTask = tasks.find(currentTask => currentTask.taskId === currentActiveTaskId);
-      if (currentActiveTask && selectedTasks.findIndex(task => task.taskId === currentActiveTask.taskId) === -1) {
-        setSelectedTasks(selectedTasks.concat(currentActiveTask));
+    getTaskInfo(currentTaskId, undefined, isDefault).then(currentTaskInfo => {
+      setCurrentTask(currentTaskInfo);
+      if (!isDefault) {
+        // TODO: request sub-tasks info
+        getTaskListFromTask(currentTaskId, 10).then(tasks => setTasks(tasks));
       }
     });
-  }, [currentActiveTaskIds, tasks]);
+  }, []);
+
+  // useEffect(() => {
+  //   const notSelectedTasks = tasks.filter(task => {
+  //     return currentActiveTaskIds.indexOf(task.taskId) !== -1
+  //       && selectedTasks.findIndex(selectedTask => selectedTask.taskId === task.taskId) === -1;
+  //   });
+  //   setSelectedTasks(selectedTasks.concat(notSelectedTasks));
+  // }, [currentActiveTaskIds, tasks]);
 
   useUpdateEffect(() => {
     handleContentInputChange(debouncedCurrentTaskContent);
@@ -307,9 +297,6 @@ export default (props: TaskList) => {
   }, [debouncedCurrentTaskDescription]);
 
   useEffect(() => {
-    if (onInit && currentTask) {
-      onInit(currentTask);
-    }
     const hubHandler = (dispatch: Dispatch) => {
       switch (dispatch.action) {
       case 'ADD': {
@@ -367,7 +354,7 @@ export default (props: TaskList) => {
       <div className="task-list__title-bar">
         <Typography variant="h6" className={theme.title}>
           {
-            !isDefaultTask
+            !isDefault
               ? <input type="checkbox" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
               : <div style={{ width: 10 }}></div>
           }
@@ -379,7 +366,7 @@ export default (props: TaskList) => {
           />
         </Typography>
         {
-          !isDefaultTask
+          !isDefault
           && <div className="task-list__log-wrapper__controls">
             <IconButton
               aria-label="edit"
@@ -392,7 +379,7 @@ export default (props: TaskList) => {
         }
       </div>
       {
-        !isDefaultTask
+        !isDefault
         && <div className="task-list__deadline">
           <DatePicker
             startDate={currentTask ? new Date(currentTask.deadline) : new Date()}
@@ -488,7 +475,7 @@ export default (props: TaskList) => {
         }
       </div>
       {
-        !isDefaultTask
+        !isDefault
         && <div className="task-list__log-wrapper">
           <textarea
             placeholder="在这里写下任务描述..."

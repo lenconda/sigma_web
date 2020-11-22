@@ -11,6 +11,7 @@ import {
   Redirect,
 } from 'react-router';
 import { createBrowserHistory } from 'history';
+import idGen from './core/idgen';
 
 const ListPage = lazy(() => import('./pages/List'));
 
@@ -43,7 +44,9 @@ const App: React.FC = () => {
       const task = tasks[0];
       const activeParentIndex = currentActiveTaskIds.indexOf(task.parentTaskId);
       if (activeParentIndex !== -1) {
-        const newActiveTaskIds = Array.from(currentActiveTaskIds).slice(activeParentIndex).concat([task.taskId]);
+        const newActiveTaskIds = activeParentIndex === currentActiveTaskIds.length - 1
+          ? Array.from(currentActiveTaskIds).concat([task.taskId])
+          : Array.from(currentActiveTaskIds).slice(activeParentIndex).concat([task.taskId]);
         setCurrentActiveTaskIds(newActiveTaskIds);
       }
     }
@@ -60,6 +63,12 @@ const App: React.FC = () => {
       dispatcher.stop();
     };
   }, [bus, dispatcher]);
+
+  // TODO: Mock
+  useEffect(() => {
+    const defaultTaskId = idGen();
+    setCurrentActiveTaskIds([defaultTaskId]);
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
