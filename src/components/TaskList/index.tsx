@@ -278,7 +278,7 @@ export default (props: TaskList) => {
         getTaskListFromTask(currentTaskId, 10).then(tasks => setTasks(tasks));
       }
     });
-  }, []);
+  }, [currentTaskId]);
 
   // useEffect(() => {
   //   const notSelectedTasks = tasks.filter(task => {

@@ -46,7 +46,7 @@ const App: React.FC = () => {
       if (activeParentIndex !== -1) {
         const newActiveTaskIds = activeParentIndex === currentActiveTaskIds.length - 1
           ? Array.from(currentActiveTaskIds).concat([task.taskId])
-          : Array.from(currentActiveTaskIds).slice(activeParentIndex).concat([task.taskId]);
+          : Array.from(currentActiveTaskIds).slice(0, activeParentIndex + 1).concat([task.taskId]);
         setCurrentActiveTaskIds(newActiveTaskIds);
       }
     }

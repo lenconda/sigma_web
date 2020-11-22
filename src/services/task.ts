@@ -14,7 +14,7 @@ export const getTaskInfo = async (
         parentTaskId: isDefault ? 'default' : parentId,
         finished: false,
         deadline: new Date().toISOString(),
-        content: isDefault ? '全部任务' : Math.random().toString(32),
+        content: isDefault ? '全部任务' : taskId,
         order,
       });
     }, 100);

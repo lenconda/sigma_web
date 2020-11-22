@@ -20,17 +20,19 @@ const List: React.FC<ListPageProps> = ({
   return (
     <div className="page-list">
       {
-        currentActiveTaskIds.map((currentActiveTaskId, index) => (
-          <div className="page-list__task-wrapper" key={index}>
-            <TaskList
-              bus={bus}
-              isDefault={index === 0}
-              currentTaskId={currentActiveTaskId}
-              currentActiveTaskIds={currentActiveTaskIds}
-              onSelectedTasksChange={onSelectedTasksChange}
-            />
-          </div>
-        ))
+        currentActiveTaskIds.map((currentActiveTaskId, index) => {
+          return (
+            <div className="page-list__task-wrapper" key={index}>
+              <TaskList
+                bus={bus}
+                isDefault={index === 0}
+                currentTaskId={currentActiveTaskId}
+                currentActiveTaskIds={currentActiveTaskIds}
+                onSelectedTasksChange={onSelectedTasksChange}
+              />
+            </div>
+          );
+        })
       }
     </div>
   );
