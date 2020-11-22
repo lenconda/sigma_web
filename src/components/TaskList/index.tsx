@@ -216,6 +216,7 @@ export default (props: TaskList) => {
     const newCurrentTaskInfo: TaskListItem = {
       ...currentTask,
       finished: event.target.checked,
+      finishedDate: new Date().toISOString(),
     };
     bus.emit('push', { action: 'UPDATE', payloads: [newCurrentTaskInfo] });
   };

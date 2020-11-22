@@ -86,7 +86,11 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
           <input
             type="checkbox"
-            onChange={event => onChange({ ...taskItem, finished: event.target.checked })}
+            onChange={event => onChange({
+              ...taskItem,
+              finished: event.target.checked,
+              finishedDate: new Date().toISOString(),
+            })}
             onClick={event => event.stopPropagation()}
           />
           <input
