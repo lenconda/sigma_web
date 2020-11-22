@@ -1,8 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
-import TaskList, { Dispatch } from './components/TaskList';
+import { Dispatch } from './components/TaskList';
+import {
+  Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router';
+import { createBrowserHistory } from 'history';
+
+const ListPage = lazy(() => import('./pages/List'));
+
+const history = createBrowserHistory();
 
 const theme = createMuiTheme({
   props: {
@@ -40,7 +51,18 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <TaskList bus={bus} currentTaskId="0" />
+      <Suspense fallback={<></>}>
+        <Router history={history}>
+          <Switch>
+            <Route path="/list">
+              <ListPage bus={bus} currentActiveTaskIds={currentActiveTaskIds} />
+            </Route>
+            <Route path="/">
+              <Redirect to="/list" />
+            </Route>
+          </Switch>
+        </Router>
+      </Suspense>
     </ThemeProvider>
   );
 };
