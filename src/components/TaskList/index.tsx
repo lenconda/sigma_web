@@ -46,6 +46,8 @@ export interface Dispatch {
 export interface TaskList {
   currentTaskId: string;
   bus: Bus<Dispatch>;
+  onSelectedTasksChange: (tasks: TaskListItem[]) => void;
+  onInit?: (task: TaskListItem) => void;
   currentActiveTaskIds?: string[];
 }
 
@@ -124,6 +126,8 @@ export default (props: TaskList) => {
     currentTaskId,
     bus,
     currentActiveTaskIds = [],
+    onSelectedTasksChange,
+    onInit,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
@@ -270,6 +274,10 @@ export default (props: TaskList) => {
   }, [taskListElement]);
 
   useEffect(() => {
+    onSelectedTasksChange(selectedTasks);
+  }, [selectedTasks]);
+
+  useEffect(() => {
     const defaultTaskFlag = currentTaskId === 'default';
     setIsDefaultTask(defaultTaskFlag);
     // TODO: request current task info
@@ -284,7 +292,7 @@ export default (props: TaskList) => {
   useEffect(() => {
     currentActiveTaskIds.forEach(currentActiveTaskId => {
       const currentActiveTask = tasks.find(currentTask => currentTask.taskId === currentActiveTaskId);
-      if (currentActiveTask) {
+      if (currentActiveTask && selectedTasks.findIndex(task => task.taskId === currentActiveTask.taskId) === -1) {
         setSelectedTasks(selectedTasks.concat(currentActiveTask));
       }
     });
@@ -299,6 +307,9 @@ export default (props: TaskList) => {
   }, [debouncedCurrentTaskDescription]);
 
   useEffect(() => {
+    if (onInit && currentTask) {
+      onInit(currentTask);
+    }
     const hubHandler = (dispatch: Dispatch) => {
       switch (dispatch.action) {
       case 'ADD': {

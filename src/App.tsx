@@ -3,6 +3,7 @@ import { createMuiTheme, ThemeProvider } from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
 import { Dispatch } from './components/TaskList';
+import { TaskListItem } from './components/TaskListItem';
 import {
   Router,
   Route,
@@ -37,6 +38,17 @@ const App: React.FC = () => {
   const dispatcher = new Dispatcher();
   const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
 
+  const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
+    if (tasks.length === 1) {
+      const task = tasks[0];
+      const activeParentIndex = currentActiveTaskIds.indexOf(task.parentTaskId);
+      if (activeParentIndex !== -1) {
+        const newActiveTaskIds = Array.from(currentActiveTaskIds).slice(activeParentIndex).concat([task.taskId]);
+        setCurrentActiveTaskIds(newActiveTaskIds);
+      }
+    }
+  };
+
   useEffect(() => {
     dispatcher.start();
     bus.on('dispatch', (dispatch: Dispatch) => {
@@ -55,7 +67,11 @@ const App: React.FC = () => {
         <Router history={history}>
           <Switch>
             <Route path="/list">
-              <ListPage bus={bus} currentActiveTaskIds={currentActiveTaskIds} />
+              <ListPage
+                bus={bus}
+                currentActiveTaskIds={currentActiveTaskIds}
+                onSelectedTasksChange={handleSelectedTasksChange}
+              />
             </Route>
             <Route path="/">
               <Redirect to="/list" />
