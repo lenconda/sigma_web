@@ -193,7 +193,7 @@ export default (props: TaskList) => {
   };
 
   const handleInputKeyPress = (event: React.KeyboardEvent<HTMLElement>) => {
-    if (event.keyCode === 13 || event.key.toLowerCase() === 'enter') {
+    if ((event.keyCode === 13 || event.key.toLowerCase() === 'enter') && addTaskContent !== '') {
       const deadline = moment().add(1, 'day').startOf('day').toISOString();
       const taskToBeAdded: TaskListItem = {
         content: addTaskContent,
