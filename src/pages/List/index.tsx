@@ -1,6 +1,7 @@
 import React from 'react';
 import Bus from '../../core/bus';
 import TaskList, {
+  Empty,
   Dispatch,
 } from '../../components/TaskList';
 import { TaskListItem } from '../../components/TaskListItem';
@@ -33,6 +34,12 @@ const List: React.FC<ListPageProps> = ({
             </div>
           );
         })
+      }
+      {
+        currentActiveTaskIds.length === 1
+          && <div className="page-list__task-wrapper--empty">
+            <Empty />
+          </div>
       }
     </div>
   );

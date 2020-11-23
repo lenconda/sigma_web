@@ -3,7 +3,6 @@
 .page-list {
   box-sizing: border-box;
   padding: 20px 0;
-  padding-right: 20px;
   height: 100%;
   display: flex;
   align-items: stretch;
@@ -12,6 +11,7 @@
   &__task-wrapper {
     box-sizing: border-box;
     padding: 0 10px;
+    width: 480px;
 
     &:first-child {
       padding-left: 20px;
@@ -19,6 +19,14 @@
 
     &:last-child {
       padding-right: 20px;
+    }
+
+    &--empty {
+      width: auto;
+      box-sizing: border-box;
+      padding-left: 10px;
+      padding-right: 20px;
+      flex-grow: 1;
     }
   }
 }

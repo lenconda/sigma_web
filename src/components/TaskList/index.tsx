@@ -481,3 +481,7 @@ export default (props: TaskList) => {
     </div>
   );
 };
+
+export const Empty: React.FC = () => (
+  <div className="task-list"></div>
+);
