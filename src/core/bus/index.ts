@@ -33,7 +33,10 @@ class Bus<T> {
       this.subscribers[key] = [];
     }
 
-    typeof callback === 'function' && this.subscribers[key].push(callback);
+    if (typeof callback === 'function') {
+      this.subscribers[key] = this.subscribers[key].concat([callback]);
+    }
+
     return callback;
   }
 

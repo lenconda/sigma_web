@@ -271,7 +271,7 @@ export default (props: TaskList) => {
 
   useEffect(() => {
     // TODO: request current task info
-    getTaskInfo(currentTaskId, undefined, isDefault).then(currentTaskInfo => {
+    getTaskInfo(currentTaskId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isDefault).then(currentTaskInfo => {
       setCurrentTask(currentTaskInfo);
       if (!isDefault) {
         // TODO: request sub-tasks info
@@ -297,7 +297,7 @@ export default (props: TaskList) => {
   }, [debouncedCurrentTaskDescription]);
 
   useEffect(() => {
-    const hubHandler = (dispatch: Dispatch) => {
+    const handler = (dispatch: Dispatch) => {
       switch (dispatch.action) {
       case 'ADD': {
         const tasksToBeAdded = [];
@@ -333,21 +333,22 @@ export default (props: TaskList) => {
         break;
       }
       case 'DELETE': {
-        const newTasks = tasks.filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId
-                && payload.parentTaskId === currentTask.taskId) === -1);
-        setTasks(newTasks);
-        bus.emit('dispatch', { action: 'DELETE', payloads: dispatch.payloads });
+        const newTasks = tasks.filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1);
+        if (newTasks.length < tasks.length) {
+          setTasks(newTasks);
+          bus.emit('dispatch', { action: 'DELETE', payloads: dispatch.payloads });
+        }
         break;
       }
       default:
         break;
       }
     };
-    bus.on('push', hubHandler);
+    bus.on('push', handler);
     return () => {
-      bus.off('push', hubHandler);
+      bus.off('push', handler);
     };
-  }, [tasks, currentTask]);
+  }, [tasks, currentTask, bus]);
 
   return (
     <div className="task-list">
