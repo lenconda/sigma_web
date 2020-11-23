@@ -57,6 +57,15 @@ const App: React.FC = () => {
     bus.on('dispatch', (dispatch: Dispatch) => {
       if (dispatch.payloads.length !== 0) {
         dispatcher.enqueue(dispatch);
+        if (dispatch.action === 'DELETE') {
+          dispatch.payloads.forEach(payload => {
+            // eslint-disable-next-line max-nested-callbacks
+            const payloadActiveIndex = currentActiveTaskIds.findIndex(taskId => payload.taskId === taskId);
+            if (payloadActiveIndex !== -1) {
+              setCurrentActiveTaskIds(currentActiveTaskIds.slice(0, payloadActiveIndex));
+            }
+          });
+        }
       }
     });
     return () => {
