@@ -280,14 +280,6 @@ export default (props: TaskList) => {
     });
   }, [currentTaskId]);
 
-  // useEffect(() => {
-  //   const notSelectedTasks = tasks.filter(task => {
-  //     return currentActiveTaskIds.indexOf(task.taskId) !== -1
-  //       && selectedTasks.findIndex(selectedTask => selectedTask.taskId === task.taskId) === -1;
-  //   });
-  //   setSelectedTasks(selectedTasks.concat(notSelectedTasks));
-  // }, [currentActiveTaskIds, tasks]);
-
   useUpdateEffect(() => {
     handleContentInputChange(debouncedCurrentTaskContent);
   }, [debouncedCurrentTaskContent]);
