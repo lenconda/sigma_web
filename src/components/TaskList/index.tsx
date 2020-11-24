@@ -172,21 +172,21 @@ export default (props: TaskList) => {
   const handleDeleteTasks = () => {
     return new Promise(resolve => {
       if (selectedTasks.length > 0) {
-        const dispatchUpdateTasks = [];
+        // const dispatchUpdateTasks = [];
         const dispatchDeleteTasks = Array.from(selectedTasks);
-        const newTasks = Array.from(tasks)
-          .filter(currentTask => selectedTasks.findIndex(currentTask1 => currentTask1.taskId === currentTask.taskId) === -1)
-          .map((currentTask, index) => {
-            if (currentTask.order !== index) {
-              currentTask.order = index;
-              dispatchUpdateTasks.push(currentTask);
-            }
-            return currentTask;
-          });
+        // const newTasks = Array.from(tasks)
+        //   .filter(currentTask => selectedTasks.findIndex(currentTask1 => currentTask1.taskId === currentTask.taskId) === -1)
+        //   .map((currentTask, index) => {
+        //     if (currentTask.order !== index) {
+        //       currentTask.order = index;
+        //       dispatchUpdateTasks.push(currentTask);
+        //     }
+        //     return currentTask;
+        //   });
         bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
-        bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
-        setTasks(newTasks);
-        setSelectedTasks([]);
+        // bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
+        // setTasks(newTasks);
+        // setSelectedTasks([]);
         resolve();
       } else {
         resolve();
@@ -331,11 +331,26 @@ export default (props: TaskList) => {
         break;
       }
       case 'DELETE': {
-        const newTasks = tasks.filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1);
+        const dispatchUpdateTasks = [];
+        const newTasks = tasks
+          .filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1);
         if (newTasks.length < tasks.length) {
           setTasks(newTasks);
-          bus.emit('dispatch', { action: 'DELETE', payloads: dispatch.payloads });
+          newTasks.forEach((currentTask, index) => {
+            if (currentTask.order !== index) {
+              currentTask.order = index;
+              dispatchUpdateTasks.push(currentTask);
+            }
+          });
+          bus.emit('dispatch', dispatch);
+          bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
         }
+        const newSelectedTasks = Array
+          .from(selectedTasks)
+          .filter(task => {
+            return dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1;
+          });
+        setSelectedTasks(newSelectedTasks);
         break;
       }
       default:

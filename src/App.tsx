@@ -54,7 +54,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     dispatcher.start();
-    bus.on('dispatch', (dispatch: Dispatch) => {
+    const dispatchHandler = (dispatch: Dispatch) => {
       if (dispatch.payloads.length !== 0) {
         dispatcher.enqueue(dispatch);
         switch (dispatch.action) {
@@ -72,10 +72,8 @@ const App: React.FC = () => {
           break;
         }
       }
-    });
-    return () => {
-      dispatcher.stop();
     };
+    bus.on('dispatch', dispatchHandler);
   }, [bus, dispatcher]);
 
   // TODO: Mock
