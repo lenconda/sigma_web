@@ -159,14 +159,14 @@ export default (props: TaskList) => {
     let newSelectedTasks = [];
     if (multiple) {
       if (currentTaskIndex === -1) {
-        setSelectedTasks(selectedTasks.concat(task));
+        newSelectedTasks = selectedTasks.concat(task);
       } else {
         newSelectedTasks = selectedTasks.slice(0, currentTaskIndex).concat(selectedTasks.slice(currentTaskIndex + 1));
-        setSelectedTasks(newSelectedTasks);
       }
     } else {
-      setSelectedTasks([task]);
+      newSelectedTasks = [task];
     }
+    setSelectedTasks(newSelectedTasks);
   };
 
   const handleDeleteTasks = () => {
@@ -287,7 +287,7 @@ export default (props: TaskList) => {
       case 'ADD': {
         const tasksToBeAdded = [];
         dispatch.payloads.forEach(payload => {
-          if (payload.parentTaskId === currentTask.taskId) {
+          if (payload.parentTaskId === (currentTask && currentTask.taskId)) {
             const lastTask = tasks[tasks.length - 1];
             payload.order = (lastTask && lastTask.order || 0) + 1;
             tasksToBeAdded.push(payload);
@@ -300,11 +300,15 @@ export default (props: TaskList) => {
       case 'UPDATE': {
         const tasksToBeUpdated = [];
         const newTasks = Array.from(tasks);
+        let currentTaskInfo = { ...currentTask };
         dispatch.payloads.forEach(payload => {
           const currentTaskIndex = newTasks.findIndex(task => task.taskId === payload.taskId);
           if (payload.taskId === (currentTask && currentTask.taskId)) {
-            setCurrentTask(payload);
-            tasksToBeUpdated.push(payload);
+            currentTaskInfo = { ...payload };
+            console.log(currentActiveTaskIds, payload.parentTaskId);
+            if (currentActiveTaskIds.indexOf(payload.parentTaskId) === -1) {
+              tasksToBeUpdated.push(payload);
+            }
           } else if (
             currentTaskIndex !== -1
             && payload.parentTaskId === (currentTask && currentTask.taskId)
@@ -314,7 +318,10 @@ export default (props: TaskList) => {
           }
         });
         setTasks(newTasks);
-        bus.emit('dispatch', { action: 'UPDATE', payloads: tasksToBeUpdated });
+        setCurrentTask(currentTaskInfo);
+        if (tasksToBeUpdated.length > 0) {
+          bus.emit('dispatch', { action: 'UPDATE', payloads: tasksToBeUpdated });
+        }
         break;
       }
       case 'DELETE': {
@@ -348,7 +355,7 @@ export default (props: TaskList) => {
     return () => {
       bus.off('push', handler);
     };
-  }, [tasks, currentTask, bus]);
+  }, [tasks, currentTask, bus, selectedTasks, currentActiveTaskIds]);
 
   return (
     <div className="task-list">
@@ -356,15 +363,20 @@ export default (props: TaskList) => {
         <Typography variant="h6" className={theme.title}>
           {
             !isDefault
-              ? <input type="checkbox" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
-              : <div style={{ width: 10 }}></div>
+              ? <>
+                <input type="checkbox" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
+                <input
+                  type="text"
+                  className="title-input"
+                  defaultValue={(currentTask && currentTask.content)}
+                  onChange={event => setCurrentTaskContent(event.target.value)}
+                />
+              </>
+              : <>
+                <div style={{ width: 10 }}></div>
+                <div className="title-input">{(currentTask && currentTask.content)}</div>
+              </>
           }
-          <input
-            type="text"
-            className="title-input"
-            defaultValue={(currentTask && currentTask.content)}
-            onChange={event => setCurrentTaskContent(event.target.value)}
-          />
         </Typography>
         {
           !isDefault
@@ -399,7 +411,7 @@ export default (props: TaskList) => {
       }
       <div className="task-list__items-wrapper">
         {
-          taskListLoading
+          taskListLoading || currentTaskLoading
             ? <span className="loading">请求中...</span>
             : tasks.length !== 0
               ? <List className={theme.root} ref={taskListElement}>
@@ -447,7 +459,7 @@ export default (props: TaskList) => {
               </List>
               : <div className="no-content">
                 <img src="/assets/no_tasks.svg" className="illustrator" />
-                <span>暂无任务</span>
+                <span>没有子任务</span>
               </div>
         }
       </div>
@@ -490,7 +502,11 @@ export default (props: TaskList) => {
           ></textarea>
         </div>
       }
-      <TaskSelector visible={taskSelectorVisible} onClose={() => setTaskSelectorVisible(false)} onSelectTask={handleMoveTasks} />
+      <TaskSelector
+        visible={taskSelectorVisible}
+        onClose={() => setTaskSelectorVisible(false)}
+        onSelectTask={handleMoveTasks}
+      />
     </div>
   );
 };

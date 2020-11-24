@@ -76,8 +76,11 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
   return (
     <div
       ref={ref as any}
-      className={`${className} task-item ${isDragging ? 'dragging' : ''} ${selected ? 'selected' : ''}`}
-      onClick={() => onSelectionChange(taskItem)}
+      className={`${className} task-item${isDragging ? ' dragging' : ''}${selected ? ' selected' : ''}`}
+      onClick={event => {
+        event.preventDefault();
+        onSelectionChange(taskItem);
+      }}
     >
       <ListItem className={theme.taskListItem}>
         <div className="task-item__drag-control">

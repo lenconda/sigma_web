@@ -23,13 +23,13 @@ const List: React.FC<ListPageProps> = ({
       {
         currentActiveTaskIds.map((currentActiveTaskId, index) => {
           return (
-            <div className="page-list__task-wrapper" key={index}>
+            <div className="page-list__task-wrapper" key={currentActiveTaskId}>
               <TaskList
                 bus={bus}
                 isDefault={index === 0}
                 currentTaskId={currentActiveTaskId}
-                currentActiveTaskIds={currentActiveTaskIds}
                 onSelectedTasksChange={onSelectedTasksChange}
+                currentActiveTaskIds={currentActiveTaskIds}
               />
             </div>
           );

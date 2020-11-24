@@ -7,7 +7,7 @@ export type EventSubscriberCallbackType<T> = (data: T) => any;
  * @constructor
  */
 class Bus<T> {
-  private subscribers: EventSubscribersType<T> = {};
+  public subscribers: EventSubscribersType<T> = {};
 
   /**
    * emit an event
@@ -33,8 +33,11 @@ class Bus<T> {
       this.subscribers[key] = [];
     }
 
-    if (typeof callback === 'function') {
-      this.subscribers[key] = this.subscribers[key].concat([callback]);
+    if (
+      typeof callback === 'function'
+      && this.subscribers[key].findIndex(subscriber => subscriber === callback) === -1
+    ) {
+      this.subscribers[key].push(callback);
     }
 
     return callback;
