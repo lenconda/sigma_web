@@ -172,21 +172,8 @@ export default (props: TaskList) => {
   const handleDeleteTasks = () => {
     return new Promise(resolve => {
       if (selectedTasks.length > 0) {
-        // const dispatchUpdateTasks = [];
         const dispatchDeleteTasks = Array.from(selectedTasks);
-        // const newTasks = Array.from(tasks)
-        //   .filter(currentTask => selectedTasks.findIndex(currentTask1 => currentTask1.taskId === currentTask.taskId) === -1)
-        //   .map((currentTask, index) => {
-        //     if (currentTask.order !== index) {
-        //       currentTask.order = index;
-        //       dispatchUpdateTasks.push(currentTask);
-        //     }
-        //     return currentTask;
-        //   });
         bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
-        // bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
-        // setTasks(newTasks);
-        // setSelectedTasks([]);
         resolve();
       } else {
         resolve();
