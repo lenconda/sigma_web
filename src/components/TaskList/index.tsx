@@ -305,7 +305,6 @@ export default (props: TaskList) => {
           const currentTaskIndex = newTasks.findIndex(task => task.taskId === payload.taskId);
           if (payload.taskId === (currentTask && currentTask.taskId)) {
             currentTaskInfo = { ...payload };
-            console.log(currentActiveTaskIds, payload.parentTaskId);
             if (currentActiveTaskIds.indexOf(payload.parentTaskId) === -1) {
               tasksToBeUpdated.push(payload);
             }
