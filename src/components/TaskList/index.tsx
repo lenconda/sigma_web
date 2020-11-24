@@ -322,7 +322,6 @@ export default (props: TaskList) => {
         const newTasks = tasks
           .filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1);
         if (newTasks.length < tasks.length) {
-          setTasks(newTasks);
           newTasks.forEach((currentTask, index) => {
             if (currentTask.order !== index) {
               currentTask.order = index;
@@ -338,6 +337,7 @@ export default (props: TaskList) => {
             return dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1;
           });
         setSelectedTasks(newSelectedTasks);
+        setTasks(newTasks);
         break;
       }
       default:

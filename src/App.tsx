@@ -74,6 +74,10 @@ const App: React.FC = () => {
       }
     };
     bus.on('dispatch', dispatchHandler);
+
+    return () => {
+      bus.off('dispatch', dispatchHandler);
+    };
   }, [bus, dispatcher]);
 
   // TODO: Mock
