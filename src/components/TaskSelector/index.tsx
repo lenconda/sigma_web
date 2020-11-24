@@ -3,7 +3,6 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
-import LinearProgress from '@material-ui/core/LinearProgress';
 import Typography from '@material-ui/core/Typography';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
@@ -114,15 +113,13 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
     <Dialog open={visible} fullWidth={true} classes={{ root: 'task-selector' }}>
       <div className="task-selector__title">
         <Typography noWrap={true} variant="h6">
-          移动任务
           {
-            selectedTask && `至：${selectedTask.content}`
+            loading
+              ? '请求中...'
+              : `移动任务${selectedTask && `至：${selectedTask.content}`}`
           }
         </Typography>
       </div>
-      {
-        loading && <LinearProgress color="primary" />
-      }
       <DialogContent classes={{ root: 'task-selector__content' }}>
         <TreeView
           className="tree-view"
