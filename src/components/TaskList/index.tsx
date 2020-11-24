@@ -133,6 +133,8 @@ export default (props: TaskList) => {
   const [currentTaskDescription, setCurrentTaskDescription] = useState<string>('');
   const debouncedCurrentTaskDescription = useDebouncedValue(currentTaskDescription, 500);
   const [taskSelectorVisible, setTaskSelectorVisible] = useState<boolean>(false);
+  const [taskListLoading, setTaskListLoading] = useState<boolean>(false);
+  const [currentTaskLoading, setCurrentTaskLoading] = useState<boolean>(false);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -271,13 +273,17 @@ export default (props: TaskList) => {
 
   useEffect(() => {
     // TODO: request current task info
+    setCurrentTaskLoading(true);
     getTaskInfo(currentTaskId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isDefault).then(currentTaskInfo => {
       setCurrentTask(currentTaskInfo);
       if (!isDefault) {
         // TODO: request sub-tasks info
-        getTaskListFromTask(currentTaskId, 10).then(tasks => setTasks(tasks));
+        setTaskListLoading(true);
+        getTaskListFromTask(currentTaskId, 10)
+          .then(tasks => setTasks(tasks))
+          .finally(() => setTaskListLoading(false));
       }
-    });
+    }).finally(() => setCurrentTaskLoading(false));
   }, [currentTaskId]);
 
   useUpdateEffect(() => {
@@ -391,51 +397,56 @@ export default (props: TaskList) => {
       }
       <div className="task-list__items-wrapper">
         {
-          tasks.length !== 0
-            ? <List className={theme.root} ref={taskListElement}>
-              <DragDropContext onDragEnd={handleDragEnd}>
-                <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
-                  {
-                    (provided, snapshot) => (
-                      <div ref={provided.innerRef} className="task-items">
-                        {
-                          tasks.map((item, index) => (
-                            <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
-                              {
-                                (provided, snapshot) => (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                    style={getItemStyle(provided.draggableProps.style)}
-                                  >
-                                    <Item
-                                      className="task-item-wrapper"
-                                      selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
-                                      isDragging={snapshot.isDragging}
-                                      content={item.content}
-                                      taskId={item.taskId}
-                                      order={item.order}
-                                      deadline={item.deadline}
-                                      finished={item.finished}
-                                      onSelectionChange={handleSelectionChange}
-                                      onChange={task => bus.emit('push', { action: 'UPDATE', payloads: [task] })}
-                                      parentTaskId={item.parentTaskId}
-                                    />
-                                  </div>
-                                )
-                              }
-                            </Draggable>
-                          ))
-                        }
-                        {provided.placeholder}
-                      </div>
-                    )
-                  }
-                </Droppable>
-              </DragDropContext>
-            </List>
-            : <div className="no-content">暂无任务</div>
+          taskListLoading
+            ? <span className="loading">请求中...</span>
+            : tasks.length !== 0
+              ? <List className={theme.root} ref={taskListElement}>
+                <DragDropContext onDragEnd={handleDragEnd}>
+                  <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
+                    {
+                      (provided, snapshot) => (
+                        <div ref={provided.innerRef} className="task-items">
+                          {
+                            tasks.map((item, index) => (
+                              <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
+                                {
+                                  (provided, snapshot) => (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      style={getItemStyle(provided.draggableProps.style)}
+                                    >
+                                      <Item
+                                        className="task-item-wrapper"
+                                        selected={selectedTasks.findIndex(currentTask => item.taskId === currentTask.taskId) !== -1}
+                                        isDragging={snapshot.isDragging}
+                                        content={item.content}
+                                        taskId={item.taskId}
+                                        order={item.order}
+                                        deadline={item.deadline}
+                                        finished={item.finished}
+                                        onSelectionChange={handleSelectionChange}
+                                        onChange={task => bus.emit('push', { action: 'UPDATE', payloads: [task] })}
+                                        parentTaskId={item.parentTaskId}
+                                      />
+                                    </div>
+                                  )
+                                }
+                              </Draggable>
+                            ))
+                          }
+                          {provided.placeholder}
+                        </div>
+                      )
+                    }
+                  </Droppable>
+                </DragDropContext>
+              </List>
+              : <div className="no-content">
+                <img src="/assets/no_tasks.svg" className="illustrator" />
+                <span>暂无任务</span>
+              </div>
         }
       </div>
       <div className="task-list__buttons">
