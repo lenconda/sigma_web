@@ -57,7 +57,8 @@ const App: React.FC = () => {
     bus.on('dispatch', (dispatch: Dispatch) => {
       if (dispatch.payloads.length !== 0) {
         dispatcher.enqueue(dispatch);
-        if (dispatch.action === 'DELETE') {
+        switch (dispatch.action) {
+        case 'DELETE': {
           dispatch.payloads.forEach(payload => {
             // eslint-disable-next-line max-nested-callbacks
             const payloadActiveIndex = currentActiveTaskIds.findIndex(taskId => payload.taskId === taskId);
@@ -65,6 +66,10 @@ const App: React.FC = () => {
               setCurrentActiveTaskIds(currentActiveTaskIds.slice(0, payloadActiveIndex));
             }
           });
+          break;
+        }
+        default:
+          break;
         }
       }
     });
