@@ -1,21 +1,26 @@
-import React, { useEffect, useState, Suspense, lazy } from 'react';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core';
+import React, {
+  useEffect,
+  useState,
+  Suspense,
+  lazy,
+} from 'react';
+import {
+  createMuiTheme,
+  ThemeProvider,
+} from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
 import { Dispatch } from './components/TaskList';
 import { TaskListItem } from './components/TaskListItem';
 import {
-  Router,
   Route,
   Switch,
   Redirect,
-} from 'react-router';
-import { createBrowserHistory } from 'history';
+  BrowserRouter,
+} from 'react-router-dom';
 import idGen from './core/idgen';
 
 const ListPage = lazy(() => import('./pages/List'));
-
-const history = createBrowserHistory();
 
 const theme = createMuiTheme({
   props: {
@@ -88,8 +93,9 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
+      <nav className="app-nav"></nav>
       <Suspense fallback={<></>}>
-        <Router history={history}>
+        <BrowserRouter>
           <Switch>
             <Route path="/list">
               <ListPage
@@ -102,7 +108,7 @@ const App: React.FC = () => {
               <Redirect to="/list" />
             </Route>
           </Switch>
-        </Router>
+        </BrowserRouter>
       </Suspense>
     </ThemeProvider>
   );
