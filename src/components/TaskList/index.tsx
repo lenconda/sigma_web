@@ -22,10 +22,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import DeleteSweepIcon from '@material-ui/icons/DeleteSweep';
-import MoveToInboxIcon from '@material-ui/icons/MoveToInbox';
 import Bus from '../../core/bus';
 import moment from 'moment';
 import './index.less';
@@ -36,12 +32,13 @@ import {
 import idGen from '../../core/idgen';
 import TaskSelector from '../TaskSelector';
 import DatePicker from '../DatePicker';
-import ProgressClockIcon from 'mdi-material-ui/ProgressClock';
 import {
   getTaskInfo,
   getTaskListFromTask,
 } from '../../services/task';
 import EditableField from '../EditableField';
+import { ProgressIcon } from '../../core/icons';
+import IconButton from '../IconButton';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -103,12 +100,12 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
   ];
 
   return (
-    <Button size="small" startIcon={<ProgressClockIcon />}>
-      <Typography color="textPrimary" variant="subtitle2">
+    <Button size="small" startIcon={<ProgressIcon />}>
+      <Typography color="textSecondary" variant="button">
         {year}-{month}-{date}
       </Typography>
       &nbsp;
-      <Typography color={delayDays > 0 ? 'error' : 'textPrimary'} variant="subtitle2">
+      <Typography color={delayDays > 0 ? 'error' : 'textSecondary'} variant="button">
         {`${status}${delayDays > 0 ? `，已过期 ${Math.abs(delayDays)} 天` : ''}`}
       </Typography>
     </Button>
@@ -385,12 +382,9 @@ export default (props: TaskList) => {
           !isDefault
           && <div className="task-list__log-wrapper__controls">
             <IconButton
-              aria-label="edit"
-              size="medium"
+              type="delete"
               onClick={() => bus.emit('push', { action: 'DELETE', payloads: [currentTask] })}
-            >
-              <DeleteSweepIcon fontSize="small" />
-            </IconButton>
+            />
           </div>
         }
       </div>
@@ -461,7 +455,7 @@ export default (props: TaskList) => {
                 </DragDropContext>
               </List>
               : <div className="no-content">
-                <img src="/assets/no_tasks.svg" className="illustrator" />
+                <img src="/assets/images/no_tasks.svg" className="illustrator" />
                 <div>
                   <h1>没有子任务</h1>
                   <h2>在下方输入任务内容以添加新的子任务</h2>
@@ -481,20 +475,14 @@ export default (props: TaskList) => {
           selectedTasks.length !== 0 &&
             <>
               <IconButton
-                size="medium"
-                aria-label="delete"
+                type="move"
                 style={{ marginLeft: 10 }}
                 onClick={() => setTaskSelectorVisible(true)}
-              >
-                <MoveToInboxIcon fontSize="small" />
-              </IconButton>
+              />
               <IconButton
-                size="medium"
-                aria-label="delete"
+                type="delete"
                 onClick={handleDeleteTasks}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
+              />
             </>
         }
       </div>

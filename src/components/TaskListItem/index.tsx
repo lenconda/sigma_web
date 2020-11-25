@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import './index.less';
 import ListItem from '@material-ui/core/ListItem';
-import DehazeIcon from '@material-ui/icons/Dehaze';
 import {
   useUpdateEffect,
   useDebouncedValue,
 } from '../../core/hooks';
 import { makeStyles } from '@material-ui/core/styles';
 import EditableField from '../EditableField';
+import { DragIcon } from '../../core/icons';
 
 export interface TaskListItemBase {
   content: string;
@@ -85,7 +85,7 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
     >
       <ListItem className={theme.taskListItem}>
         <div className="task-item__drag-control">
-          <DehazeIcon fontSize="small" className="icon" />
+          <DragIcon className="icon" />
         </div>
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
           <input
