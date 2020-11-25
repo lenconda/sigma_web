@@ -232,6 +232,17 @@ export default (props: TaskList) => {
     });
   };
 
+  const handleFinishAllTasks = () => {
+    const tasksToBeUpdated: TaskListItem[] = [
+      ...Array.from(tasks).map(task => ({
+        ...task,
+        finished: true,
+      })),
+      { ...currentTask, finished: true },
+    ];
+    bus.emit('push', { action: 'UPDATE', payloads: tasksToBeUpdated });
+  };
+
   useEffect(() => {
     const handleMetaKey = (type: 'keydown' | 'keyup' | string, event: KeyboardEvent) => {
       const { metaKey, ctrlKey, key } = event;
@@ -378,15 +389,16 @@ export default (props: TaskList) => {
               </>
           }
         </Typography>
-        {
-          !isDefault
-          && <div className="task-list__log-wrapper__controls">
-            <IconButton
-              type="delete"
-              onClick={() => bus.emit('push', { action: 'DELETE', payloads: [currentTask] })}
-            />
-          </div>
-        }
+        <div className="task-list__log-wrapper__controls">
+          <IconButton type="finish" onClick={handleFinishAllTasks} />
+          {
+            !isDefault &&
+              <IconButton
+                type="delete"
+                onClick={() => bus.emit('push', { action: 'DELETE', payloads: [currentTask] })}
+              />
+          }
+        </div>
       </div>
       {
         !isDefault
