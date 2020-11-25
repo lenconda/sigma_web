@@ -41,6 +41,7 @@ import {
   getTaskInfo,
   getTaskListFromTask,
 } from '../../services/task';
+import EditableField from '../EditableField';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -363,11 +364,14 @@ export default (props: TaskList) => {
           {
             !isDefault
               ? <>
-                <input type="checkbox" checked={(currentTask && currentTask.finished) || false} onChange={handleCurrentTaskFinishedChange} />
                 <input
-                  type="text"
+                  type="checkbox"
+                  checked={(currentTask && currentTask.finished) || false}
+                  onChange={handleCurrentTaskFinishedChange}
+                />
+                <EditableField
                   className="title-input"
-                  defaultValue={(currentTask && currentTask.content)}
+                  content={(currentTask && currentTask.content)}
                   onChange={event => setCurrentTaskContent(event.target.value)}
                 />
               </>

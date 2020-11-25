@@ -7,6 +7,7 @@ import {
   useDebouncedValue,
 } from '../../core/hooks';
 import { makeStyles } from '@material-ui/core/styles';
+import EditableField from '../EditableField';
 
 export interface TaskListItemBase {
   content: string;
@@ -97,10 +98,10 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
             })}
             onClick={event => event.stopPropagation()}
           />
-          <input
-            defaultValue={content}
-            className={`task-item__content__task_title ${finished ? 'finished' : ''}`}
+          <EditableField
+            content={content}
             onChange={event => setCurrentTaskContent(event.target.value)}
+            className={`task-item__content__task-title${finished ? ' finished' : ''}`}
           />
         </div>
       </ListItem>
