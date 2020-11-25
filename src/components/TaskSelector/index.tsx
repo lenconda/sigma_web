@@ -116,7 +116,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           {
             loading
               ? '请求中...'
-              : `移动任务${selectedTask && `至：${selectedTask.content}`}`
+              : `移动任务${selectedTask && `至：${selectedTask.content}` || ''}`
           }
         </Typography>
       </div>
