@@ -37,7 +37,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default React.forwardRef((props: TaskListItemProps, ref) => {
+export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<HTMLDivElement>) => {
   const {
     content,
     isDragging,
@@ -76,7 +76,7 @@ export default React.forwardRef((props: TaskListItemProps, ref) => {
 
   return (
     <div
-      ref={ref as any}
+      ref={ref}
       className={`${className} task-item${isDragging ? ' dragging' : ''}${selected ? ' selected' : ''}`}
       onClick={event => {
         event.preventDefault();
