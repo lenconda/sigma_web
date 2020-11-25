@@ -15,24 +15,15 @@ module.exports = {
     },
   },
   rules: {
-    indent: [
-      'error',
-      2
-    ],
+    indent: ['error', 2, { ignoredNodes: ['JSXElement *', 'JSXElement'] }],
     '@typescript-eslint/indent': 'off',
-    'react/jsx-indent-props': [
-      'error',
-      2
-    ],
+    'react/jsx-indent-props': ['error', 2],
     '@typescript-eslint/explicit-member-accessibility': 'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/consistent-type-assertions': 'off',
     '@typescript-eslint/typedef': 'off',
     'comma-dangle': ['error', 'always-multiline'],
-    'react/jsx-indent': [
-      'error',
-      2
-    ],
+    'react/jsx-indent': ['error', 2],
     'react-hooks/exhaustive-deps': 'off',
     '@typescript-eslint/no-empty-interface': 'off',
     'eol-last': 2,
