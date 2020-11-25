@@ -19,8 +19,24 @@ export interface TaskListItemBase {
   parentTaskId: string;
 }
 
+export interface User {
+  email: string;
+  avatar: string;
+  name?: string;
+  birthday?: string;
+  motto?: string;
+  createdAt: string;
+  updatedAt?: string;
+}
+
 export interface TaskListItem extends TaskListItemBase {
   taskId: string;
+}
+
+export interface TaskListItemDetailInfo extends TaskListItem {
+  creator: User;
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface TaskListItemProps extends TaskListItem {

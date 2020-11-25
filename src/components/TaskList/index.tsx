@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 import Item, {
   TaskListItem,
+  TaskListItemDetailInfo,
 } from '../TaskListItem';
 import {
   DragDropContext,
@@ -35,10 +36,13 @@ import DatePicker from '../DatePicker';
 import {
   getTaskInfo,
   getTaskListFromTask,
+  getCurrentTaskInfo,
 } from '../../services/task';
 import EditableField from '../EditableField';
 import { ProgressIcon } from '../../core/icons';
 import IconButton from '../IconButton';
+import _merge from 'lodash/merge';
+import _cloneDeep from 'lodash/cloneDeep';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -125,7 +129,7 @@ export default (props: TaskList) => {
   const [addTaskContent, setAddTaskContent] = useState<string>('');
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
-  const [currentTask, setCurrentTask] = useState<TaskListItem | undefined>(undefined);
+  const [currentTask, setCurrentTask] = useState<TaskListItemDetailInfo | undefined>(undefined);
   const [currentTaskContent, setCurrentTaskContent] = useState<string>('');
   const debouncedCurrentTaskContent = useDebouncedValue(currentTaskContent, 500);
   const [currentTaskDescription, setCurrentTaskDescription] = useState<string>('');
@@ -270,7 +274,7 @@ export default (props: TaskList) => {
   useEffect(() => {
     // TODO: request current task info
     setCurrentTaskLoading(true);
-    getTaskInfo(currentTaskId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isDefault).then(currentTaskInfo => {
+    getCurrentTaskInfo(currentTaskId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isDefault).then(currentTaskInfo => {
       setCurrentTask(currentTaskInfo);
       if (!isDefault) {
         // TODO: request sub-tasks info
@@ -309,11 +313,11 @@ export default (props: TaskList) => {
       case 'UPDATE': {
         const tasksToBeUpdated = [];
         const newTasks = Array.from(tasks);
-        let currentTaskInfo = { ...currentTask };
         dispatch.payloads.forEach(payload => {
           const currentTaskIndex = newTasks.findIndex(task => task.taskId === payload.taskId);
           if (payload.taskId === (currentTask && currentTask.taskId)) {
-            currentTaskInfo = { ...payload };
+            const newCurrentTaskInfo = _merge(_cloneDeep(currentTask), payload);
+            setCurrentTask(newCurrentTaskInfo);
             if (currentActiveTaskIds.indexOf(payload.parentTaskId) === -1) {
               tasksToBeUpdated.push(payload);
             }
@@ -326,7 +330,6 @@ export default (props: TaskList) => {
           }
         });
         setTasks(newTasks);
-        setCurrentTask(currentTaskInfo);
         if (tasksToBeUpdated.length > 0) {
           bus.emit('dispatch', { action: 'UPDATE', payloads: tasksToBeUpdated });
         }

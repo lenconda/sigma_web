@@ -1,4 +1,7 @@
-import { TaskListItem } from '../components/TaskListItem';
+import {
+  TaskListItem,
+  TaskListItemDetailInfo,
+} from '../components/TaskListItem';
 import idGen from '../core/idgen';
 
 export const getTaskInfo = async (
@@ -10,7 +13,7 @@ export const getTaskInfo = async (
   return new Promise(resolve => {
     setTimeout(() => {
       resolve({
-        taskId: taskId,
+        taskId,
         parentTaskId: isDefault ? 'default' : parentId,
         finished: false,
         deadline: new Date().toISOString(),
@@ -18,6 +21,35 @@ export const getTaskInfo = async (
         order,
       });
     }, 100);
+  });
+};
+
+export const getCurrentTaskInfo = async (
+  taskId: string,
+  parentId?: string,
+  isDefault: boolean = false,
+  order = 0,
+): Promise<TaskListItemDetailInfo> => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve({
+        taskId: taskId,
+        parentTaskId: isDefault ? 'default' : parentId,
+        finished: false,
+        deadline: new Date().toISOString(),
+        content: isDefault ? '全部任务' : taskId,
+        order,
+        creator: {
+          email: 'test@example.com',
+          name: 'test',
+          avatar: '/assets/images/default_avatar.svg',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        },
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    }, 400);
   });
 };
 
