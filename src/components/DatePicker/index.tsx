@@ -11,7 +11,7 @@ export interface DatePickerProps {
 
 const DatePicker: React.FC<DatePickerProps> = ({
   startDate = new Date(),
-  customComponent = <input />,
+  customComponent = <></>,
   onChange,
 }) => {
   return (

@@ -84,7 +84,7 @@ const getItemStyle = (draggableStyle: DraggingStyle | NotDraggingStyle) => ({
 
 const generateStatus = (task: TaskListItem): JSX.Element => {
   if (!task) {
-    return null;
+    return <></>;
   }
   const {
     deadline,
