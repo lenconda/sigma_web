@@ -398,7 +398,10 @@ export default (props: TaskList) => {
             !isDefault &&
               <IconButton
                 type="delete"
-                onClick={() => bus.emit('push', { action: 'DELETE', payloads: [currentTask] })}
+                onClick={() => bus.emit('push', {
+                  action: 'DELETE',
+                  payloads: [currentTask],
+                })}
               />
           }
         </div>
@@ -415,7 +418,10 @@ export default (props: TaskList) => {
                   ...currentTask,
                   deadline: date.toISOString(),
                 };
-                bus.emit('push', { action: 'UPDATE', payloads: [newCurrentTaskInfo] });
+                bus.emit('push', {
+                  action: 'UPDATE',
+                  payloads: [newCurrentTaskInfo],
+                });
               }
             }}
           />

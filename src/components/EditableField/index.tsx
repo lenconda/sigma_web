@@ -12,28 +12,22 @@ const EditableField: React.FC<EditableFieldProps> = ({
   onChange,
   className = '',
 }) => {
-  const [editing, setEditing] = useState<boolean>(false);
-  const ref = useRef<HTMLInputElement>(undefined);
+  const [controlledValue, setControlledValue] = useState<string>('');
 
   useEffect(() => {
-    if (editing && ref) {
-      ref.current.focus();
-    }
-  }, [ref, editing]);
+    setControlledValue(content);
+  }, [content]);
 
   return (
-    editing
-      ? <input
-          ref={ref}
-          className={`editable-field--input ${className}`}
-          onChange={onChange}
-          onBlur={() => setEditing(false)}
-          defaultValue={content}
-      />
-      : <div
-          className={`editable-field--div ${className}`}
-          onClick={() => setEditing(true)}
-      >{content}</div>
+    <input
+      type="text"
+      className={`editable-field--input ${className}`}
+      value={controlledValue || ''}
+      onChange={event => {
+        setControlledValue(event.target.value);
+        onChange(event);
+      }}
+    />
   );
 };
 
