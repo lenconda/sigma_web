@@ -18,6 +18,13 @@
   border: 1px solid #e0e0e0;
   width: 100%;
 
+  &.empty {
+    justify-content: center;
+    align-items: center;
+    color: @text-color-gray;
+    font-size: 16px;
+  }
+
   .task-items {
     background-color: #fff;
     border-radius: @border-radius;
@@ -69,7 +76,7 @@
 
     .loading {
       box-sizing: border-box;
-      height: 150px;
+      height: 200px;
       font-size: 16px;
       color: @text-color-gray;
       display: flex;
@@ -81,7 +88,7 @@
       box-sizing: border-box;
       margin-top: 48px;
       width: 100%;
-      height: 150px;
+      height: 200px;
       line-height: 56px;
       text-align: center;
       user-select: none;
@@ -91,6 +98,21 @@
       flex-direction: column;
       align-items: center;
       justify-content: flex-start;
+
+      h1 {
+        margin: 0;
+        font-size: 16px;
+      }
+
+      h2 {
+        margin: 0;
+        font-size: 13px;
+      }
+
+      h1, h2 {
+        margin: 10px;
+        font-weight: normal;
+      }
 
       > .illustrator {
         width: 100px;

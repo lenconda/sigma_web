@@ -462,7 +462,10 @@ export default (props: TaskList) => {
               </List>
               : <div className="no-content">
                 <img src="/assets/no_tasks.svg" className="illustrator" />
-                <span>没有子任务</span>
+                <div>
+                  <h1>没有子任务</h1>
+                  <h2>在下方输入任务内容以添加新的子任务</h2>
+                </div>
               </div>
         }
       </div>
@@ -515,5 +518,7 @@ export default (props: TaskList) => {
 };
 
 export const Empty: React.FC = () => (
-  <div className="task-list"></div>
+  <div className="task-list empty">
+    点击左侧任意一条子任务以查看任务详情
+  </div>
 );
