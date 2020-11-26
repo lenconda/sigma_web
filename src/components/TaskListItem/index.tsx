@@ -1,14 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './index.less';
 import ListItem from '@material-ui/core/ListItem';
-import {
-  useUpdateEffect,
-  useDebouncedValue,
-} from '../../core/hooks';
 import { makeStyles } from '@material-ui/core/styles';
-import EditableField from '../EditableField';
 import { DragIcon } from '../../core/icons';
 import Checkbox from '../Checkbox';
+import DebouncedTextField from '../DebouncedTextField';
 
 export interface TaskListItemBase {
   content: string;
@@ -69,7 +65,6 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
     className = '',
   } = props;
 
-  const [currentTaskContent, setCurrentTaskContent] = useState<string>('');
   const theme = useStyles();
 
   const taskItem: TaskListItem = {
@@ -81,15 +76,13 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
     parentTaskId,
   };
 
-  const debouncedCurrentTaskTitle = useDebouncedValue(currentTaskContent, 500);
-
-  useUpdateEffect(() => {
+  const handleContentChange = (content: string) => {
     const newTaskInfo = {
       ...taskItem,
-      content: debouncedCurrentTaskTitle,
+      content,
     };
     onChange(newTaskInfo);
-  }, [debouncedCurrentTaskTitle]);
+  };
 
   return (
     <div
@@ -114,9 +107,9 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
             onClick={event => event.stopPropagation()}
             checked={taskItem.finished}
           />
-          <EditableField
-            content={content}
-            onChange={event => setCurrentTaskContent(event.target.value)}
+          <DebouncedTextField
+            value={content}
+            onChange={event => handleContentChange(event.target.value)}
             className={`task-item__content__task-title${finished ? ' finished' : ''}`}
           />
         </div>

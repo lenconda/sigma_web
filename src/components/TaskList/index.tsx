@@ -25,10 +25,6 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Bus from '../../core/bus';
 import moment from 'moment';
-import {
-  useDebouncedValue,
-  useUpdateEffect,
-} from '../../core/hooks';
 import idGen from '../../core/idgen';
 import TaskSelector from '../TaskSelector';
 import DatePicker from '../DatePicker';
@@ -36,7 +32,6 @@ import {
   getTaskListFromTask,
   getCurrentTaskInfo,
 } from '../../services/task';
-import EditableField from '../EditableField';
 import { ProgressIcon } from '../../core/icons';
 import IconButton from '../IconButton';
 import _merge from 'lodash/merge';
@@ -45,12 +40,13 @@ import {
   getTaskGenerateInfo,
 } from '../../utils/task';
 import Checkbox from '../Checkbox';
+import DebouncedTextField from '../DebouncedTextField';
 
 import './index.less';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
-  payloads: TaskListItem[];
+  payloads: TaskListItem[] | TaskListItemDetailInfo[];
 }
 
 export interface TaskList {
@@ -134,10 +130,6 @@ export default (props: TaskList) => {
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
   const [currentTask, setCurrentTask] = useState<TaskListItemDetailInfo | undefined>(undefined);
-  const [currentTaskContent, setCurrentTaskContent] = useState<string>('');
-  const debouncedCurrentTaskContent = useDebouncedValue(currentTaskContent, 500);
-  const [currentTaskDescription, setCurrentTaskDescription] = useState<string>('');
-  const debouncedCurrentTaskDescription = useDebouncedValue(currentTaskDescription, 500);
   const [taskSelectorVisible, setTaskSelectorVisible] = useState<boolean>(false);
   const [taskListLoading, setTaskListLoading] = useState<boolean>(false);
   const [currentTaskLoading, setCurrentTaskLoading] = useState<boolean>(false);
@@ -187,11 +179,11 @@ export default (props: TaskList) => {
     });
   };
 
-  const handleInputKeyPress = (event: React.KeyboardEvent<HTMLElement>) => {
-    if ((event.keyCode === 13 || event.key.toLowerCase() === 'enter') && addTaskContent !== '') {
+  const handleAddTask = (content: string | number) => {
+    if (typeof content === 'string' && content !== '') {
       const deadline = moment().add(1, 'day').startOf('day').toISOString();
       const taskToBeAdded: TaskListItem = {
-        content: addTaskContent,
+        content,
         deadline,
         finished: false,
         order: tasks.length,
@@ -201,33 +193,12 @@ export default (props: TaskList) => {
       bus.emit('push', { action: 'ADD', payloads: [taskToBeAdded] });
       setAddTaskContent('');
     }
+    return true;
   };
 
-  const handleCurrentTaskFinishedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newCurrentTaskInfo: TaskListItem = {
-      ...getTaskGenerateInfo(currentTask),
-      finished: event.target.checked,
-      finishedDate: new Date().toISOString(),
-    };
+  const handleUpdateCurrentTask = (updates: Partial<TaskListItemDetailInfo>) => {
+    const newCurrentTaskInfo = _merge(_cloneDeep(currentTask), updates);
     bus.emit('push', { action: 'UPDATE', payloads: [newCurrentTaskInfo] });
-  };
-
-  const handleContentInputChange = (content: string) => {
-    if (content || content === '') {
-      bus.emit('push', {
-        action: 'UPDATE',
-        payloads: [{ ...getTaskGenerateInfo(currentTask), content: content || '未命名任务' }],
-      });
-    }
-  };
-
-  const handleDescriptionInputChange = (description: string) => {
-    if (description || description === '') {
-      bus.emit('push', {
-        action: 'UPDATE',
-        payloads: [{ ...getTaskGenerateInfo(currentTask), description }],
-      });
-    }
   };
 
   const handleMoveTasks = (newParentTask: TaskListItem) => {
@@ -289,14 +260,6 @@ export default (props: TaskList) => {
       }
     }).finally(() => setCurrentTaskLoading(false));
   }, [currentTaskId]);
-
-  useUpdateEffect(() => {
-    handleContentInputChange(debouncedCurrentTaskContent);
-  }, [debouncedCurrentTaskContent]);
-
-  useUpdateEffect(() => {
-    handleDescriptionInputChange(debouncedCurrentTaskDescription);
-  }, [debouncedCurrentTaskDescription]);
 
   useEffect(() => {
     const handler = (dispatch: Dispatch) => {
@@ -381,12 +344,12 @@ export default (props: TaskList) => {
               ? <>
                 <Checkbox
                   checked={(currentTask && currentTask.finished) || false}
-                  onChange={handleCurrentTaskFinishedChange}
+                  onChange={event => handleUpdateCurrentTask({ finished: event.target.checked })}
                 />
-                <EditableField
+                <DebouncedTextField
                   className="title-input"
-                  content={(currentTask && currentTask.content)}
-                  onChange={event => setCurrentTaskContent(event.target.value)}
+                  value={(currentTask && currentTask.content)}
+                  onChange={event => handleUpdateCurrentTask({ content: event.target.value })}
                 />
               </>
               : <>
@@ -488,12 +451,11 @@ export default (props: TaskList) => {
         }
       </div>
       <div className="task-list__buttons">
-        <input
+        <DebouncedTextField
           value={addTaskContent}
           className="add-task-content"
           placeholder="键入 Enter 以添加新的子任务..."
-          onChange={event => setAddTaskContent(event.target.value)}
-          onKeyUp={handleInputKeyPress}
+          onPressEnter={handleAddTask}
         />
         {
           selectedTasks.length !== 0 &&
@@ -513,11 +475,12 @@ export default (props: TaskList) => {
       {
         !isDefault
         && <div className="task-list__log-wrapper">
-          <textarea
+          <DebouncedTextField
+            type="textarea"
             placeholder="在这里写下任务描述..."
-            defaultValue={(currentTask && currentTask.description) || ''}
-            onChange={event => setCurrentTaskDescription(event.target.value)}
-          ></textarea>
+            value={(currentTask && currentTask.description) || ''}
+            onChange={event => handleUpdateCurrentTask({ description: event.target.value })}
+          />
         </div>
       }
       <TaskSelector
@@ -529,8 +492,4 @@ export default (props: TaskList) => {
   );
 };
 
-export const Empty: React.FC = () => (
-  <div className="task-list empty">
-    点击左侧任意一条子任务以查看任务详情
-  </div>
-);
+export const Empty: React.FC = () => <div className="task-list empty">点击左侧任意一条子任务以查看任务详情</div>;
