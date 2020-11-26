@@ -104,12 +104,12 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
   ];
 
   return (
-    <Button size="small" startIcon={<ProgressIcon />}>
-      <Typography color="textSecondary" variant="button">
+    <Button size="small" startIcon={<ProgressIcon style={{ color: '#aaa' }} />}>
+      <Typography color="textSecondary" variant="body2">
         {year}-{month}-{date}
       </Typography>
       &nbsp;
-      <Typography color={delayDays > 0 ? 'error' : 'textSecondary'} variant="button">
+      <Typography color={delayDays > 0 ? 'error' : 'textSecondary'} variant="body2">
         {`${status}${delayDays > 0 ? `，已过期 ${Math.abs(delayDays)} 天` : ''}`}
       </Typography>
     </Button>
