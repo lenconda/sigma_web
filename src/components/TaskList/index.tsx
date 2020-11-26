@@ -96,7 +96,7 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
     new Date(deadline),
   );
   const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
-  const deadlineDate = new Date(deadline);
+  const deadlineDate = moment(new Date(deadline)).add(-1, 'day').toDate();
   const [year, month, date] = [
     deadlineDate.getFullYear(),
     deadlineDate.getMonth() + 1,

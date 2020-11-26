@@ -3,6 +3,7 @@ import {
   TaskListItemDetailInfo,
 } from '../components/TaskListItem';
 import idGen from '../core/idgen';
+import moment from 'moment';
 
 export const getTaskInfo = async (
   taskId: string,
@@ -36,7 +37,7 @@ export const getCurrentTaskInfo = async (
         taskId: taskId,
         parentTaskId: isDefault ? 'default' : parentId,
         finished: false,
-        deadline: new Date().toISOString(),
+        deadline: moment(new Date()).startOf('day').add(1, 'day').toISOString(),
         content: isDefault ? '全部任务' : taskId,
         order,
         creator: {
