@@ -1,5 +1,9 @@
 @import '../../global.less';
 
+.react-datepicker-popper {
+  margin: 0 !important;
+}
+
 .date-picker-component {
   border-color: @bg-gray;
   border-radius: @border-radius;
@@ -35,11 +39,7 @@
   }
 
   .react-datepicker__triangle {
-    border-bottom-color: #fff !important;
-
-    &::before {
-      border-bottom-color: #fff !important;
-    }
+    display: none;
   }
 
   .react-datepicker__current-month {
