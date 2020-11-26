@@ -1,0 +1,40 @@
+input[type=checkbox].app-checkbox {
+  box-sizing: border-box;
+  position: relative;
+  cursor: pointer;
+}
+
+input[type=checkbox].app-checkbox::before {
+  box-sizing: border-box;
+  content: "";
+  display: block;
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border: 1px solid #dfdfdf;
+  border-radius: 2px;
+  background-color: #fafafa;
+}
+
+input[type=checkbox].app-checkbox:checked {
+  &::after {
+    content: "";
+    display: block;
+    width: 3px;
+    height: 7px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+    position: absolute;
+    top: 2px;
+    left: 5px;
+  }
+
+  &::before {
+    background-color: #dfdfdf;
+  }
+}
