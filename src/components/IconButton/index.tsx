@@ -25,14 +25,16 @@ export interface IconButtonProps {
   iconClasses?: string[];
 }
 
-const IconButton: React.FC<IconButtonProps> = ({
-  type,
-  className = '',
-  size = 16,
-  onClick,
-  style = {},
-  iconClasses = [],
-}) => {
+const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, ref) => {
+  const {
+    type,
+    className = '',
+    size = 16,
+    onClick,
+    style = {},
+    iconClasses = [],
+  } = props;
+
   const icons: IconTypes = {
     drag: DragIcon,
     move: MoveIcon,
@@ -43,9 +45,13 @@ const IconButton: React.FC<IconButtonProps> = ({
 
   const Icon = icons[type];
 
-  return <button onClick={onClick} className={`icon-button${className ? ` ${className}` : ''}`}>
+  return <button
+    onClick={onClick}
+    ref={ref}
+    className={`icon-button${className ? ` ${className}` : ''}`}
+  >
     <Icon className={iconClasses.join(' ')} fontSize={size} style={style} />
   </button>;
-};
+});
 
 export default IconButton;

@@ -25,7 +25,6 @@ import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Bus from '../../core/bus';
 import moment from 'moment';
-import './index.less';
 import {
   useDebouncedValue,
   useUpdateEffect,
@@ -42,6 +41,12 @@ import { ProgressIcon } from '../../core/icons';
 import IconButton from '../IconButton';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
+import {
+  getTaskGenerateInfo,
+} from '../../utils/task';
+import Checkbox from '../Checkbox';
+
+import './index.less';
 
 export interface Dispatch {
   action: 'UPDATE' | 'DELETE' | 'ADD';
@@ -200,7 +205,7 @@ export default (props: TaskList) => {
 
   const handleCurrentTaskFinishedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newCurrentTaskInfo: TaskListItem = {
-      ...currentTask,
+      ...getTaskGenerateInfo(currentTask),
       finished: event.target.checked,
       finishedDate: new Date().toISOString(),
     };
@@ -211,7 +216,7 @@ export default (props: TaskList) => {
     if (content || content === '') {
       bus.emit('push', {
         action: 'UPDATE',
-        payloads: [{ ...currentTask, content: content || '未命名任务' }],
+        payloads: [{ ...getTaskGenerateInfo(currentTask), content: content || '未命名任务' }],
       });
     }
   };
@@ -220,7 +225,7 @@ export default (props: TaskList) => {
     if (description || description === '') {
       bus.emit('push', {
         action: 'UPDATE',
-        payloads: [{ ...currentTask, description }],
+        payloads: [{ ...getTaskGenerateInfo(currentTask), description }],
       });
     }
   };
@@ -241,7 +246,7 @@ export default (props: TaskList) => {
         ...task,
         finished: true,
       })),
-      { ...currentTask, finished: true },
+      { ...getTaskGenerateInfo((currentTask)), finished: true },
     ];
     bus.emit('push', { action: 'UPDATE', payloads: tasksToBeUpdated });
   };
@@ -374,8 +379,7 @@ export default (props: TaskList) => {
           {
             !isDefault
               ? <>
-                <input
-                  type="checkbox"
+                <Checkbox
                   checked={(currentTask && currentTask.finished) || false}
                   onChange={handleCurrentTaskFinishedChange}
                 />
@@ -395,13 +399,13 @@ export default (props: TaskList) => {
           <IconButton type="finish" onClick={handleFinishAllTasks} />
           {
             !isDefault &&
-              <IconButton
-                type="delete"
-                onClick={() => bus.emit('push', {
+            <IconButton
+              type="delete"
+              onClick={() => bus.emit('push', {
                   action: 'DELETE',
                   payloads: [currentTask],
                 })}
-              />
+            />
           }
         </div>
       </div>
@@ -414,7 +418,7 @@ export default (props: TaskList) => {
             onChange={date => {
               if (date instanceof Date) {
                 const newCurrentTaskInfo: TaskListItem = {
-                  ...currentTask,
+                  ...getTaskGenerateInfo(currentTask),
                   deadline: date.toISOString(),
                 };
                 bus.emit('push', {

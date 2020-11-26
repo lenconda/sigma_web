@@ -8,6 +8,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import EditableField from '../EditableField';
 import { DragIcon } from '../../core/icons';
+import Checkbox from '../Checkbox';
 
 export interface TaskListItemBase {
   content: string;
@@ -104,15 +105,14 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
           <DragIcon className="icon" />
         </div>
         <div className={`task-item__content ${isDragging ? 'dragging' : ''}`}>
-          <input
-            type="checkbox"
-            checked={taskItem.finished}
+          <Checkbox
             onChange={event => onChange({
               ...taskItem,
               finished: event.target.checked,
               finishedDate: new Date().toISOString(),
             })}
             onClick={event => event.stopPropagation()}
+            checked={taskItem.finished}
           />
           <EditableField
             content={content}
