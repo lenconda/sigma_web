@@ -7,6 +7,7 @@ import React, {
 import {
   createMuiTheme,
   ThemeProvider,
+  StylesProvider,
 } from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
@@ -19,6 +20,9 @@ import {
   BrowserRouter,
 } from 'react-router-dom';
 import idGen from './core/idgen';
+import PopupProvider from './components/PopupProvider';
+import Button from '@material-ui/core/Button';
+import './App.less';
 
 const ListPage = lazy(() => import('./pages/List'));
 
@@ -93,23 +97,37 @@ const App: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <nav className="app-nav"></nav>
-      <Suspense fallback={<></>}>
-        <BrowserRouter>
-          <Switch>
-            <Route path="/list">
-              <ListPage
-                bus={bus}
-                currentActiveTaskIds={currentActiveTaskIds}
-                onSelectedTasksChange={handleSelectedTasksChange}
-              />
-            </Route>
-            <Route path="/">
-              <Redirect to="/list" />
-            </Route>
-          </Switch>
-        </BrowserRouter>
-      </Suspense>
+      <StylesProvider injectFirst={true}>
+        <nav className="app-nav">
+          <PopupProvider
+            trigger={<Button>test</Button>}
+            triggerClass="test"
+          >
+            <>
+              <span>asidhaoisdjaosidjasoidj</span><br />
+              <span>asidaosidjaosidjaosdaoisjd</span>
+            </>
+          </PopupProvider>
+        </nav>
+        <div className="app-page">
+          <Suspense fallback={<></>}>
+            <BrowserRouter>
+              <Switch>
+                <Route path="/list">
+                  <ListPage
+                    bus={bus}
+                    currentActiveTaskIds={currentActiveTaskIds}
+                    onSelectedTasksChange={handleSelectedTasksChange}
+                  />
+                </Route>
+                <Route path="/">
+                  <Redirect to="/list" />
+                </Route>
+              </Switch>
+            </BrowserRouter>
+          </Suspense>
+        </div>
+      </StylesProvider>
     </ThemeProvider>
   );
 };
