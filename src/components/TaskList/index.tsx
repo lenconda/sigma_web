@@ -34,7 +34,6 @@ import idGen from '../../core/idgen';
 import TaskSelector from '../TaskSelector';
 import DatePicker from '../DatePicker';
 import {
-  getTaskInfo,
   getTaskListFromTask,
   getCurrentTaskInfo,
 } from '../../services/task';
