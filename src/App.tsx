@@ -23,7 +23,9 @@ import idGen from './core/idgen';
 import PopupProvider from './components/PopupProvider';
 import Button from '@material-ui/core/Button';
 import StickyNav from './components/StickyNav';
+import DatePicker from './components/DatePicker';
 import './App.less';
+import ReactDatePicker from 'react-datepicker';
 
 const ListPage = lazy(() => import('./pages/List'));
 
@@ -112,7 +114,14 @@ const App: React.FC = () => {
                 </>
               </PopupProvider>
             </div>
-            <div className="app-nav__menus--center"></div>
+            <div className="app-nav__menus--center">
+              <DatePicker
+                selectsRange={true}
+                inline={true}
+                onChange={date => console.log(date)}
+                customComponent={<Button>日期</Button>}
+              />
+            </div>
             <div className="app-nav__menus--right"></div>
           </>
         </StickyNav>
