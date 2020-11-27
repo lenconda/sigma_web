@@ -17,13 +17,17 @@ import {
   Route,
   Switch,
   Redirect,
-  BrowserRouter,
+  Router,
+  Link,
 } from 'react-router-dom';
 import idGen from './core/idgen';
 import PopupProvider from './components/PopupProvider';
 import Button from '@material-ui/core/Button';
 import StickyNav from './components/StickyNav';
 import DatePicker from './components/DatePicker';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import { createBrowserHistory } from 'history';
 import './App.less';
 
 const ListPage = lazy(() => import('./pages/List'));
@@ -45,10 +49,21 @@ const theme = createMuiTheme({
   },
 });
 
+const history = createBrowserHistory();
+
+export interface AppMenu {
+  name: string;
+  path: string;
+}
+
 const App: React.FC = () => {
   const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
   const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
+  const [menus, setMenus] = useState<Record<string, string>>({
+    '/list': '任务列表',
+    '/summary': '摘要',
+  });
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -100,32 +115,37 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
-        <StickyNav className="app-nav">
-          <>
-            <div className="app-nav__menus--left">
-              <PopupProvider
-                trigger={<Button>test</Button>}
-                triggerClass="test"
-              >
-                <>
-                  <span>asidhaoisdjaosidjasoidj</span><br />
-                  <span>asidaosidjaosidjaosdaoisjd</span>
-                </>
-              </PopupProvider>
-            </div>
-            <div className="app-nav__menus--center">
-              <DatePicker
-                selectsRange={true}
-                onConfirm={result => console.log(result)}
-                customComponent={<Button>日期</Button>}
-              />
-            </div>
-            <div className="app-nav__menus--right"></div>
-          </>
-        </StickyNav>
-        <div className="app-page">
-          <Suspense fallback={<></>}>
-            <BrowserRouter>
+        <Router history={history}>
+          <StickyNav className="app-nav">
+            <>
+              <div className="app-nav__menus--left">
+                <PopupProvider
+                  trigger={<Button>{menus[history.location.pathname.split('/').slice(0, 2).join('/')]}</Button>}
+                  triggerClass="test"
+                >
+                  <MenuList>
+                    {
+                      Object.keys(menus).map((path, index) => {
+                        return <Link to={path} className="link" key={index}>
+                          <MenuItem>{menus[path]}</MenuItem>
+                        </Link>;
+                      })
+                    }
+                  </MenuList>
+                </PopupProvider>
+              </div>
+              <div className="app-nav__menus--center">
+                <DatePicker
+                  selectsRange={true}
+                  onConfirm={result => console.log(result)}
+                  customComponent={<Button>日期</Button>}
+                />
+              </div>
+              <div className="app-nav__menus--right"></div>
+            </>
+          </StickyNav>
+          <div className="app-page">
+            <Suspense fallback={<></>}>
               <Switch>
                 <Route path="/list">
                   <ListPage
@@ -138,9 +158,9 @@ const App: React.FC = () => {
                   <Redirect to="/list" />
                 </Route>
               </Switch>
-            </BrowserRouter>
-          </Suspense>
-        </div>
+            </Suspense>
+          </div>
+        </Router>
       </StylesProvider>
     </ThemeProvider>
   );
