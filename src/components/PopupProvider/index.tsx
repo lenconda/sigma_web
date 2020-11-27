@@ -1,6 +1,7 @@
 import React, {
   useState,
   useRef,
+  useEffect,
 } from 'react';
 import Popper from '@material-ui/core/Popper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
@@ -12,6 +13,10 @@ export interface PopupProviderProps {
   id?: string;
   triggerClass?: string;
   zIndex?: number;
+  open?: boolean;
+  disablePortal?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
 }
 
 const PopupProvider: React.FC<PopupProviderProps> = ({
@@ -20,17 +25,37 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
   children,
   triggerClass = '',
   zIndex = 9999,
+  open = false,
+  disablePortal = false,
+  onOpen,
+  onClose,
 }) => {
   const triggerRef = useRef(null);
   const [popupVisible, setPopupVisible] = useState<boolean>(false);
 
+  useEffect(() => {
+    setPopupVisible(open);
+  }, [open]);
+
   return (
-    <ClickAwayListener onClickAway={() => setPopupVisible(false)}>
+    <ClickAwayListener
+      onClickAway={() => {
+        setPopupVisible(false);
+        if (onClose) {
+          onClose();
+        }
+      }}
+    >
       <div>
         <div
           className={`app-popup__trigger-wrapper${triggerClass && ` ${triggerClass}` || ''}`}
           ref={triggerRef}
-          onClick={() => setPopupVisible(true)}
+          onClick={() => {
+            setPopupVisible(true);
+            if (onOpen) {
+              onOpen();
+            }
+          }}
         >
           {(() => trigger)()}
         </div>
@@ -40,6 +65,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
           anchorEl={triggerRef.current}
           className="app-popup"
           style={{ zIndex }}
+          disablePortal={disablePortal}
         >
           <div className="app-popup__popup-wrapper__content">
             {children}

@@ -7,7 +7,6 @@
 .date-picker-component {
   border-color: @bg-gray;
   border-radius: @border-radius;
-  box-shadow: @box-shadow-focus;
   user-select: none;
 
   & * {
@@ -32,9 +31,15 @@
     }
 
     &--selected,
+    &--in-range,
+    &--in-selecting-range,
     &--keyboard-selected {
       background-color: #e0e0e0;
       color: inherit;
+    }
+
+    &--in-selecting-range {
+      background-color: #f0f0f0;
     }
   }
 
@@ -48,5 +53,19 @@
 
   .react-datepicker__navigation {
     top: 20px;
+  }
+}
+
+.app-date-picker {
+  box-sizing: border-box;
+
+  &__controls {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 15px;
+    padding-top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

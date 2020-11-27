@@ -378,11 +378,12 @@ export default (props: TaskList) => {
           <DatePicker
             startDate={currentTask ? moment(new Date(currentTask.deadline)).add(-1, 'day').startOf('day').toDate() : new Date()}
             customComponent={generateStatus(currentTask)}
-            onChange={date => {
-              if (date instanceof Date) {
+            zIndex={998}
+            onConfirm={result => {
+              if (result instanceof Date) {
                 const newCurrentTaskInfo: TaskListItem = {
                   ...getTaskGenerateInfo(currentTask),
-                  deadline: moment(date).startOf('day').add(1, 'day').toDate().toISOString(),
+                  deadline: moment(result).startOf('day').add(1, 'day').toDate().toISOString(),
                 };
                 bus.emit('push', {
                   action: 'UPDATE',
