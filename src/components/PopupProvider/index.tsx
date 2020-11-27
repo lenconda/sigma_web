@@ -15,6 +15,7 @@ export interface PopupProviderProps {
   zIndex?: number;
   open?: boolean;
   disablePortal?: boolean;
+  closeOnClick?: boolean;
   onOpen?: () => void;
   onClose?: () => void;
 }
@@ -27,25 +28,26 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
   zIndex = 9999,
   open = false,
   disablePortal = false,
+  closeOnClick = false,
   onOpen,
   onClose,
 }) => {
   const triggerRef = useRef(null);
   const [popupVisible, setPopupVisible] = useState<boolean>(false);
 
+  const handleClose = () => {
+    setPopupVisible(false);
+    if (onClose && typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
   useEffect(() => {
     setPopupVisible(open);
   }, [open]);
 
   return (
-    <ClickAwayListener
-      onClickAway={() => {
-        setPopupVisible(false);
-        if (onClose) {
-          onClose();
-        }
-      }}
-    >
+    <ClickAwayListener onClickAway={() => handleClose()}>
       <div>
         <div
           className={`app-popup__trigger-wrapper${triggerClass && ` ${triggerClass}` || ''}`}
@@ -67,7 +69,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
           style={{ zIndex }}
           disablePortal={disablePortal}
         >
-          <div className="app-popup__popup-wrapper__content">
+          <div className="app-popup__popup-wrapper__content" onClick={() => closeOnClick && handleClose()}>
             {children}
           </div>
         </Popper>

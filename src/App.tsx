@@ -18,7 +18,7 @@ import {
   Switch,
   Redirect,
   Router,
-  NavLink,
+  Link,
 } from 'react-router-dom';
 import idGen from './core/idgen';
 import PopupProvider from './components/PopupProvider';
@@ -28,7 +28,6 @@ import DatePicker from './components/DatePicker';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
 import { createBrowserHistory } from 'history';
 import './App.less';
 
@@ -125,15 +124,24 @@ const App: React.FC = () => {
           <StickyNav className="app-nav">
             <>
               <div className="app-nav__menus--left">
-                <ButtonGroup>
-                  {
-                    Object.keys(menus).map((path, index) => {
-                      return <Button key={index} className="nav-button">
-                        <NavLink to={path} className="link" activeClassName="active" key={index}>{menus[path]}</NavLink>
-                      </Button>;
-                    })
+                <PopupProvider
+                  closeOnClick={true}
+                  trigger={
+                    <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
+                      {menus[history.location.pathname.split('/').slice(0, 2).join('/')]}
+                    </Button>
                   }
-                </ButtonGroup>
+                >
+                  <MenuList>
+                    {
+                      Object.keys(menus).map((path, index) => {
+                        return <Link to={path} key={index} className="link">
+                          <MenuItem>{menus[path]}</MenuItem>
+                        </Link>;
+                      })
+                    }
+                  </MenuList>
+                </PopupProvider>
               </div>
               <div className="app-nav__menus--center">
                 <DatePicker
@@ -144,6 +152,7 @@ const App: React.FC = () => {
               </div>
               <div className="app-nav__menus--right">
                 <PopupProvider
+                  closeOnClick={true}
                   trigger={
                     <Button>
                       <img src="/assets/images/default_avatar.svg" width="20" />
@@ -153,9 +162,9 @@ const App: React.FC = () => {
                   <MenuList>
                     {
                       Object.keys(avatarMenus).map((path, index) => {
-                        return <NavLink to={path} className="link" key={index}>
+                        return <Link to={path} className="link" key={index}>
                           <MenuItem>{avatarMenus[path]}</MenuItem>
-                        </NavLink>;
+                        </Link>;
                       })
                     }
                   </MenuList>
