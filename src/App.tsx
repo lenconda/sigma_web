@@ -100,15 +100,21 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
         <StickyNav className="app-nav">
-          <PopupProvider
-            trigger={<Button>test</Button>}
-            triggerClass="test"
-          >
-            <>
-              <span>asidhaoisdjaosidjasoidj</span><br />
-              <span>asidaosidjaosidjaosdaoisjd</span>
-            </>
-          </PopupProvider>
+          <>
+            <div className="app-nav__menus--left">
+              <PopupProvider
+                trigger={<Button>test</Button>}
+                triggerClass="test"
+              >
+                <>
+                  <span>asidhaoisdjaosidjasoidj</span><br />
+                  <span>asidaosidjaosidjaosdaoisjd</span>
+                </>
+              </PopupProvider>
+            </div>
+            <div className="app-nav__menus--center"></div>
+            <div className="app-nav__menus--right"></div>
+          </>
         </StickyNav>
         <div className="app-page">
           <Suspense fallback={<></>}>

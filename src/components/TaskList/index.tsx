@@ -96,7 +96,7 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
     new Date(deadline),
   );
   const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
-  const deadlineDate = moment(new Date(deadline)).add(-1, 'day').toDate();
+  const deadlineDate = moment(new Date(deadline)).add(-1, 'day').startOf('day').toDate();
   const [year, month, date] = [
     deadlineDate.getFullYear(),
     deadlineDate.getMonth() + 1,
@@ -376,13 +376,13 @@ export default (props: TaskList) => {
         !isDefault
         && <div className="task-list__deadline">
           <DatePicker
-            startDate={currentTask ? new Date(currentTask.deadline) : new Date()}
+            startDate={currentTask ? moment(new Date(currentTask.deadline)).add(-1, 'day').startOf('day').toDate() : new Date()}
             customComponent={generateStatus(currentTask)}
             onChange={date => {
               if (date instanceof Date) {
                 const newCurrentTaskInfo: TaskListItem = {
                   ...getTaskGenerateInfo(currentTask),
-                  deadline: date.toISOString(),
+                  deadline: moment(date).startOf('day').add(1, 'day').toDate().toISOString(),
                 };
                 bus.emit('push', {
                   action: 'UPDATE',
