@@ -11,6 +11,7 @@ export interface PopupProviderProps {
   children: React.ReactChild;
   id?: string;
   triggerClass?: string;
+  zIndex?: number;
 }
 
 const PopupProvider: React.FC<PopupProviderProps> = ({
@@ -18,6 +19,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
   id = Date.now().toString(),
   children,
   triggerClass = '',
+  zIndex = 9999,
 }) => {
   const triggerRef = useRef(null);
   const [popupVisible, setPopupVisible] = useState<boolean>(false);
@@ -37,6 +39,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
           open={popupVisible}
           anchorEl={triggerRef.current}
           className="app-popup"
+          style={{ zIndex }}
         >
           <div className="app-popup__popup-wrapper__content">
             {children}
