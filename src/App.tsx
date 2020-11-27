@@ -22,6 +22,7 @@ import {
 import idGen from './core/idgen';
 import PopupProvider from './components/PopupProvider';
 import Button from '@material-ui/core/Button';
+import StickyNav from './components/StickyNav';
 import './App.less';
 
 const ListPage = lazy(() => import('./pages/List'));
@@ -98,7 +99,7 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
-        <nav className="app-nav">
+        <StickyNav className="app-nav">
           <PopupProvider
             trigger={<Button>test</Button>}
             triggerClass="test"
@@ -108,7 +109,7 @@ const App: React.FC = () => {
               <span>asidaosidjaosidjaosdaoisjd</span>
             </>
           </PopupProvider>
-        </nav>
+        </StickyNav>
         <div className="app-page">
           <Suspense fallback={<></>}>
             <BrowserRouter>
