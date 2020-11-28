@@ -8,6 +8,7 @@ import {
   createMuiTheme,
   ThemeProvider,
   StylesProvider,
+  Typography,
 } from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
@@ -86,7 +87,7 @@ const generateDateString = (start?: Date, end: Date = start): string => {
   if (startTimestamp === endTimestamp) {
     return today.valueOf() === startTimestamp
       ? `今天 (${todayString})`
-      : todayString;
+      : startString;
   } else {
     return `${startString} - ${endString}`;
   }
@@ -164,7 +165,7 @@ const App: React.FC = () => {
         <Router history={history}>
           <Sticky direction="horizontal" className="app-sidebar">
             <>
-              <PopupProvider
+              {/* <PopupProvider
                 closeOnClick={true}
                 trigger={
                   <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
@@ -175,20 +176,23 @@ const App: React.FC = () => {
                 <MenuList>
                   {generatePopupMenu(menus)}
                 </MenuList>
-              </PopupProvider>
+              </PopupProvider> */}
               <DatePicker
                 startDate={(dateRange && dateRange.start)}
                 endDate={(dateRange && dateRange.end)}
                 selectsRange={true}
                 onConfirm={result => {
-                if (Array.isArray(result)) {
-                  const [start, end] = result;
+                  if (Array.isArray(result)) {
+                    const [start, end] = result;
+                    console.log(result);
                     setDateRange({ start, end });
                   }
                 }}
                 customComponent={
-                  <Button variant="outlined" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
-                    {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
+                  <Button startIcon={<DateRangeIcon />}>
+                    <Typography noWrap={true}>
+                      {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
+                    </Typography>
                   </Button>
                 }
               />
