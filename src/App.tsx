@@ -8,34 +8,21 @@ import {
   createMuiTheme,
   ThemeProvider,
   StylesProvider,
-  Typography,
 } from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
 import { Dispatch } from './components/TaskList';
-import { TaskListItem } from './components/TaskListItem';
+import {
+  TaskListItem,
+} from './components/TaskListItem';
 import {
   Route,
-  Switch,
-  Redirect,
   Router,
-  Link,
+  Redirect,
 } from 'react-router-dom';
-import idGen from './core/idgen';
-import PopupProvider from './components/PopupProvider';
-import Button from '@material-ui/core/Button';
-import StickyNav from './components/StickyNav';
-import DatePicker from './components/DatePicker';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createBrowserHistory } from 'history';
-import DateRangeIcon from '@material-ui/icons/DateRange';
-import Sticky from './components/Sticky';
-import moment from 'moment';
-import './App.less';
 
-const ListPage = lazy(() => import('./pages/List'));
+const HomePage = lazy(() => import('./pages/Home'));
 
 const theme = createMuiTheme({
   props: {
@@ -54,58 +41,17 @@ const theme = createMuiTheme({
   },
 });
 
-const history = createBrowserHistory();
+export const history = createBrowserHistory();
 
 export interface AppMenu {
   name: string;
   path: string;
 }
 
-export interface DateRange {
-  start: Date;
-  end: Date;
-}
-
-const generatePopupMenu = (menus: Record<string, string>): JSX.Element[] => {
-  return Object.keys(menus).map((path, index) => {
-    return <Link to={path} key={index} className="link">
-      <MenuItem>{menus[path]}</MenuItem>
-    </Link>;
-  });
-};
-
-const generateDateString = (start?: Date, end: Date = start): string => {
-  if (!start) { return '' }
-  const today = moment().startOf('day');
-  const todayString = today.format('YYYY-MM-DD');
-  const startMoment = moment(start);
-  const endMoment = moment(end);
-  const startTimestamp = startMoment.valueOf();
-  const endTimestamp = endMoment.valueOf();
-  const startString = startMoment.format('YYYY-MM-DD');
-  const endString = endMoment.format('YYYY-MM-DD');
-  if (startTimestamp === endTimestamp) {
-    return today.valueOf() === startTimestamp
-      ? `今天 (${todayString})`
-      : startString;
-  } else {
-    return `${startString} - ${endString}`;
-  }
-};
-
 const App: React.FC = () => {
   const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
   const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
-  const [menus, setMenus] = useState<Record<string, string>>({
-    '/list': '任务列表',
-    '/summary': '摘要',
-  });
-  const [avatarMenus, setAvatarMenus] = useState<Record<string, string>>({
-    '/profile': '账户设置',
-    '/exit': '登出',
-  });
-  const [dateRange, setDateRange] = useState<DateRange>(undefined);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -148,124 +94,23 @@ const App: React.FC = () => {
     };
   }, [bus, dispatcher]);
 
-  // TODO: Mock
-  useEffect(() => {
-    const today = moment().startOf('day').toDate();
-    const defaultTaskId = idGen();
-    setCurrentActiveTaskIds([defaultTaskId]);
-    setDateRange({
-      start: today,
-      end: today,
-    });
-  }, []);
-
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
         <Router history={history}>
-          <Sticky direction="horizontal" className="app-sidebar">
-            <>
-              {/* <PopupProvider
-                closeOnClick={true}
-                trigger={
-                  <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
-                    {menus[history.location.pathname.split('/').slice(0, 2).join('/')]}
-                  </Button>
-                }
-              >
-                <MenuList>
-                  {generatePopupMenu(menus)}
-                </MenuList>
-              </PopupProvider> */}
-              <DatePicker
-                startDate={(dateRange && dateRange.start)}
-                endDate={(dateRange && dateRange.end)}
-                selectsRange={true}
-                onConfirm={result => {
-                  if (Array.isArray(result)) {
-                    const [start, end] = result;
-                    console.log(result);
-                    setDateRange({ start, end });
-                  }
-                }}
-                customComponent={
-                  <Button startIcon={<DateRangeIcon />}>
-                    <Typography noWrap={true}>
-                      {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
-                    </Typography>
-                  </Button>
-                }
-              />
-            </>
-          </Sticky>
-          {/* <StickyNav className="app-nav">
-            <>
-              <div className="app-nav__menus--left">
-                <PopupProvider
-                  closeOnClick={true}
-                  trigger={
-                    <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
-                      {menus[history.location.pathname.split('/').slice(0, 2).join('/')]}
-                    </Button>
-                  }
-                >
-                  <MenuList>
-                    {generatePopupMenu(menus)}
-                  </MenuList>
-                </PopupProvider>
-              </div>
-              <div className="app-nav__menus--center">
-                <DatePicker
-                  startDate={(dateRange && dateRange.start)}
-                  endDate={(dateRange && dateRange.end)}
-                  selectsRange={true}
-                  onConfirm={result => {
-                    if (Array.isArray(result)) {
-                      const [start, end] = result;
-                      setDateRange({ start, end });
-                    }
-                  }}
-                  customComponent={
-                    <Button variant="outlined" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
-                      {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
-                    </Button>
-                  }
+          <Suspense fallback={<></>}>
+            <Route
+              path="/home"
+              component={() => (
+                <HomePage
+                  bus={bus}
+                  currentActiveTaskIds={currentActiveTaskIds}
+                  onSelectedTasksChange={handleSelectedTasksChange}
                 />
-              </div>
-              <div className="app-nav__menus--right">
-                <PopupProvider
-                  closeOnClick={true}
-                  trigger={
-                    <Button variant="outlined">
-                      <div className="avatar_wrapper">
-                        <img src="/assets/images/default_avatar.svg" width="20" />
-                      </div>
-                    </Button>
-                  }
-                >
-                  <MenuList>
-                    {generatePopupMenu(avatarMenus)}
-                  </MenuList>
-                </PopupProvider>
-              </div>
-            </>
-          </StickyNav> */}
-          <div className="app-page">
-            <Suspense fallback={<></>}>
-              <Switch>
-                <Route path="/list">
-                  <ListPage
-                    bus={bus}
-                    currentActiveTaskIds={currentActiveTaskIds}
-                    onSelectedTasksChange={handleSelectedTasksChange}
-                  />
-                </Route>
-                <Route path="/">
-                  <Redirect to="/list" />
-                </Route>
-              </Switch>
-            </Suspense>
-          </div>
+              )}
+            />
+            <Redirect to="/home" />
+          </Suspense>
         </Router>
       </StylesProvider>
     </ThemeProvider>

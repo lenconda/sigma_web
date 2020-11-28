@@ -1,11 +1,15 @@
-@import './global.less';
+@import '../../global.less';
+
+.app-home-page {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
 
 .app-sidebar {
   box-sizing: border-box;
-  padding: 20px;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid @border-color;
   width: 320px;
-  flex-grow: 1;
   flex-shrink: 0;
   background-color: #fff;
   display: flex;
@@ -14,19 +18,59 @@
   &.sticky {
     border-right-color: #fff;
   }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+
+    .avatar_wrapper {
+      img {
+        width: 26px;
+        height: 26px;
+        border-radius: 13px;
+      }
+    }
+  }
+
+  &__add-collection-wrapper {
+    box-sizing: border-box;
+    padding: 20px;
+
+    .add-collection {
+      box-sizing: border-box;
+      border: 1px solid @border-color;
+      font-size: 13px;
+      width: 100%;
+    }
+  }
+
+  &__collections-wrapper {
+    box-sizing: border-box;
+    padding: 20px 0;
+  }
 }
 
 .app-nav {
   overflow: auto;
   box-sizing: border-box;
-  padding: 15px 20px;
   width: 100%;
-  flex-grow: 0;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
+  padding: 15px 20px;
+  padding-left: 320px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   background-color: #fff;
   overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 998;
+
+  .app-popup__trigger-wrapper {
+    margin: 0 5px;
+  }
 
   &__menus {
     &--left,

@@ -1,9 +1,10 @@
-@import '../../global.less';
+@import '../../../global.less';
 
 .page-list {
   box-sizing: border-box;
   height: 100%;
   padding: 20px 0;
+  padding-top: 75px;
   display: flex;
   align-items: stretch;
   overflow-x: scroll;
@@ -21,10 +22,10 @@
       padding-right: 20px;
     }
 
-    &--empty {
+    &.empty {
       width: auto;
       box-sizing: border-box;
-      padding-left: 10px;
+      padding-left: 20px;
       padding-right: 20px;
       flex-grow: 1;
       min-width: 480px;

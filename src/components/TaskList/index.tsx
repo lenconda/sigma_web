@@ -50,11 +50,12 @@ export interface Dispatch {
 }
 
 export interface TaskList {
-  currentTaskId: string;
+  currentId: string;
   bus: Bus<Dispatch>;
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
   currentActiveTaskIds?: string[];
-  isDefault?: boolean;
+  isCollection?: boolean;
+  collectionTitle?: string;
 }
 
 const useStyles = makeStyles(() => ({
@@ -118,11 +119,12 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
 
 export default (props: TaskList) => {
   const {
-    currentTaskId,
+    currentId,
     bus,
     currentActiveTaskIds = [],
     onSelectedTasksChange,
-    isDefault = false,
+    isCollection = false,
+    collectionTitle = '清单内容',
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
@@ -249,17 +251,17 @@ export default (props: TaskList) => {
   useEffect(() => {
     // TODO: request current task info
     setCurrentTaskLoading(true);
-    getCurrentTaskInfo(currentTaskId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isDefault).then(currentTaskInfo => {
+    getCurrentTaskInfo(currentId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isCollection).then(currentTaskInfo => {
       setCurrentTask(currentTaskInfo);
-      if (!isDefault) {
+      if (!isCollection) {
         // TODO: request sub-tasks info
         setTaskListLoading(true);
-        getTaskListFromTask(currentTaskId, 10)
+        getTaskListFromTask(currentId, 10)
           .then(tasks => setTasks(tasks))
           .finally(() => setTaskListLoading(false));
       }
     }).finally(() => setCurrentTaskLoading(false));
-  }, [currentTaskId]);
+  }, [currentId]);
 
   useEffect(() => {
     const handler = (dispatch: Dispatch) => {
@@ -340,7 +342,7 @@ export default (props: TaskList) => {
       <div className="task-list__title-bar">
         <Typography variant="h6" className={theme.title}>
           {
-            !isDefault
+            !isCollection
               ? <>
                 <Checkbox
                   checked={(currentTask && currentTask.finished) || false}
@@ -354,14 +356,14 @@ export default (props: TaskList) => {
               </>
               : <>
                 <div style={{ width: 10 }}></div>
-                <div className="title-input">{(currentTask && currentTask.content)}</div>
+                <div className="title-input">{collectionTitle}</div>
               </>
           }
         </Typography>
         <div className="task-list__log-wrapper__controls">
           <IconButton type="finish" onClick={handleFinishAllTasks} />
           {
-            !isDefault &&
+            !isCollection &&
             <IconButton
               type="delete"
               onClick={() => bus.emit('push', {
@@ -373,7 +375,7 @@ export default (props: TaskList) => {
         </div>
       </div>
       {
-        !isDefault
+        !isCollection
         && <div className="task-list__deadline">
           <DatePicker
             startDate={currentTask ? moment(new Date(currentTask.deadline)).add(-1, 'day').startOf('day').toDate() : new Date()}
@@ -474,7 +476,7 @@ export default (props: TaskList) => {
         }
       </div>
       {
-        !isDefault
+        !isCollection
         && <div className="task-list__log-wrapper">
           <DebouncedTextField
             type="textarea"
@@ -493,4 +495,4 @@ export default (props: TaskList) => {
   );
 };
 
-export const Empty: React.FC = () => <div className="task-list empty">点击左侧任意一条子任务以查看任务详情</div>;
+export const Empty: React.FC = () => <div className="task-list empty">点击左侧列表以查看所有任务</div>;
