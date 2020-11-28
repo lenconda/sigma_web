@@ -42,7 +42,6 @@ import {
 } from '../../utils/task';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
-
 import './index.less';
 
 export interface Dispatch {
@@ -254,6 +253,7 @@ export default (props: TaskList) => {
   }, [taskListElement]);
 
   useEffect(() => {
+    console.log('select');
     onSelectedTasksChange(selectedTasks);
   }, [selectedTasks]);
 

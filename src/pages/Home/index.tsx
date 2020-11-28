@@ -48,6 +48,7 @@ import {
 import {
   useUpdateEffect,
 } from '../../core/hooks';
+import Dispatcher from '../../core/dispatcher';
 import './index.less';
 
 const CollectionPage = lazy(() => import('./Collection'));
@@ -62,12 +63,7 @@ export interface DateRange {
   end: Date;
 }
 
-export interface HomePageProps {
-  bus: Bus<Dispatch>;
-  currentActiveTaskIds: string[];
-  onSelectedTasksChange: (tasks: TaskListItem[]) => void;
-  onSelectCollectionIds: (ids: string[]) => void;
-}
+export interface HomePageProps {}
 
 const generatePopupMenu = (menus: Record<string, string>): JSX.Element[] => {
   return Object.keys(menus).map((path, index) => {
@@ -96,12 +92,10 @@ const generateDateString = (start?: Date, end: Date = start): string => {
   }
 };
 
-const Home: React.FC<HomePageProps> = ({
-  bus,
-  currentActiveTaskIds,
-  onSelectedTasksChange,
-  onSelectCollectionIds,
-}) => {
+const Home: React.FC<HomePageProps> = () => {
+  const bus = new Bus<Dispatch>();
+  const dispatcher = new Dispatcher();
+  const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
   const [menus, setMenus] = useState<Record<string, string>>({
     '/home/collection': '任务列表',
     '/home/summary': '摘要',
@@ -114,9 +108,49 @@ const Home: React.FC<HomePageProps> = ({
   const [userInfo, setUserInfo] = useState<User>(undefined);
   const [collections, setCollections] = useState<Collection[]>([]);
 
+  const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
+    if (tasks.length === 1) {
+      const task = tasks[0];
+      const activeParentIndex = currentActiveTaskIds.indexOf(task.parentTaskId);
+      if (activeParentIndex !== -1) {
+        const newActiveTaskIds = activeParentIndex === currentActiveTaskIds.length - 1
+          ? Array.from(currentActiveTaskIds).concat([task.taskId])
+          : Array.from(currentActiveTaskIds).slice(0, activeParentIndex + 1).concat([task.taskId]);
+        setCurrentActiveTaskIds(newActiveTaskIds);
+      }
+    }
+  };
+
+  useEffect(() => {
+    dispatcher.start();
+    const dispatchHandler = (dispatch: Dispatch) => {
+      if (dispatch.payloads.length !== 0) {
+        dispatcher.enqueue(dispatch);
+        switch (dispatch.action) {
+        case 'DELETE': {
+          dispatch.payloads.forEach(payload => {
+            // eslint-disable-next-line max-nested-callbacks
+            const payloadActiveIndex = currentActiveTaskIds.findIndex(taskId => payload.taskId === taskId);
+            if (payloadActiveIndex !== -1) {
+              setCurrentActiveTaskIds(currentActiveTaskIds.slice(0, payloadActiveIndex));
+            }
+          });
+          break;
+        }
+        default:
+          break;
+        }
+      }
+    };
+    bus.on('dispatch', dispatchHandler);
+
+    return () => {
+      bus.off('dispatch', dispatchHandler);
+    };
+  }, [bus, dispatcher]);
+
   // TODO: Mock
   useEffect(() => {
-    console.log(111);
     const today = moment().startOf('day').toDate();
     setDateRange({
       start: today,
@@ -126,10 +160,10 @@ const Home: React.FC<HomePageProps> = ({
     getCollections(6).then(res => setCollections(res));
   }, []);
 
-  useUpdateEffect(() => {
+  useEffect(() => {
     const { search } = parse(history.location);
     const { id = '' } = search;
-    onSelectCollectionIds((id ? [id] : []));
+    setCurrentActiveTaskIds((id ? [id] : []));
   }, [history.location.search]);
 
   return (
@@ -223,7 +257,7 @@ const Home: React.FC<HomePageProps> = ({
                 <CollectionPage
                   bus={bus}
                   currentActiveTaskIds={currentActiveTaskIds}
-                  onSelectedTasksChange={onSelectedTasksChange}
+                  onSelectedTasksChange={handleSelectedTasksChange}
                 />
               )}
             />
