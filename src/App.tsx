@@ -29,6 +29,8 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createBrowserHistory } from 'history';
+import DateRangeIcon from '@material-ui/icons/DateRange';
+import moment from 'moment';
 import './App.less';
 
 const ListPage = lazy(() => import('./pages/List'));
@@ -57,6 +59,38 @@ export interface AppMenu {
   path: string;
 }
 
+export interface DateRange {
+  start: Date;
+  end: Date;
+}
+
+const generatePopupMenu = (menus: Record<string, string>): JSX.Element[] => {
+  return Object.keys(menus).map((path, index) => {
+    return <Link to={path} key={index} className="link">
+      <MenuItem>{menus[path]}</MenuItem>
+    </Link>;
+  });
+};
+
+const generateDateString = (start?: Date, end: Date = start): string => {
+  if (!start) { return '' }
+  const today = moment().startOf('day');
+  const todayString = today.format('YYYY-MM-DD');
+  const startMoment = moment(start);
+  const endMoment = moment(end);
+  const startTimestamp = startMoment.valueOf();
+  const endTimestamp = endMoment.valueOf();
+  const startString = startMoment.format('YYYY-MM-DD');
+  const endString = endMoment.format('YYYY-MM-DD');
+  if (startTimestamp === endTimestamp) {
+    return today.valueOf() === startTimestamp
+      ? `今天 (${todayString})`
+      : todayString;
+  } else {
+    return `${startString} - ${endString}`;
+  }
+};
+
 const App: React.FC = () => {
   const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
@@ -69,6 +103,7 @@ const App: React.FC = () => {
     '/profile': '账户设置',
     '/exit': '登出',
   });
+  const [dateRange, setDateRange] = useState<DateRange>(undefined);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -113,8 +148,13 @@ const App: React.FC = () => {
 
   // TODO: Mock
   useEffect(() => {
+    const today = moment().startOf('day').toDate();
     const defaultTaskId = idGen();
     setCurrentActiveTaskIds([defaultTaskId]);
+    setDateRange({
+      start: today,
+      end: today,
+    });
   }, []);
 
   return (
@@ -133,40 +173,41 @@ const App: React.FC = () => {
                   }
                 >
                   <MenuList>
-                    {
-                      Object.keys(menus).map((path, index) => {
-                        return <Link to={path} key={index} className="link">
-                          <MenuItem>{menus[path]}</MenuItem>
-                        </Link>;
-                      })
-                    }
+                    {generatePopupMenu(menus)}
                   </MenuList>
                 </PopupProvider>
               </div>
               <div className="app-nav__menus--center">
                 <DatePicker
+                  startDate={(dateRange && dateRange.start)}
+                  endDate={(dateRange && dateRange.end)}
                   selectsRange={true}
-                  onConfirm={result => console.log(result)}
-                  customComponent={<Button variant="outlined" endIcon={<ExpandMoreIcon />}>日期</Button>}
+                  onConfirm={result => {
+                    if (Array.isArray(result)) {
+                      const [start, end] = result;
+                      setDateRange({ start, end });
+                    }
+                  }}
+                  customComponent={
+                    <Button variant="outlined" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
+                      {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
+                    </Button>
+                  }
                 />
               </div>
               <div className="app-nav__menus--right">
                 <PopupProvider
                   closeOnClick={true}
                   trigger={
-                    <Button>
-                      <img src="/assets/images/default_avatar.svg" width="20" />
+                    <Button variant="outlined">
+                      <div className="avatar_wrapper">
+                        <img src="/assets/images/default_avatar.svg" width="20" />
+                      </div>
                     </Button>
                   }
                 >
                   <MenuList>
-                    {
-                      Object.keys(avatarMenus).map((path, index) => {
-                        return <Link to={path} className="link" key={index}>
-                          <MenuItem>{avatarMenus[path]}</MenuItem>
-                        </Link>;
-                      })
-                    }
+                    {generatePopupMenu(avatarMenus)}
                   </MenuList>
                 </PopupProvider>
               </div>

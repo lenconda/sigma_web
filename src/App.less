@@ -33,6 +33,17 @@
       align-items: center;
     }
   }
+
+  .avatar_wrapper {
+    box-sizing: border-box;
+    width: 22px;
+    height: 22px;
+    overflow: hidden;
+    border-radius: 11px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 .app-page {
@@ -59,8 +70,5 @@
   text-decoration: none;
   color: inherit;
   min-width: 180px;
-
-  &.active {
-    background-color: #e9e9e9;
-  }
+  position: relative;
 }
