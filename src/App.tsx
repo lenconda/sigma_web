@@ -30,6 +30,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
+import Sticky from './components/Sticky';
 import moment from 'moment';
 import './App.less';
 
@@ -161,7 +162,39 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
         <Router history={history}>
-          <StickyNav className="app-nav">
+          <Sticky direction="horizontal" className="app-sidebar">
+            <>
+              <PopupProvider
+                closeOnClick={true}
+                trigger={
+                  <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
+                    {menus[history.location.pathname.split('/').slice(0, 2).join('/')]}
+                  </Button>
+                }
+              >
+                <MenuList>
+                  {generatePopupMenu(menus)}
+                </MenuList>
+              </PopupProvider>
+              <DatePicker
+                startDate={(dateRange && dateRange.start)}
+                endDate={(dateRange && dateRange.end)}
+                selectsRange={true}
+                onConfirm={result => {
+                if (Array.isArray(result)) {
+                  const [start, end] = result;
+                    setDateRange({ start, end });
+                  }
+                }}
+                customComponent={
+                  <Button variant="outlined" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
+                    {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
+                  </Button>
+                }
+              />
+            </>
+          </Sticky>
+          {/* <StickyNav className="app-nav">
             <>
               <div className="app-nav__menus--left">
                 <PopupProvider
@@ -212,7 +245,7 @@ const App: React.FC = () => {
                 </PopupProvider>
               </div>
             </>
-          </StickyNav>
+          </StickyNav> */}
           <div className="app-page">
             <Suspense fallback={<></>}>
               <Switch>

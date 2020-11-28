@@ -1,0 +1,30 @@
+@import '../../global.less';
+
+@custom-transition-duration: .15s;
+
+.app-sticky-nav {
+  transition: box-shadow @custom-transition-duration;
+
+  &--placeholder {
+    display: block;
+    width: 100%;
+  }
+
+  &.sticky {
+    position: fixed;
+    box-shadow: @box-shadow-focus;
+    transition: box-shadow @custom-transition-duration;
+
+    &.vertical {
+      top: 0;
+      right: 0;
+      left: 0;
+    }
+
+    &.horizontal {
+      top: 0;
+      bottom: 0;
+      left: 0;
+    }
+  }
+}

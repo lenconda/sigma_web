@@ -1,5 +1,21 @@
 @import './global.less';
 
+.app-sidebar {
+  box-sizing: border-box;
+  padding: 20px;
+  border-right: 1px solid #e0e0e0;
+  width: 320px;
+  flex-grow: 1;
+  flex-shrink: 0;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+
+  &.sticky {
+    border-right-color: #fff;
+  }
+}
+
 .app-nav {
   overflow: auto;
   box-sizing: border-box;
