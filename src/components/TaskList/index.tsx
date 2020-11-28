@@ -397,7 +397,7 @@ export default (props: TaskList) => {
       <div className="task-list__items-wrapper">
         {
           taskListLoading || currentTaskLoading
-            ? <span className="loading">请求中...</span>
+            ? <span className="loading">请稍候...</span>
             : tasks.length !== 0
               ? <List className={theme.root} ref={taskListElement}>
                 <DragDropContext onDragEnd={handleDragEnd}>
