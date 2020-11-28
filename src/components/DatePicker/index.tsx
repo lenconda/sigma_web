@@ -32,7 +32,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   useEffect(() => {
     setDates(startDate, endDate, startDate);
-  }, []);
+  }, [startDate, endDate]);
 
   const setDates = (startDate: Date, endDate: Date, selectedDate: Date) => {
     setControlledStartDate(startDate);
