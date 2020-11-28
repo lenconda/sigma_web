@@ -11,7 +11,10 @@ import {
 } from '@material-ui/core';
 import Bus from './core/bus';
 import Dispatcher from './core/dispatcher';
-import { Dispatch } from './components/TaskList';
+import {
+  Dispatch,
+  Collection,
+} from './components/TaskList';
 import {
   TaskListItem,
 } from './components/TaskListItem';
@@ -21,6 +24,9 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
+import {
+  parse,
+} from './utils/location';
 
 const HomePage = lazy(() => import('./pages/Home'));
 
@@ -66,6 +72,10 @@ const App: React.FC = () => {
     }
   };
 
+  const handleSelectCollection = (ids: string[]) => {
+    setCurrentActiveTaskIds(ids);
+  };
+
   useEffect(() => {
     dispatcher.start();
     const dispatchHandler = (dispatch: Dispatch) => {
@@ -106,6 +116,7 @@ const App: React.FC = () => {
                   bus={bus}
                   currentActiveTaskIds={currentActiveTaskIds}
                   onSelectedTasksChange={handleSelectedTasksChange}
+                  onSelectCollectionIds={handleSelectCollection}
                 />
               )}
             />

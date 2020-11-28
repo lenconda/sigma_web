@@ -5,7 +5,10 @@ import React, {
   lazy,
 } from 'react';
 import Bus from '../../core/bus';
-import { Dispatch } from '../../components/TaskList';
+import {
+  Dispatch,
+  Collection,
+} from '../../components/TaskList';
 import {
   TaskListItem,
   User,
@@ -25,13 +28,27 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import IconButton from '@material-ui/core/IconButton';
 import Sticky from '../../components/Sticky';
+import FormatListBulletedIcon from '@material-ui/icons/FormatListBulleted';
+import Typography from '@material-ui/core/Typography';
 import moment from 'moment';
 import {
   getUserInfo,
 } from '../../services/user';
+import {
+  getCollections,
+} from '../../services/collection';
 import { history } from '../../App';
-import './index.less';
 import DebouncedTextField from '../../components/DebouncedTextField';
+import _merge from 'lodash/merge';
+import _cloneDeep from 'lodash/cloneDeep';
+import {
+  parse,
+  stringify,
+} from '../../utils/location';
+import {
+  useUpdateEffect,
+} from '../../core/hooks';
+import './index.less';
 
 const CollectionPage = lazy(() => import('./Collection'));
 
@@ -49,6 +66,7 @@ export interface HomePageProps {
   bus: Bus<Dispatch>;
   currentActiveTaskIds: string[];
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
+  onSelectCollectionIds: (ids: string[]) => void;
 }
 
 const generatePopupMenu = (menus: Record<string, string>): JSX.Element[] => {
@@ -82,6 +100,7 @@ const Home: React.FC<HomePageProps> = ({
   bus,
   currentActiveTaskIds,
   onSelectedTasksChange,
+  onSelectCollectionIds,
 }) => {
   const [menus, setMenus] = useState<Record<string, string>>({
     '/home/collection': '任务列表',
@@ -93,17 +112,25 @@ const Home: React.FC<HomePageProps> = ({
   });
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [userInfo, setUserInfo] = useState<User>(undefined);
+  const [collections, setCollections] = useState<Collection[]>([]);
 
   // TODO: Mock
   useEffect(() => {
+    console.log(111);
     const today = moment().startOf('day').toDate();
-    // const defaultTaskId = idGen();
     setDateRange({
       start: today,
       end: today,
     });
     getUserInfo().then(res => setUserInfo(res));
+    getCollections(6).then(res => setCollections(res));
   }, []);
+
+  useUpdateEffect(() => {
+    const { search } = parse(history.location);
+    const { id = '' } = search;
+    onSelectCollectionIds((id ? [id] : []));
+  }, [history.location.search]);
 
   return (
     <div className="app-home-page">
@@ -137,7 +164,22 @@ const Home: React.FC<HomePageProps> = ({
           </div>
           <div className="app-sidebar__collections-wrapper">
             <MenuList>
-              <MenuItem>asidjaosidjas</MenuItem>
+              {
+                collections.map((collection, index) => {
+                  return <div
+                    key={index}
+                    onClick={() => {
+                      const newLocation = _merge(parse(_cloneDeep(history.location)), { search: { id: collection.collectionId }});
+                      history.push(stringify(newLocation));
+                    }}
+                  >
+                    <MenuItem className="collection-item">
+                      <FormatListBulletedIcon classes={{ root: 'icon' }} />
+                      <Typography variant="inherit" noWrap={true}>{collection.name}</Typography>
+                    </MenuItem>
+                  </div>;
+                })
+              }
             </MenuList>
           </div>
         </>

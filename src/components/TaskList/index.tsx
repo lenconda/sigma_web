@@ -7,6 +7,7 @@ import React, {
 import Item, {
   TaskListItem,
   TaskListItemDetailInfo,
+  User,
 } from '../TaskListItem';
 import {
   DragDropContext,
@@ -56,6 +57,14 @@ export interface TaskList {
   currentActiveTaskIds?: string[];
   isCollection?: boolean;
   collectionTitle?: string;
+}
+
+export interface Collection {
+  collectionId: string;
+  name: string;
+  creator: User;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 const useStyles = makeStyles(() => ({
