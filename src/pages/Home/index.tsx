@@ -223,7 +223,7 @@ const Home: React.FC<HomePageProps> = props => {
   // TODO: Mock
   useEffect(() => {
     const today = moment().startOf('day').toDate();
-    getTaskListFromTask('default', 10).then(res => {
+    getTaskListFromTask('default', 6).then(res => {
       setDefaultTasks(res);
     });
     setDateRange({
