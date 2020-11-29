@@ -1,10 +1,10 @@
 import React from 'react';
-import Bus from '../../core/bus';
+import Bus from '../../../core/bus';
 import TaskList, {
   Empty,
   Dispatch,
-} from '../../components/TaskList';
-import { TaskListItem } from '../../components/TaskListItem';
+} from '../../../components/TaskList';
+import { TaskListItem } from '../../../components/TaskListItem';
 import './index.less';
 
 export interface ListPageProps {
