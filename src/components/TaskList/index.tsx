@@ -7,7 +7,6 @@ import React, {
 import Item, {
   TaskListItem,
   TaskListItemDetailInfo,
-  User,
 } from '../TaskListItem';
 import {
   DragDropContext,
@@ -42,6 +41,7 @@ import {
 } from '../../utils/task';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
+
 import './index.less';
 
 export interface Dispatch {
@@ -50,20 +50,11 @@ export interface Dispatch {
 }
 
 export interface TaskList {
-  currentId: string;
+  currentTaskId: string;
   bus: Bus<Dispatch>;
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
   currentActiveTaskIds?: string[];
-  isCollection?: boolean;
-  collectionTitle?: string;
-}
-
-export interface Collection {
-  collectionId: string;
-  name: string;
-  creator: User;
-  createdAt?: string;
-  updatedAt?: string;
+  isDefault?: boolean;
 }
 
 const useStyles = makeStyles(() => ({
@@ -127,12 +118,11 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
 
 export default (props: TaskList) => {
   const {
-    currentId,
+    currentTaskId,
     bus,
     currentActiveTaskIds = [],
     onSelectedTasksChange,
-    isCollection = false,
-    collectionTitle = '清单内容',
+    isDefault = false,
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
@@ -253,24 +243,23 @@ export default (props: TaskList) => {
   }, [taskListElement]);
 
   useEffect(() => {
-    console.log('select');
     onSelectedTasksChange(selectedTasks);
   }, [selectedTasks]);
 
   useEffect(() => {
     // TODO: request current task info
     setCurrentTaskLoading(true);
-    getCurrentTaskInfo(currentId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isCollection).then(currentTaskInfo => {
+    getCurrentTaskInfo(currentTaskId, currentActiveTaskIds[currentActiveTaskIds.length - 2], isDefault).then(currentTaskInfo => {
       setCurrentTask(currentTaskInfo);
-      if (!isCollection) {
+      if (!isDefault) {
         // TODO: request sub-tasks info
         setTaskListLoading(true);
-        getTaskListFromTask(currentId, 10)
+        getTaskListFromTask(currentTaskId, 10)
           .then(tasks => setTasks(tasks))
           .finally(() => setTaskListLoading(false));
       }
     }).finally(() => setCurrentTaskLoading(false));
-  }, [currentId]);
+  }, [currentTaskId]);
 
   useEffect(() => {
     const handler = (dispatch: Dispatch) => {
@@ -351,7 +340,7 @@ export default (props: TaskList) => {
       <div className="task-list__title-bar">
         <Typography variant="h6" className={theme.title}>
           {
-            !isCollection
+            !isDefault
               ? <>
                 <Checkbox
                   checked={(currentTask && currentTask.finished) || false}
@@ -365,14 +354,14 @@ export default (props: TaskList) => {
               </>
               : <>
                 <div style={{ width: 10 }}></div>
-                <div className="title-input">{collectionTitle}</div>
+                <div className="title-input">{(currentTask && currentTask.content)}</div>
               </>
           }
         </Typography>
         <div className="task-list__log-wrapper__controls">
           <IconButton type="finish" onClick={handleFinishAllTasks} />
           {
-            !isCollection &&
+            !isDefault &&
             <IconButton
               type="delete"
               onClick={() => bus.emit('push', {
@@ -384,7 +373,7 @@ export default (props: TaskList) => {
         </div>
       </div>
       {
-        !isCollection
+        !isDefault
         && <div className="task-list__deadline">
           <DatePicker
             startDate={currentTask ? moment(new Date(currentTask.deadline)).add(-1, 'day').startOf('day').toDate() : new Date()}
@@ -485,7 +474,7 @@ export default (props: TaskList) => {
         }
       </div>
       {
-        !isCollection
+        !isDefault
         && <div className="task-list__log-wrapper">
           <DebouncedTextField
             type="textarea"
@@ -504,4 +493,4 @@ export default (props: TaskList) => {
   );
 };
 
-export const Empty: React.FC = () => <div className="task-list empty">点击左侧列表以查看所有任务</div>;
+export const Empty: React.FC = () => <div className="task-list empty">点击左侧任意一条子任务以查看任务详情</div>;

@@ -35,7 +35,7 @@ export const getCurrentTaskInfo = async (
     setTimeout(() => {
       resolve({
         taskId: taskId,
-        parentTaskId: parentId,
+        parentTaskId: isDefault ? 'default' : parentId,
         finished: false,
         deadline: moment(new Date()).startOf('day').add(1, 'day').toISOString(),
         content: isDefault ? '全部任务' : taskId,
@@ -43,7 +43,7 @@ export const getCurrentTaskInfo = async (
         creator: {
           email: 'test@example.com',
           name: 'test',
-          avatar: '/assets/images/default_avatar.jpg',
+          avatar: '/assets/images/default_avatar.svg',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },

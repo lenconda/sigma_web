@@ -1,19 +1,19 @@
 import React from 'react';
-import Bus from '../../../core/bus';
+import Bus from '../../core/bus';
 import TaskList, {
   Empty,
   Dispatch,
-} from '../../../components/TaskList';
-import { TaskListItem } from '../../../components/TaskListItem';
+} from '../../components/TaskList';
+import { TaskListItem } from '../../components/TaskListItem';
 import './index.less';
 
-export interface CollectionPageProps {
+export interface ListPageProps {
   bus: Bus<Dispatch>;
   currentActiveTaskIds: string[];
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
 }
 
-const Collection: React.FC<CollectionPageProps> = ({
+const List: React.FC<ListPageProps> = ({
   bus,
   currentActiveTaskIds,
   onSelectedTasksChange,
@@ -26,8 +26,7 @@ const Collection: React.FC<CollectionPageProps> = ({
             <div className="page-list__task-wrapper" key={currentActiveTaskId}>
               <TaskList
                 bus={bus}
-                isCollection={index === 0}
-                currentId={currentActiveTaskId}
+                currentTaskId={currentActiveTaskId}
                 onSelectedTasksChange={onSelectedTasksChange}
                 currentActiveTaskIds={currentActiveTaskIds}
               />
@@ -37,7 +36,7 @@ const Collection: React.FC<CollectionPageProps> = ({
       }
       {
         currentActiveTaskIds.length === 0
-          && <div className="page-list__task-wrapper empty">
+          && <div className="page-list__task-wrapper--empty">
             <Empty />
           </div>
       }
@@ -45,4 +44,4 @@ const Collection: React.FC<CollectionPageProps> = ({
   );
 };
 
-export default Collection;
+export default List;
