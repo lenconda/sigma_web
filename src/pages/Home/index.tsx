@@ -13,15 +13,16 @@ import {
 import Bus from '../../core/bus';
 import Dispatcher from '../../core/dispatcher';
 import { Dispatch } from '../../components/TaskList';
-import { TaskListItem } from '../../components/TaskListItem';
+import {
+  TaskListItem,
+  User,
+} from '../../components/TaskListItem';
 import {
   Route,
   Switch,
   Redirect,
-  Router,
   Link,
 } from 'react-router-dom';
-import idGen from '../../core/idgen';
 import PopupProvider from '../../components/PopupProvider';
 import Button from '@material-ui/core/Button';
 import DatePicker from '../../components/DatePicker';
@@ -37,6 +38,9 @@ import _cloneDeep from 'lodash/cloneDeep';
 import {
   getTaskListFromTask,
 } from '../../services/task';
+import {
+  getUserInfo,
+} from '../../services/user';
 import './index.less';
 
 const ListPage = lazy(() => import('./List'));
@@ -111,6 +115,7 @@ const App: React.FC = () => {
   });
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
+  const [userInfo, setUserInfo] = useState<User>(undefined);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -193,126 +198,107 @@ const App: React.FC = () => {
       start: today,
       end: today,
     });
+    getUserInfo().then(res => {
+      setUserInfo(res);
+    });
   }, []);
 
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
-        <Router history={history}>
-          <Sticky direction="horizontal" className="app-sidebar">
-            <>
-              {/* <PopupProvider
-                closeOnClick={true}
-                trigger={
-                  <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
-                    {menus[history.location.pathname.split('/').slice(0, 2).join('/')]}
-                  </Button>
+        <Sticky direction="horizontal" className="app-home__sidebar">
+          <>
+            <DatePicker
+              startDate={(dateRange && dateRange.start)}
+              endDate={(dateRange && dateRange.end)}
+              selectsRange={true}
+              onConfirm={result => {
+                if (Array.isArray(result)) {
+                  const [start, end] = result;
+                  console.log(result);
+                  setDateRange({ start, end });
                 }
-              >
-                <MenuList>
-                  {generatePopupMenu(menus)}
-                </MenuList>
-              </PopupProvider> */}
-              <DatePicker
-                startDate={(dateRange && dateRange.start)}
-                endDate={(dateRange && dateRange.end)}
-                selectsRange={true}
-                onConfirm={result => {
-                  if (Array.isArray(result)) {
-                    const [start, end] = result;
-                    console.log(result);
-                    setDateRange({ start, end });
-                  }
-                }}
-                customComponent={
-                  <Button startIcon={<DateRangeIcon />}>
-                    <Typography noWrap={true}>
-                      {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
-                    </Typography>
-                  </Button>
-                }
-              />
-              {
-                defaultTasks.map((task, index) => {
-                  return <button
-                    key={index}
-                    onClick={() => {
-                      setCurrentActiveTaskIds([task.taskId]);
-                    }}
-                  >
-                    {task.content}
-                  </button>;
-                })
+              }}
+              customComponent={
+                <Button startIcon={<DateRangeIcon />}>
+                  <Typography noWrap={true}>
+                    {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
+                  </Typography>
+                </Button>
               }
-            </>
-          </Sticky>
-          {/* <StickyNav className="app-nav">
-            <>
-              <div className="app-nav__menus--left">
-                <PopupProvider
-                  closeOnClick={true}
-                  trigger={
-                    <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
-                      {menus[history.location.pathname.split('/').slice(0, 2).join('/')]}
-                    </Button>
-                  }
-                >
-                  <MenuList>
-                    {generatePopupMenu(menus)}
-                  </MenuList>
-                </PopupProvider>
-              </div>
-              <div className="app-nav__menus--center">
-                <DatePicker
-                  startDate={(dateRange && dateRange.start)}
-                  endDate={(dateRange && dateRange.end)}
-                  selectsRange={true}
-                  onConfirm={result => {
-                    if (Array.isArray(result)) {
-                      const [start, end] = result;
-                      setDateRange({ start, end });
-                    }
+            />
+            {
+              defaultTasks.map((task, index) => {
+                return <button
+                  key={index}
+                  onClick={() => {
+                    setCurrentActiveTaskIds([task.taskId]);
                   }}
-                  customComponent={
-                    <Button variant="outlined" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
-                      {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
-                    </Button>
-                  }
-                />
-              </div>
-              <div className="app-nav__menus--right">
-                <PopupProvider
-                  closeOnClick={true}
-                  trigger={
-                    <Button variant="outlined">
-                      <div className="avatar_wrapper">
-                        <img src="/assets/images/default_avatar.jpg" width="20" />
-                      </div>
-                    </Button>
-                  }
                 >
-                  <MenuList>
-                    {generatePopupMenu(avatarMenus)}
-                  </MenuList>
-                </PopupProvider>
+                  {task.content}
+                </button>;
+              })
+            }
+          </>
+        </Sticky>
+        <nav className="app-home__nav">
+          <PopupProvider
+            closeOnClick={true}
+            trigger={
+              <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
+                {menus[history.location.pathname.split('/').slice(0, 3).join('/')]}
+              </Button>
+            }
+          >
+            <MenuList>
+              {generatePopupMenu(menus)}
+            </MenuList>
+          </PopupProvider>
+          <DatePicker
+            startDate={(dateRange && dateRange.start)}
+            endDate={(dateRange && dateRange.end)}
+            selectsRange={true}
+            onConfirm={result => {
+              if (Array.isArray(result)) {
+                const [start, end] = result;
+                setDateRange({ start, end });
+              }
+            }}
+            customComponent={
+              <Button variant="outlined" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
+                {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
+              </Button>
+            }
+          />
+        </nav>
+        {/* <PopupProvider
+          closeOnClick={true}
+          trigger={
+            <Button variant="outlined">
+              <div className="avatar_wrapper">
+                <img src="/assets/images/default_avatar.jpg" width="20" />
               </div>
-            </>
-          </StickyNav> */}
-          <div className="app-page">
-            <Suspense fallback={<></>}>
-              <Switch>
-                <Route path="/home/list">
-                  <ListPage
-                    bus={bus}
-                    currentActiveTaskIds={currentActiveTaskIds}
-                    onSelectedTasksChange={handleSelectedTasksChange}
-                  />
-                </Route>
-                <Redirect from="/home" to="/home/list" />
-              </Switch>
-            </Suspense>
-          </div>
-        </Router>
+            </Button>
+          }
+        >
+          <MenuList>
+            {generatePopupMenu(avatarMenus)}
+          </MenuList>
+        </PopupProvider> */}
+        <div className="app-home__page">
+          <Suspense fallback={<></>}>
+            <Switch>
+              <Route path="/home/list">
+                <ListPage
+                  bus={bus}
+                  currentActiveTaskIds={currentActiveTaskIds}
+                  onSelectedTasksChange={handleSelectedTasksChange}
+                />
+              </Route>
+              <Redirect from="/home" to="/home/list" />
+            </Switch>
+          </Suspense>
+        </div>
       </StylesProvider>
     </ThemeProvider>
   );

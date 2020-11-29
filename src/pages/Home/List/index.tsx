@@ -19,11 +19,11 @@ const List: React.FC<ListPageProps> = ({
   onSelectedTasksChange,
 }) => {
   return (
-    <div className="page-list">
+    <div className="app-list__page">
       {
         currentActiveTaskIds.map((currentActiveTaskId, index) => {
           return (
-            <div className="page-list__task-wrapper" key={currentActiveTaskId}>
+            <div className="app-list__page__task-wrapper" key={currentActiveTaskId}>
               <TaskList
                 bus={bus}
                 currentTaskId={currentActiveTaskId}
@@ -36,7 +36,7 @@ const List: React.FC<ListPageProps> = ({
       }
       {
         currentActiveTaskIds.length === 0
-          && <div className="page-list__task-wrapper--empty">
+          && <div className="app-list__page__task-wrapper empty">
             <Empty />
           </div>
       }
