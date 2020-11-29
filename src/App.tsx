@@ -33,6 +33,9 @@ import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import Sticky from './components/Sticky';
 import moment from 'moment';
+import {
+  getTaskListFromTask,
+} from './services/task';
 import './App.less';
 
 const ListPage = lazy(() => import('./pages/List'));
@@ -106,6 +109,7 @@ const App: React.FC = () => {
     '/exit': '登出',
   });
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
+  const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -151,8 +155,9 @@ const App: React.FC = () => {
   // TODO: Mock
   useEffect(() => {
     const today = moment().startOf('day').toDate();
-    const defaultTaskId = idGen();
-    setCurrentActiveTaskIds([defaultTaskId]);
+    getTaskListFromTask('0', 10).then(res => {
+      setDefaultTasks(res);
+    });
     setDateRange({
       start: today,
       end: today,
@@ -196,6 +201,18 @@ const App: React.FC = () => {
                   </Button>
                 }
               />
+              {
+                defaultTasks.map((task, index) => {
+                  return <button
+                    key={index}
+                    onClick={() => {
+                      setCurrentActiveTaskIds([task.taskId]);
+                    }}
+                  >
+                    {task.content}
+                  </button>;
+                })
+              }
             </>
           </Sticky>
           {/* <StickyNav className="app-nav">

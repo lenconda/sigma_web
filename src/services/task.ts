@@ -54,10 +54,10 @@ export const getCurrentTaskInfo = async (
   });
 };
 
-export const getTaskListFromTask = async (taskId: string, count: number): Promise<TaskListItem[]> => {
+export const getTaskListFromTask = async (taskId: string, count: number, isDefault = false): Promise<TaskListItem[]> => {
   const result = [];
   for (let i = 0; i < count; i += 1) {
-    const task = await getTaskInfo(idGen(), taskId, false, i);
+    const task = await getTaskInfo(idGen(), (isDefault ? 'default' : taskId), isDefault, i);
     result.push(task);
   }
   return result;
