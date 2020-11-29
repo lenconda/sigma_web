@@ -8,7 +8,6 @@ import {
   createMuiTheme,
   ThemeProvider,
   StylesProvider,
-  Typography,
 } from '@material-ui/core';
 import Bus from '../../core/bus';
 import Dispatcher from '../../core/dispatcher';
@@ -25,12 +24,14 @@ import {
 } from 'react-router-dom';
 import PopupProvider from '../../components/PopupProvider';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import DatePicker from '../../components/DatePicker';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
+import DebouncedTextField from '../../components/DebouncedTextField';
 import Sticky from '../../components/Sticky';
 import moment from 'moment';
 import _merge from 'lodash/merge';
@@ -208,25 +209,26 @@ const App: React.FC = () => {
       <StylesProvider injectFirst={true}>
         <Sticky direction="horizontal" className="app-home__sidebar">
           <>
-            <DatePicker
-              startDate={(dateRange && dateRange.start)}
-              endDate={(dateRange && dateRange.end)}
-              selectsRange={true}
-              onConfirm={result => {
-                if (Array.isArray(result)) {
-                  const [start, end] = result;
-                  console.log(result);
-                  setDateRange({ start, end });
+            <div className="app-home__sidebar__header">
+              <PopupProvider
+                closeOnClick={true}
+                trigger={
+                  <IconButton>
+                    <img className="avatar" src="/assets/images/default_avatar.jpg" width="20" />
+                  </IconButton>
                 }
-              }}
-              customComponent={
-                <Button startIcon={<DateRangeIcon />}>
-                  <Typography noWrap={true}>
-                    {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
-                  </Typography>
-                </Button>
-              }
-            />
+              >
+                <MenuList>
+                  {generatePopupMenu(avatarMenus)}
+                </MenuList>
+              </PopupProvider>
+            </div>
+            <div className="app-home__sidebar__input">
+              <DebouncedTextField
+                className="input"
+                placeholder="键入 Enter 以新建任务清单..."
+              />
+            </div>
             {
               defaultTasks.map((task, index) => {
                 return <button
@@ -271,20 +273,6 @@ const App: React.FC = () => {
             }
           />
         </nav>
-        {/* <PopupProvider
-          closeOnClick={true}
-          trigger={
-            <Button variant="outlined">
-              <div className="avatar_wrapper">
-                <img src="/assets/images/default_avatar.jpg" width="20" />
-              </div>
-            </Button>
-          }
-        >
-          <MenuList>
-            {generatePopupMenu(avatarMenus)}
-          </MenuList>
-        </PopupProvider> */}
         <div className="app-home__page">
           <Suspense fallback={<></>}>
             <Switch>
