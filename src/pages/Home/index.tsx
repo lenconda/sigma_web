@@ -32,6 +32,8 @@ import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import Sticky from '../../components/Sticky';
 import moment from 'moment';
+import _merge from 'lodash/merge';
+import _cloneDeep from 'lodash/cloneDeep';
 import {
   getTaskListFromTask,
 } from '../../services/task';
@@ -125,6 +127,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     dispatcher.start();
+
     const dispatchHandler = (dispatch: Dispatch) => {
       if (dispatch.payloads.length !== 0) {
         dispatcher.enqueue(dispatch);
@@ -144,7 +147,36 @@ const App: React.FC = () => {
         }
       }
     };
+
+    const pushHandler = (dispatch: Dispatch) => {
+      if (dispatch.payloads.length === 0) { return }
+      if (dispatch.action === 'DELETE') {
+        const defaultTasksToBeDeleted: TaskListItem[] = [];
+        const defaultTasksToBeUpdated: TaskListItem[] = [];
+        const currentDefaultTasks: TaskListItem[] = [];
+        defaultTasks.forEach(task => {
+          if (dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1) {
+            currentDefaultTasks.push(task);
+          } else {
+            defaultTasksToBeDeleted.push(task);
+          }
+        });
+        currentDefaultTasks.forEach((task, index) => {
+          if (task.order !== index) {
+            const newTask = _merge(_cloneDeep(task), { order: index });
+            defaultTasksToBeUpdated.push(newTask);
+            return newTask;
+          }
+          return task;
+        });
+        setDefaultTasks(currentDefaultTasks);
+        bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
+        bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
+      }
+    };
+
     bus.on('dispatch', dispatchHandler);
+    bus.on('push', pushHandler);
 
     return () => {
       bus.off('dispatch', dispatchHandler);
@@ -154,7 +186,7 @@ const App: React.FC = () => {
   // TODO: Mock
   useEffect(() => {
     const today = moment().startOf('day').toDate();
-    getTaskListFromTask('0', 10).then(res => {
+    getTaskListFromTask('default', 10).then(res => {
       setDefaultTasks(res);
     });
     setDateRange({
