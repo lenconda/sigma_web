@@ -21,10 +21,13 @@ import {
   Switch,
   Redirect,
   Link,
+  NavLink,
+  RouteComponentProps,
 } from 'react-router-dom';
 import PopupProvider from '../../components/PopupProvider';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import DatePicker from '../../components/DatePicker';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -35,6 +38,9 @@ import DebouncedTextField from '../../components/DebouncedTextField';
 import Sticky from '../../components/Sticky';
 import moment from 'moment';
 import _merge from 'lodash/merge';
+import {
+  parseParams,
+} from '../../utils/url';
 import _cloneDeep from 'lodash/cloneDeep';
 import {
   getTaskListFromTask,
@@ -102,7 +108,9 @@ const generateDateString = (start?: Date, end: Date = start): string => {
   }
 };
 
-const App: React.FC = () => {
+export interface HomePageProps extends RouteComponentProps {}
+
+const Home: React.FC<HomePageProps> = props => {
   const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
   const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
@@ -130,6 +138,15 @@ const App: React.FC = () => {
       }
     }
   };
+
+  useEffect(() => {
+    const { id = '' } = parseParams(window.location.href, '/home/list/:id');
+    if (id === '') {
+      setCurrentActiveTaskIds([]);
+    } else {
+      setCurrentActiveTaskIds([id]);
+    }
+  }, [props.location]);
 
   useEffect(() => {
     dispatcher.start();
@@ -176,6 +193,10 @@ const App: React.FC = () => {
           return task;
         });
         setDefaultTasks(currentDefaultTasks);
+        const { id = '' } = parseParams(window.location.href, '/home/list/:id');
+        if (dispatch.payloads.findIndex(payload => payload.taskId === id) !== -1) {
+          history.push('/home/list');
+        }
         bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
         bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
       }
@@ -229,18 +250,17 @@ const App: React.FC = () => {
                 placeholder="键入 Enter 以新建任务清单..."
               />
             </div>
-            {
-              defaultTasks.map((task, index) => {
-                return <button
-                  key={index}
-                  onClick={() => {
-                    setCurrentActiveTaskIds([task.taskId]);
-                  }}
-                >
-                  {task.content}
-                </button>;
-              })
-            }
+            <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
+              {
+                defaultTasks.map((task, index) => {
+                  return <MenuItem classes={{ root: 'item' }} key={index}>
+                    <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
+                      <Typography noWrap={true} variant="caption">{task.content}</Typography>
+                    </NavLink>
+                  </MenuItem>;
+                })
+              }
+            </MenuList>
           </>
         </Sticky>
         <nav className="app-home__nav">
@@ -252,9 +272,7 @@ const App: React.FC = () => {
               </Button>
             }
           >
-            <MenuList>
-              {generatePopupMenu(menus)}
-            </MenuList>
+            <MenuList>{generatePopupMenu(menus)}</MenuList>
           </PopupProvider>
           <DatePicker
             startDate={(dateRange && dateRange.start)}
@@ -276,7 +294,7 @@ const App: React.FC = () => {
         <div className="app-home__page">
           <Suspense fallback={<></>}>
             <Switch>
-              <Route path="/home/list">
+              <Route path="/home/list/:id">
                 <ListPage
                   bus={bus}
                   currentActiveTaskIds={currentActiveTaskIds}
@@ -292,4 +310,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Home;
