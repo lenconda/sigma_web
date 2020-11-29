@@ -254,7 +254,7 @@ const App: React.FC = () => {
                   trigger={
                     <Button variant="outlined">
                       <div className="avatar_wrapper">
-                        <img src="/assets/images/default_avatar.svg" width="20" />
+                        <img src="/assets/images/default_avatar.jpg" width="20" />
                       </div>
                     </Button>
                   }

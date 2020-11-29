@@ -43,7 +43,7 @@ export const getCurrentTaskInfo = async (
         creator: {
           email: 'test@example.com',
           name: 'test',
-          avatar: '/assets/images/default_avatar.svg',
+          avatar: '/assets/images/default_avatar.jpg',
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         },
