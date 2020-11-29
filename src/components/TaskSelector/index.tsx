@@ -24,7 +24,7 @@ export interface TaskSelectorMenuItem extends TaskListItem {
 // TODO: Mock
 const getItems = (count: number, id: string): TaskSelectorMenuItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({
   taskId: Math.random().toString(32),
-  content: `${Math.random().toString(32)}aisjdaosijdaosidjaosidjaosidjaosidjaosijdoasijdoaisjdaosijdaosijdoaisj`,
+  content: Math.random().toString(32),
   deadline: new Date().toISOString(),
   originalDeadline: new Date().toISOString(),
   order: k,

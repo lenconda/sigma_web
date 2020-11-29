@@ -168,15 +168,10 @@ export default (props: TaskList) => {
   };
 
   const handleDeleteTasks = () => {
-    return new Promise(resolve => {
-      if (selectedTasks.length > 0) {
-        const dispatchDeleteTasks = Array.from(selectedTasks);
-        bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
-        resolve();
-      } else {
-        resolve();
-      }
-    });
+    if (selectedTasks.length > 0) {
+      const dispatchDeleteTasks = Array.from(selectedTasks);
+      bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
+    }
   };
 
   const handleAddTask = (content: string | number) => {
@@ -206,9 +201,8 @@ export default (props: TaskList) => {
       ...task,
       parentTaskId: newParentTask.taskId,
     }));
-    handleDeleteTasks().then(() => {
-      bus.emit('push', { action: 'ADD', payloads: currentSelectedTasks });
-    });
+    handleDeleteTasks();
+    bus.emit('push', { action: 'ADD', payloads: currentSelectedTasks });
   };
 
   const handleFinishAllTasks = () => {
@@ -274,7 +268,6 @@ export default (props: TaskList) => {
           }
         });
         setTasks(tasks.concat(tasksToBeAdded));
-        bus.emit('dispatch', { action: 'ADD', payloads: tasksToBeAdded });
         break;
       }
       case 'UPDATE': {

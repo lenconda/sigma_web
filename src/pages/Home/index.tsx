@@ -173,7 +173,12 @@ const Home: React.FC<HomePageProps> = props => {
 
     const pushHandler = (dispatch: Dispatch) => {
       if (dispatch.payloads.length === 0) { return }
-      if (dispatch.action === 'DELETE') {
+      switch (dispatch.action) {
+      case 'ADD': {
+        bus.emit('dispatch', { action: 'ADD', payloads: dispatch.payloads });
+        break;
+      }
+      case 'DELETE': {
         const defaultTasksToBeDeleted: TaskListItem[] = [];
         const defaultTasksToBeUpdated: TaskListItem[] = [];
         const currentDefaultTasks: TaskListItem[] = [];
@@ -199,13 +204,18 @@ const Home: React.FC<HomePageProps> = props => {
         }
         bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
         bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
+        break;
+      }
+      default:
+        break;
       }
     };
 
-    bus.on('dispatch', dispatchHandler);
     bus.on('push', pushHandler);
+    bus.on('dispatch', dispatchHandler);
 
     return () => {
+      bus.off('push', pushHandler);
       bus.off('dispatch', dispatchHandler);
     };
   }, [bus, dispatcher]);
