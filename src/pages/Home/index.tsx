@@ -49,6 +49,10 @@ import {
   getUserInfo,
 } from '../../services/user';
 import {
+  getNavMenu,
+  getAvatarMenu,
+} from '../../services/menus';
+import {
   ListIcon,
 } from '../../core/icons/index';
 import CustomIconButton from '../../components/IconButton';
@@ -75,9 +79,11 @@ const theme = createMuiTheme({
 
 const history = createBrowserHistory();
 
-export interface AppMenu {
-  name: string;
-  path: string;
+export interface AppMenuItem {
+  name?: string;
+  path?: string;
+  isDivider?: boolean;
+  icon?: string;
 }
 
 export interface DateRange {
@@ -85,11 +91,20 @@ export interface DateRange {
   end: Date;
 }
 
-const generatePopupMenu = (menus: Record<string, string>): JSX.Element[] => {
-  return Object.keys(menus).map((path, index) => {
-    return <Link to={path} key={index} className="link">
-      <MenuItem>{menus[path]}</MenuItem>
-    </Link>;
+const generatePopupMenu = (menus: AppMenuItem[]): JSX.Element[] => {
+  return menus.map((menu, index) => {
+    const { isDivider, name, path } = menu;
+    if (isDivider) {
+      return <hr key={index} />;
+    }
+    if (name && path) {
+      return <Link to={path} key={index} className="link">
+        <MenuItem classes={{ root: 'app-menu-item' }}>
+          <Typography noWrap={true} variant="body1">{name}</Typography>
+        </MenuItem>
+      </Link>;
+    }
+    return null;
   });
 };
 
@@ -118,14 +133,8 @@ const Home: React.FC<HomePageProps> = props => {
   const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
   const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
-  const [menus, setMenus] = useState<Record<string, string>>({
-    '/home/list': '任务列表',
-    '/home/summary': '摘要',
-  });
-  const [avatarMenus, setAvatarMenus] = useState<Record<string, string>>({
-    '/profile': '账户设置',
-    '/exit': '登出',
-  });
+  const [menus, setMenus] = useState<AppMenuItem[]>([]);
+  const [avatarMenus, setAvatarMenus] = useState<AppMenuItem[]>([]);
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
   const [userInfo, setUserInfo] = useState<User>(undefined);
@@ -245,6 +254,8 @@ const Home: React.FC<HomePageProps> = props => {
     getUserInfo().then(res => {
       setUserInfo(res);
     });
+    getAvatarMenu().then(res => setAvatarMenus(res));
+    getNavMenu().then(res => setMenus(res));
   }, []);
 
   return (
@@ -295,17 +306,6 @@ const Home: React.FC<HomePageProps> = props => {
           </>
         </Sticky>
         <nav className="app-home__nav">
-          <PopupProvider
-            className="popup-menu-wrapper"
-            closeOnClick={true}
-            trigger={
-              <Button variant="outlined" endIcon={<ExpandMoreIcon />}>
-                {menus[history.location.pathname.split('/').slice(0, 3).join('/')]}
-              </Button>
-            }
-          >
-            <MenuList>{generatePopupMenu(menus)}</MenuList>
-          </PopupProvider>
           <DatePicker
             startDate={(dateRange && dateRange.start)}
             endDate={(dateRange && dateRange.end)}
