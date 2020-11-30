@@ -486,4 +486,4 @@ export default (props: TaskList) => {
   );
 };
 
-export const Empty: React.FC = () => <div className="task-list empty">点击左侧任意一条子任务以查看任务详情</div>;
+export const Empty: React.FC = () => <div className="task-list empty">点击左侧任意一个任务清单以查看任务详情</div>;
