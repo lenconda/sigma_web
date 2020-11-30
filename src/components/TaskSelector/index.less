@@ -7,7 +7,28 @@
   &__title {
     box-sizing: border-box;
     padding: 16px;
+    padding-right: 48px;
     cursor: default;
+    position: relative;
+
+    .close-button {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: 16px;
+      padding: 0;
+      color: #999;
+      outline: 0;
+      border: 0;
+      background-color: transparent;
+      cursor: pointer;
+      transition: all @transition-duration;
+
+      &:hover {
+        color: #666;
+        transition: all @transition-duration;
+      }
+    }
   }
 
   &__content {
@@ -42,4 +63,8 @@
     border: 1px solid @border-color;
     transition: all @transition-duration;
   }
+}
+
+.footer {
+  padding: 16px;
 }

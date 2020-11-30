@@ -11,6 +11,8 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { TaskListItem } from '../TaskListItem';
 import Draggable from 'react-draggable';
 import Paper from '@material-ui/core/Paper';
+import CloseIcon from '@material-ui/icons/Close';
+import AppIconButton from '../IconButton';
 import './index.less';
 
 export interface TaskSelectorProps {
@@ -146,12 +148,15 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
               : `移动任务${selectedTask && `至：${selectedTask.content}` || ''}`
           }
         </Typography>
+        <button className="close-button" onClick={onClose}>
+          <CloseIcon fontSize="small" />
+        </button>
       </div>
       <DialogContent classes={{ root: 'task-selector__content' }}>
         <TreeView
           className="tree-view"
-          defaultCollapseIcon={<ExpandMoreIcon />}
-          defaultExpandIcon={<ChevronRightIcon />}
+          defaultCollapseIcon={<ExpandMoreIcon color="primary" />}
+          defaultExpandIcon={<ChevronRightIcon color="primary" />}
           expanded={expanded}
           onNodeToggle={(event, nodeIds) => {
             event.preventDefault();
@@ -163,7 +168,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           }
         </TreeView>
       </DialogContent>
-      <DialogActions>
+      <DialogActions classes={{ root: 'footer' }}>
         <Button onClick={onClose} variant="outlined">放弃</Button>
         <Button
           variant="outlined"
