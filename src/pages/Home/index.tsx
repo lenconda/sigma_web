@@ -253,6 +253,7 @@ const Home: React.FC<HomePageProps> = props => {
               userInfo &&
                 <div className="app-home__sidebar__header">
                   <PopupProvider
+                    className="popup-menu-wrapper"
                     closeOnClick={true}
                     trigger={
                       <IconButton>
@@ -289,6 +290,7 @@ const Home: React.FC<HomePageProps> = props => {
         </Sticky>
         <nav className="app-home__nav">
           <PopupProvider
+            className="popup-menu-wrapper"
             closeOnClick={true}
             trigger={
               <Button variant="outlined" endIcon={<ExpandMoreIcon />}>

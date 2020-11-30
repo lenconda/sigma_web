@@ -110,7 +110,21 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
   );
 
   return (
-    <Dialog open={visible} fullWidth={true} classes={{ root: 'task-selector' }}>
+    <Dialog
+      open={visible}
+      fullWidth={true}
+      classes={{ root: 'task-selector' }}
+      BackdropProps={{
+        classes: {
+          root: 'backdrop',
+        },
+      }}
+      PaperProps={{
+        classes: {
+          elevation24: 'container',
+        },
+      }}
+    >
       <div className="task-selector__title">
         <Typography noWrap={true} variant="subtitle1">
           {

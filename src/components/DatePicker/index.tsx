@@ -64,6 +64,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
       onOpen={() => setDatepickerVisible(true)}
       disablePortal={true}
       zIndex={zIndex}
+      className="date-picker__popup"
     >
       <div className="app-date-picker">
         <ReactDatePicker

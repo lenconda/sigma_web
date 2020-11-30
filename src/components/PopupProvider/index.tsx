@@ -16,6 +16,7 @@ export interface PopupProviderProps {
   open?: boolean;
   disablePortal?: boolean;
   closeOnClick?: boolean;
+  className?: string;
   onOpen?: () => void;
   onClose?: () => void;
 }
@@ -29,6 +30,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
   open = false,
   disablePortal = false,
   closeOnClick = false,
+  className = '',
   onOpen,
   onClose,
 }) => {
@@ -65,7 +67,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
           id={id}
           open={popupVisible}
           anchorEl={triggerRef.current}
-          className="app-popup"
+          className={`app-popup${className && ` ${className}` || ''}`}
           style={{ zIndex }}
           disablePortal={disablePortal}
         >
