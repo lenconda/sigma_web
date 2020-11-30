@@ -8,6 +8,7 @@ import {
   ListIcon,
   RefreshIcon,
   NotificationIcon,
+  LoadingIcon,
 } from '../../core/icons';
 import './index.less';
 
@@ -20,6 +21,7 @@ interface IconTypes {
   list: typeof ListIcon;
   refresh: typeof RefreshIcon;
   notification: typeof NotificationIcon;
+  loading: typeof LoadingIcon;
 }
 
 export interface IconButtonProps {
@@ -52,6 +54,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
     list: ListIcon,
     refresh: RefreshIcon,
     notification: NotificationIcon,
+    loading: LoadingIcon,
   };
 
   const Icon = icons[type];
