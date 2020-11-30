@@ -7,7 +7,7 @@ export const getNavMenu = async (): Promise<AppMenuItem[]> => {
     setTimeout(() => {
       resolve([
         {
-          name: '任务列表',
+          name: '任务清单',
           path: '/home/list',
         },
         {
