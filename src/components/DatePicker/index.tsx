@@ -78,6 +78,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         />
         <div className="app-date-picker__controls">
           <Button
+            variant="outlined"
             style={{ width: '100%' }}
             color="default"
             onClick={handleConfirmDateSelection}

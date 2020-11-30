@@ -19,6 +19,10 @@
     border-bottom: 0;
   }
 
+  .react-datepicker__day {
+    border: 1px solid transparent;
+  }
+
   .react-datepicker__day,
   .react-datepicker__day-name {
     width: 40px;
@@ -34,8 +38,9 @@
     &--in-range,
     &--in-selecting-range,
     &--keyboard-selected {
-      background-color: #e0e0e0;
+      background-color: #eee;
       color: inherit;
+      border: 1px solid #ddd;
     }
 
     &--in-selecting-range {
@@ -62,7 +67,7 @@
   &__controls {
     box-sizing: border-box;
     width: 100%;
-    padding: 15px;
+    padding: 15px 10px;
     padding-top: 0;
     display: flex;
     justify-content: center;
