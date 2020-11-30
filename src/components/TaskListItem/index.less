@@ -6,6 +6,7 @@
   justify-content: space-between;
   padding: 0;
   background-color: #fff;
+  border: 1px solid transparent;
   transition: all @transition-duration;
 
   &:hover &__drag-control > .icon,
@@ -21,6 +22,8 @@
   &.dragging {
     transition: all @transition-duration;
     box-shadow: @box-shadow-focus;
+    border: 1px solid @border-color;
+    border-radius: @border-radius;
   }
 
   &__content {
