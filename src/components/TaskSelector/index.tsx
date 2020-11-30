@@ -177,7 +177,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
         </TreeView>
       </DialogContent>
       <DialogActions classes={{ root: 'footer' }}>
-        <Button onClick={onClose} variant="outlined">放弃</Button>
+        <Button onClick={onClose} variant="outlined" className="app-button">放弃</Button>
         <Button
           variant="outlined"
           disabled={!selectedTask}
@@ -185,6 +185,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
             onClose();
             onSelectTask(selectedTask);
           }}
+          className="app-button"
         >
           好
         </Button>

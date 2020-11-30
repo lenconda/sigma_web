@@ -27,6 +27,46 @@
     .app-popup__trigger-wrapper > button {
       margin: 0 5px;
     }
+
+    &__pills {
+      > button {
+        padding: 0;
+
+        &:hover {
+          background-color: rgba(0, 0, 0, 0);
+        }
+
+        &:last-child {
+          border-left: 0;
+        }
+
+        .nav-link {
+          display: inline-block;
+          box-sizing: border-box;
+          padding: 5px 15px;
+          text-decoration: none;
+          color: inherit;
+          font-weight: inherit;
+          cursor: pointer;
+          transition: all @transition-duration;
+          border-radius: 4px 4px 3px 3px;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, .04);
+            transition: all @transition-duration;
+          }
+
+          &:visited {
+            text-decoration: none;
+          }
+
+          &.active {
+            background-color: #eee;
+            font-weight: bold;
+          }
+        }
+      }
+    }
   }
 
   &__sidebar {

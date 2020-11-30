@@ -26,6 +26,7 @@ import {
 } from 'react-router-dom';
 import PopupProvider from '../../components/PopupProvider';
 import Button from '@material-ui/core/Button';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import DatePicker from '../../components/DatePicker';
@@ -133,7 +134,7 @@ const Home: React.FC<HomePageProps> = props => {
   const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
   const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
-  const [menus, setMenus] = useState<AppMenuItem[]>([]);
+  const [navMenus, setNavMenus] = useState<AppMenuItem[]>([]);
   const [avatarMenus, setAvatarMenus] = useState<AppMenuItem[]>([]);
   const [dateRange, setDateRange] = useState<DateRange>(undefined);
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
@@ -255,7 +256,7 @@ const Home: React.FC<HomePageProps> = props => {
       setUserInfo(res);
     });
     getAvatarMenu().then(res => setAvatarMenus(res));
-    getNavMenu().then(res => setMenus(res));
+    getNavMenu().then(res => setNavMenus(res));
   }, []);
 
   return (
@@ -306,6 +307,20 @@ const Home: React.FC<HomePageProps> = props => {
           </>
         </Sticky>
         <nav className="app-home__nav">
+          {
+            navMenus.length !== 0
+              && <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
+                {
+                  navMenus.map((navMenu, index) => (
+                    <Button key={index} className="app-button">
+                      <NavLink className="nav-link" to={navMenu.path} activeClassName="active">
+                        {navMenu.name}
+                      </NavLink>
+                    </Button>
+                  ))
+                }
+              </ButtonGroup>
+          }
           <DatePicker
             startDate={(dateRange && dateRange.start)}
             endDate={(dateRange && dateRange.end)}
@@ -317,7 +332,7 @@ const Home: React.FC<HomePageProps> = props => {
               }
             }}
             customComponent={
-              <Button variant="outlined" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
+              <Button variant="outlined" className="app-button" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
                 {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
               </Button>
             }

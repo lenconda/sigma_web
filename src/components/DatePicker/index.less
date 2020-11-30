@@ -20,50 +20,53 @@
     outline: none;
   }
 
-  .react-datepicker__header {
-    background-color: #fff;
-    border-bottom: 0;
-  }
-
-  .react-datepicker__day {
-    border: 1px solid transparent;
-  }
-
-  .react-datepicker__day,
-  .react-datepicker__day-name {
-    width: 40px;
-    height: 40px;
-    line-height: 40px;
-    transition: all @transition-duration;
-
-    &:hover {
-      transition: all @transition-duration;
+  .react-datepicker {
+    &__header {
+      background-color: #fff;
+      border-bottom: 0;
     }
 
-    &--selected,
-    &--in-range,
-    &--in-selecting-range,
-    &--keyboard-selected {
-      background-color: #eee;
-      color: inherit;
-      border: 1px solid #ddd;
+    &__day {
+      border: 1px solid transparent;
+
+      &,
+      &-name {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        transition: all @transition-duration;
+
+        &:hover {
+          transition: all @transition-duration;
+        }
+
+        &--selected,
+        &--in-range,
+        &--in-selecting-range,
+        &--keyboard-selected {
+          background-color: #eee;
+          color: inherit;
+          border: 1px solid #ddd;
+        }
+
+        &--in-selecting-range {
+          background-color: #f0f0f0;
+        }
+      }
     }
 
-    &--in-selecting-range {
-      background-color: #f0f0f0;
+    &__triangle {
+      display: none;
     }
-  }
 
-  .react-datepicker__triangle {
-    display: none;
-  }
+    &__current-month {
+      padding: 10px 0;
+      font-weight: normal;
+    }
 
-  .react-datepicker__current-month {
-    padding: 10px 0;
-  }
-
-  .react-datepicker__navigation {
-    top: 20px;
+    &__navigation {
+      top: 20px;
+    }
   }
 }
 

@@ -83,6 +83,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             style={{ width: '100%' }}
             color="default"
             onClick={handleConfirmDateSelection}
+            className="app-button"
           >
             好
           </Button>
