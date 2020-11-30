@@ -23,6 +23,9 @@ const DragIcon = generateIcon('drag');
 const MoveIcon = generateIcon('move');
 const ProgressIcon = generateIcon('progress');
 const FinishIcon = generateIcon('finish');
+const ListIcon = generateIcon('list');
+const RefreshIcon = generateIcon('refresh');
+const NotificationIcon = generateIcon('notification');
 
 export {
   DeleteIcon,
@@ -30,4 +33,7 @@ export {
   MoveIcon,
   ProgressIcon,
   FinishIcon,
+  ListIcon,
+  RefreshIcon,
+  NotificationIcon,
 };
