@@ -333,6 +333,13 @@ const Home: React.FC<HomePageProps> = props => {
                   onSelectedTasksChange={handleSelectedTasksChange}
                 />
               </Route>
+              <Route path="/home/list">
+                <ListPage
+                  bus={bus}
+                  currentActiveTaskIds={currentActiveTaskIds}
+                  onSelectedTasksChange={handleSelectedTasksChange}
+                />
+              </Route>
               <Redirect from="/home" to="/home/list" />
             </Switch>
           </Suspense>
