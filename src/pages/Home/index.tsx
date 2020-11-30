@@ -136,7 +136,7 @@ const Home: React.FC<HomePageProps> = props => {
   const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
   const [navMenus, setNavMenus] = useState<AppMenuItem[]>([]);
   const [avatarMenus, setAvatarMenus] = useState<AppMenuItem[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange>(undefined);
+  const [dateRange, setDateRange] = useState<[Date, Date]>([undefined, undefined]);
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
   const [userInfo, setUserInfo] = useState<User>(undefined);
 
@@ -248,10 +248,7 @@ const Home: React.FC<HomePageProps> = props => {
     getTaskListFromTask('default', 6).then(res => {
       setDefaultTasks(res);
     });
-    setDateRange({
-      start: today,
-      end: today,
-    });
+    setDateRange([today, today]);
     getUserInfo().then(res => {
       setUserInfo(res);
     });
@@ -322,18 +319,18 @@ const Home: React.FC<HomePageProps> = props => {
               </ButtonGroup>
           }
           <DatePicker
-            startDate={(dateRange && dateRange.start)}
-            endDate={(dateRange && dateRange.end)}
+            startDate={(dateRange && dateRange[0])}
+            endDate={(dateRange && dateRange[1])}
             selectsRange={true}
             onConfirm={result => {
               if (Array.isArray(result)) {
                 const [start, end] = result;
-                setDateRange({ start, end });
+                setDateRange([start, end]);
               }
             }}
             customComponent={
               <Button variant="outlined" className="app-button" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
-                {generateDateString((dateRange && dateRange.start), (dateRange && dateRange.end))}
+                {generateDateString((dateRange && dateRange[0]), (dateRange && dateRange[1]))}
               </Button>
             }
           />
@@ -346,6 +343,7 @@ const Home: React.FC<HomePageProps> = props => {
                   bus={bus}
                   currentActiveTaskIds={currentActiveTaskIds}
                   onSelectedTasksChange={handleSelectedTasksChange}
+                  dateRange={[(dateRange && dateRange[0]), (dateRange && dateRange[1])]}
                 />
               </Route>
               <Route path="/home/list">
@@ -353,6 +351,7 @@ const Home: React.FC<HomePageProps> = props => {
                   bus={bus}
                   currentActiveTaskIds={currentActiveTaskIds}
                   onSelectedTasksChange={handleSelectedTasksChange}
+                  dateRange={[(dateRange && dateRange[0]), (dateRange && dateRange[1])]}
                 />
               </Route>
               <Redirect from="/home" to="/home/list" />

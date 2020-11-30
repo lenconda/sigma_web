@@ -11,12 +11,14 @@ export interface ListPageProps {
   bus: Bus<Dispatch>;
   currentActiveTaskIds: string[];
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
+  dateRange: [Date, Date];
 }
 
 const List: React.FC<ListPageProps> = ({
   bus,
   currentActiveTaskIds,
   onSelectedTasksChange,
+  dateRange,
 }) => {
   return (
     <div className="app-list__page">
@@ -29,6 +31,7 @@ const List: React.FC<ListPageProps> = ({
                 currentTaskId={currentActiveTaskId}
                 onSelectedTasksChange={onSelectedTasksChange}
                 currentActiveTaskIds={currentActiveTaskIds}
+                dateRange={dateRange}
               />
             </div>
           );

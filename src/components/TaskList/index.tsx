@@ -41,7 +41,6 @@ import {
 } from '../../utils/task';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
-
 import './index.less';
 
 export interface Dispatch {
@@ -55,6 +54,7 @@ export interface TaskList {
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
   currentActiveTaskIds?: string[];
   isDefault?: boolean;
+  dateRange: [Date, Date];
 }
 
 const useStyles = makeStyles(() => ({
@@ -123,33 +123,44 @@ export default (props: TaskList) => {
     currentActiveTaskIds = [],
     onSelectedTasksChange,
     isDefault = false,
+    dateRange = [undefined, undefined],
   } = props;
   const taskListElement = useRef(null);
   const [multiple, setMultiple] = useState<boolean>(false);
   const [addTaskContent, setAddTaskContent] = useState<string>('');
   const [tasks, setTasks] = useState<TaskListItem[]>([]);
+  const [shownTasks, setShownTasks] = useState<TaskListItem[]>([]);
   const [selectedTasks, setSelectedTasks] = useState<TaskListItem[]>([]);
   const [currentTask, setCurrentTask] = useState<TaskListItemDetailInfo | undefined>(undefined);
   const [taskSelectorVisible, setTaskSelectorVisible] = useState<boolean>(false);
   const [taskListLoading, setTaskListLoading] = useState<boolean>(false);
   const [currentTaskLoading, setCurrentTaskLoading] = useState<boolean>(false);
+  const [selectedDateRange, setSelectedDateRange] = useState<[Date, Date]>([undefined, undefined]);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
-    if (!destination) {
+    if (!destination || !source) {
       return;
     }
-    const currentTasks = reorder(tasks, source.index, destination.index);
-    const dispatchUpdateTasks = [];
-    currentTasks.forEach((task, index) => {
-      if (task.order !== index) {
-        task.order = index;
-        dispatchUpdateTasks.push(task);
-      }
-    });
-    bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
-    setTasks(currentTasks);
+    const sourceTask = shownTasks[source.index];
+    const destinationTask = shownTasks[destination.index];
+    const currentShownTasks = reorder(Array.from(shownTasks), source.index, destination.index);
+    const sourceTaskIndex = tasks.findIndex(task => task.taskId === sourceTask.taskId);
+    const destinationTaskIndex = tasks.findIndex(task => task.taskId === destinationTask.taskId);
+    if (sourceTaskIndex !== -1 && destinationTaskIndex !== -1) {
+      const dispatchUpdateTasks = [];
+      const currentAllTasks = reorder(tasks, sourceTaskIndex, destinationTaskIndex);
+      currentAllTasks.forEach((task, index) => {
+        if (task.order !== index) {
+          task.order = index;
+          dispatchUpdateTasks.push(task);
+        }
+      });
+      bus.emit('push', { action: 'UPDATE', payloads: dispatchUpdateTasks });
+      setTasks(currentAllTasks);
+    }
+    setShownTasks(currentShownTasks);
   };
 
   const handleSelectionChange = (task: TaskListItem) => {
@@ -239,6 +250,25 @@ export default (props: TaskList) => {
   useEffect(() => {
     onSelectedTasksChange(selectedTasks);
   }, [selectedTasks]);
+
+  useEffect(() => {
+    const [start, end] = dateRange;
+    const startDate = moment(start).startOf('day').toDate();
+    const endDate = moment(end).add(1, 'day').toDate();
+    setSelectedDateRange([startDate, endDate]);
+  }, [dateRange, tasks]);
+
+  useEffect(() => {
+    const [startDate, endDate] = selectedDateRange;
+    if (startDate && endDate) {
+      setShownTasks(tasks.filter(task => {
+        const taskDeadlineTimestamp = Date.parse(task.deadline);
+        const startTimestamp = Date.parse(startDate.toISOString());
+        const endTimeStamp = Date.parse(endDate.toISOString());
+        return startTimestamp <= taskDeadlineTimestamp && endTimeStamp >= taskDeadlineTimestamp;
+      }));
+    }
+  }, [selectedDateRange]);
 
   useEffect(() => {
     // TODO: request current task info
@@ -391,7 +421,7 @@ export default (props: TaskList) => {
         {
           taskListLoading || currentTaskLoading
             ? <span className="loading">请稍候...</span>
-            : tasks.length !== 0
+            : shownTasks.length !== 0
               ? <List className={theme.root} ref={taskListElement}>
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
@@ -399,7 +429,7 @@ export default (props: TaskList) => {
                       (provided, snapshot) => (
                         <div ref={provided.innerRef} className="task-items">
                           {
-                            tasks.map((item, index) => (
+                            shownTasks.map((item, index) => (
                               <Draggable key={item.taskId} draggableId={item.taskId} index={index}>
                                 {
                                   (provided, snapshot) => (
