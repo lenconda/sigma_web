@@ -9,6 +9,8 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { TaskListItem } from '../TaskListItem';
+import Draggable from 'react-draggable';
+import Paper from '@material-ui/core/Paper';
 import './index.less';
 
 export interface TaskSelectorProps {
@@ -39,6 +41,15 @@ const generateTaskMenu = async (): Promise<TaskSelectorMenuItem[]> => {
       resolve(getItems(10, '0'));
     }, 1000);
   });
+};
+
+const PaperComponent = props => {
+  return <Draggable
+    handle="#task-selector-title"
+    cancel={'[class*="MuiDialogContent-root"]'}
+  >
+    <Paper {...props} />
+  </Draggable>;
 };
 
 const TaskSelector: React.FC<TaskSelectorProps> = ({
@@ -113,7 +124,9 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
     <Dialog
       open={visible}
       fullWidth={true}
+      aria-labelledby="task-selector-title"
       classes={{ root: 'task-selector' }}
+      PaperComponent={PaperComponent}
       BackdropProps={{
         classes: {
           root: 'backdrop',
@@ -125,7 +138,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
         },
       }}
     >
-      <div className="task-selector__title">
+      <div className="task-selector__title" id="task-selector-title">
         <Typography noWrap={true} variant="subtitle1">
           {
             loading
