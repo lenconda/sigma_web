@@ -1,24 +1,35 @@
+@import '../../global.less';
+
 .task-selector {
   min-width: 420px;
   overflow-x: scroll;
 
   &__title {
     box-sizing: border-box;
-    padding: 25px;
+    padding: 16px;
   }
 
   &__content {
     box-sizing: border-box;
-    padding: 25px 0 !important;
-    padding-top: 10px !important;
+    padding: 0 16px !important;
+    padding-top: 0 !important;
     overflow: scroll;
-    padding-left: 10px !important;
   }
 }
 
 .tree-view {
   &__item__label {
-    padding: 10px !important;
+    box-sizing: border-box;
+    border-radius: @border-radius;
+    padding: 6px 10px !important;
+    border: 1px solid transparent;
     min-width: 400px;
+    transition: all @transition-duration;
+  }
+
+  &__item--selected > div > &__item__label {
+    background-color: #eee !important;
+    border: 1px solid @border-color;
+    transition: all @transition-duration;
   }
 }

@@ -64,10 +64,10 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
       nodeId={`${currentIndex}`}
       label={
         <div className="text-wrapper">
-          <Typography noWrap={true} variant="body1">{menuItem.content}</Typography>
+          <Typography noWrap={true} variant="caption">{menuItem.content}</Typography>
         </div>
       }
-      classes={{ label: 'tree-view__item__label' }}
+      classes={{ label: 'tree-view__item__label', selected: 'tree-view__item--selected' }}
       onIconClick={() => {
         if (expanded.indexOf(currentIndex) === -1) {
           setLoading(true);
@@ -112,10 +112,10 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
   return (
     <Dialog open={visible} fullWidth={true} classes={{ root: 'task-selector' }}>
       <div className="task-selector__title">
-        <Typography noWrap={true} variant="h6">
+        <Typography noWrap={true} variant="subtitle1">
           {
             loading
-              ? '请求中...'
+              ? '请稍候...'
               : `移动任务${selectedTask && `至：${selectedTask.content}` || ''}`
           }
         </Typography>
@@ -137,8 +137,9 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
         </TreeView>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>放弃</Button>
+        <Button onClick={onClose} variant="outlined">放弃</Button>
         <Button
+          variant="outlined"
           disabled={!selectedTask}
           onClick={() => {
             onClose();
