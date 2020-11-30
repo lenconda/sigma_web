@@ -5,6 +5,9 @@ import {
   ProgressIcon,
   DeleteIcon,
   FinishIcon,
+  ListIcon,
+  RefreshIcon,
+  NotificationIcon,
 } from '../../core/icons';
 import './index.less';
 
@@ -14,6 +17,9 @@ interface IconTypes {
   progress: typeof ProgressIcon;
   delete: typeof DeleteIcon;
   finish: typeof FinishIcon;
+  list: typeof ListIcon;
+  refresh: typeof RefreshIcon;
+  notification: typeof NotificationIcon;
 }
 
 export interface IconButtonProps {
@@ -23,6 +29,7 @@ export interface IconButtonProps {
   onClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   style?: React.CSSProperties;
   iconClasses?: string[];
+  disabled?: boolean;
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, ref) => {
@@ -33,6 +40,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
     onClick,
     style = {},
     iconClasses = [],
+    disabled = false,
   } = props;
 
   const icons: IconTypes = {
@@ -41,6 +49,9 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
     progress: ProgressIcon,
     delete: DeleteIcon,
     finish: FinishIcon,
+    list: ListIcon,
+    refresh: RefreshIcon,
+    notification: NotificationIcon,
   };
 
   const Icon = icons[type];
@@ -48,6 +59,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
   return <button
     onClick={onClick}
     ref={ref}
+    disabled={disabled}
     className={`icon-button${className ? ` ${className}` : ''}`}
   >
     <Icon className={iconClasses.join(' ')} fontSize={size} style={style} />
