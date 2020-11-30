@@ -48,6 +48,11 @@ import {
 import {
   getUserInfo,
 } from '../../services/user';
+import {
+  ListIcon,
+  DeleteIcon,
+} from '../../core/icons/index';
+import CustomIconButton from '../../components/IconButton';
 import './index.less';
 
 const ListPage = lazy(() => import('./List'));
@@ -137,6 +142,10 @@ const Home: React.FC<HomePageProps> = props => {
         setCurrentActiveTaskIds(newActiveTaskIds);
       }
     }
+  };
+
+  const handleDeleteDefaultTask = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
   };
 
   useEffect(() => {
@@ -240,20 +249,23 @@ const Home: React.FC<HomePageProps> = props => {
       <StylesProvider injectFirst={true}>
         <Sticky direction="horizontal" className="app-home__sidebar">
           <>
-            <div className="app-home__sidebar__header">
-              <PopupProvider
-                closeOnClick={true}
-                trigger={
-                  <IconButton>
-                    <img className="avatar" src="/assets/images/default_avatar.jpg" width="20" />
-                  </IconButton>
-                }
-              >
-                <MenuList>
-                  {generatePopupMenu(avatarMenus)}
-                </MenuList>
-              </PopupProvider>
-            </div>
+            {
+              userInfo &&
+                <div className="app-home__sidebar__header">
+                  <PopupProvider
+                    closeOnClick={true}
+                    trigger={
+                      <IconButton>
+                        <img className="avatar" src={userInfo.avatar} width="20" />
+                      </IconButton>
+                    }
+                  >
+                    <MenuList>
+                      {generatePopupMenu(avatarMenus)}
+                    </MenuList>
+                  </PopupProvider>
+                </div>
+            }
             <div className="app-home__sidebar__input">
               <DebouncedTextField
                 className="input"
@@ -265,7 +277,9 @@ const Home: React.FC<HomePageProps> = props => {
                 defaultTasks.map((task, index) => {
                   return <MenuItem classes={{ root: 'item' }} key={index}>
                     <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
+                      <ListIcon className="link__icon list" />
                       <Typography noWrap={true} variant="caption">{task.content}</Typography>
+                      <CustomIconButton className="link__icon delete" type="delete" onClick={handleDeleteDefaultTask} />
                     </NavLink>
                   </MenuItem>;
                 })

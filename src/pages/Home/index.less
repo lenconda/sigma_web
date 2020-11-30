@@ -78,6 +78,7 @@
       flex-grow: 1;
       flex-shrink: 1;
       overflow-y: scroll;
+      outline: 0;
 
       .item {
         padding: 0;
@@ -85,7 +86,35 @@
         .link {
           box-sizing: border-box;
           width: 100%;
-          padding: 10px 15px;
+          padding: 10px 42px;
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          position: relative;
+
+          &:hover {
+            .delete {
+              display: block;
+            }
+          }
+
+          &__icon {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+
+            &.list {
+              left: 16px;
+            }
+
+            &.delete {
+              right: 10px;
+              color: #c0c0c0;
+              font-weight: 400;
+              display: none;
+            }
+          }
 
           &.current {
             background-color: #eee;
