@@ -1,10 +1,13 @@
 import React from 'react';
 import './iconfont.css';
+import './index.less';
 
 export interface IconProps {
   fontSize?: number;
   className?: string;
   style?: React.CSSProperties;
+  spin?: boolean;
+  spinDuration?: string;
 }
 
 const generateIcon = (name: string): React.FC<IconProps> => {
@@ -12,9 +15,11 @@ const generateIcon = (name: string): React.FC<IconProps> => {
     fontSize = 16,
     className = '',
     style = {},
+    spin = false,
+    spinDuration: animationDuration = '1s',
   }) => <i
-    className={`iconfont sg_${name}${className ? ` ${className}` : ''}`}
-    style={{ ...style, fontSize }}
+    className={`iconfont sg_${name}${className && ` ${className}` || ''}${spin && ' spin' || ''}`}
+    style={{ ...style, fontSize, animationDuration: spin ? animationDuration : 'none' }}
   ></i>;
 };
 

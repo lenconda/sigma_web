@@ -12,7 +12,6 @@ import { TaskListItem } from '../TaskListItem';
 import Draggable from 'react-draggable';
 import Paper from '@material-ui/core/Paper';
 import CloseIcon from '@material-ui/icons/Close';
-import AppIconButton from '../IconButton';
 import {
   LoadingIcon,
 } from '../../core/icons';
@@ -84,7 +83,6 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           <Typography noWrap={true} variant="caption">{menuItem.content}</Typography>
         </div>
       }
-      icon={(currentIndex === currentLoadingItem && <LoadingIcon />) || null}
       classes={{ label: 'tree-view__item__label', selected: 'tree-view__item--selected' }}
       onIconClick={() => {
         if (expanded.indexOf(currentIndex) === -1) {
@@ -118,6 +116,11 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
         }, {} as TaskListItem);
         setSelectedTask(currentTaskItem);
       }}
+      icon={
+        currentIndex === currentLoadingItem
+          ? <LoadingIcon spin={true} fontSize={13} style={{ color: '#c0c0c0', fontWeight: 'bold' }} />
+          : null
+      }
     >
       <TreeItem nodeId="placeholder"></TreeItem>
       {
