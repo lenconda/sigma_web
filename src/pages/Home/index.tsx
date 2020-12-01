@@ -260,48 +260,46 @@ const Home: React.FC<HomePageProps> = props => {
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
         <Sticky direction="horizontal" className="app-home__sidebar">
-          <>
+          {
+            userInfo &&
+              <div className="app-home__sidebar__header">
+                <PopupProvider
+                  className="popup-menu-wrapper"
+                  closeOnClick={true}
+                  trigger={
+                    <IconButton>
+                      <img className="avatar" src={userInfo.avatar} width="20" />
+                    </IconButton>
+                  }
+                >
+                  <MenuList>
+                    {generatePopupMenu(avatarMenus)}
+                  </MenuList>
+                </PopupProvider>
+              </div>
+          }
+          <div className="app-home__sidebar__input">
+            <DebouncedTextField
+              className="input"
+              placeholder="键入 Enter 以新建任务清单..."
+            />
+          </div>
+          <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
             {
-              userInfo &&
-                <div className="app-home__sidebar__header">
-                  <PopupProvider
-                    className="popup-menu-wrapper"
-                    closeOnClick={true}
-                    trigger={
-                      <IconButton>
-                        <img className="avatar" src={userInfo.avatar} width="20" />
-                      </IconButton>
-                    }
-                  >
-                    <MenuList>
-                      {generatePopupMenu(avatarMenus)}
-                    </MenuList>
-                  </PopupProvider>
-                </div>
+              defaultTasks.map((task, index) => {
+                return <MenuItem classes={{ root: 'item' }} key={index}>
+                  <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
+                    <ListIcon className="link__icon list" />
+                    <Typography noWrap={true} variant="caption">{task.content}</Typography>
+                    <CustomIconButton
+                      className="link__icon delete"
+                      type="delete" onClick={event => handleDeleteDefaultTask(event, task)}
+                    />
+                  </NavLink>
+                </MenuItem>;
+              })
             }
-            <div className="app-home__sidebar__input">
-              <DebouncedTextField
-                className="input"
-                placeholder="键入 Enter 以新建任务清单..."
-              />
-            </div>
-            <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
-              {
-                defaultTasks.map((task, index) => {
-                  return <MenuItem classes={{ root: 'item' }} key={index}>
-                    <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
-                      <ListIcon className="link__icon list" />
-                      <Typography noWrap={true} variant="caption">{task.content}</Typography>
-                      <CustomIconButton
-                        className="link__icon delete"
-                        type="delete" onClick={event => handleDeleteDefaultTask(event, task)}
-                      />
-                    </NavLink>
-                  </MenuItem>;
-                })
-              }
-            </MenuList>
-          </>
+          </MenuList>
         </Sticky>
         <nav className="app-home__nav">
           {

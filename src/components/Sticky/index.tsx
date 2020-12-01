@@ -8,7 +8,7 @@ import './index.less';
 export interface StickyProps {
   className?: string;
   zIndex?: number;
-  children: React.ReactChild;
+  children: React.ReactNode;
   direction?: 'vertical' | 'horizontal';
 }
 
@@ -59,7 +59,12 @@ const Sticky: React.FC<StickyProps> = ({
         className={`app-sticky-nav${className && ` ${className}` || ''}${sticky && ` sticky ${direction}` || ''}`}
         style={{ zIndex }}
       >
-        {children}
+        {
+          React.Children.map(children, child => {
+            if (!React.isValidElement(child)) { return null }
+            return React.cloneElement(child, child.props);
+          })
+        }
       </nav>
       {
         sticky

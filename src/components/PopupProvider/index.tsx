@@ -9,7 +9,7 @@ import './index.less';
 
 export interface PopupProviderProps {
   trigger: JSX.Element;
-  children: React.ReactChild;
+  children: React.ReactNode;
   id?: string;
   triggerClass?: string;
   zIndex?: number;
@@ -72,7 +72,12 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
           disablePortal={disablePortal}
         >
           <div className="app-popup__popup-wrapper__content" onClick={() => closeOnClick && handleClose()}>
-            {children}
+            {
+              React.Children.map(children, child => {
+                if (!React.isValidElement(child)) { return null }
+                return React.cloneElement(child, child.props);
+              })
+            }
           </div>
         </Popper>
       </div>
