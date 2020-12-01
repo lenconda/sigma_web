@@ -37,7 +37,7 @@ export const getCurrentTaskInfo = async (
         taskId: taskId,
         parentTaskId: isDefault ? 'default' : parentId,
         finished: false,
-        deadline: moment(new Date()).startOf('day').add(1, 'day').toISOString(),
+        deadline: new Date().toISOString(),
         content: isDefault ? '全部任务' : taskId,
         order,
         creator: {

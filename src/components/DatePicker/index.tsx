@@ -14,6 +14,7 @@ export interface DatePickerProps {
   customComponent?: JSX.Element;
   onConfirm: (data: Date | [Date, Date], event: React.SyntheticEvent<any, Event>) => void;
   selectsRange?: boolean;
+  showTimeSelect?: boolean;
   zIndex?: number;
 }
 
@@ -24,6 +25,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
   onConfirm,
   selectsRange = false,
   zIndex = 9999,
+  showTimeSelect = false,
 }) => {
   const [datepickerVisible, setDatepickerVisible] = useState<boolean>(false);
   const [controlledStartDate, setControlledStartDate] = useState<Date>(undefined);
@@ -76,6 +78,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
           selectsRange={selectsRange}
           customInput={customComponent}
           calendarClassName="date-picker-component"
+          showTimeSelect={showTimeSelect}
         />
         <div className="app-date-picker__controls">
           <Button

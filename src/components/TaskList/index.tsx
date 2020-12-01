@@ -34,6 +34,7 @@ import {
 } from '../../services/task';
 import { ProgressIcon } from '../../core/icons';
 import IconButton from '../IconButton';
+import Chip from '@material-ui/core/Chip';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
 import {
@@ -97,23 +98,20 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
     new Date(deadline),
   );
   const status: '进行中' | '已完成' = finished ? '已完成' : '进行中';
-  const deadlineDate = moment(new Date(deadline)).add(-1, 'day').startOf('day').toDate();
-  const [year, month, date] = [
-    deadlineDate.getFullYear(),
-    deadlineDate.getMonth() + 1,
-    deadlineDate.getDate(),
-  ];
-
+  const dateString = moment(deadline).format('YYYY-MM-DD HH:mm');
   return (
-    <Button size="small" startIcon={<ProgressIcon style={{ color: '#aaa' }} />}>
-      <Typography color="textSecondary" variant="body2">
-        {year}-{month}-{date}
-      </Typography>
+    <div>
+      <Button size="small" startIcon={<ProgressIcon style={{ color: '#aaa' }} />}>
+        <Typography color="textSecondary" variant="body2">{dateString}</Typography>
+      </Button>
       &nbsp;
-      <Typography color={delayDays > 0 ? 'error' : 'textSecondary'} variant="body2">
-        {`${status}${delayDays > 0 ? `，已过期 ${Math.abs(delayDays)} 天` : ''}`}
-      </Typography>
-    </Button>
+      <Chip
+        size="small"
+        color={delayDays > 0 ? 'secondary' : 'default'}
+        label={`${status}${delayDays > 0 ? `，过期 ${Math.abs(delayDays)} 天` : ''}`}
+      />
+    </div>
+
   );
 };
 
@@ -167,19 +165,6 @@ export default (props: TaskList) => {
 
   const handleTaskStatusChange = (task: TaskListItem, currentTasks: TaskListItem[]) => {
     const payloads = [task];
-    // const currentNewTasks = Array.from(currentTasks).map(listedTask => {
-    //   if (task.taskId === listedTask.taskId) {
-    //     return task;
-    //   }
-    //   return listedTask;
-    // });
-    // const currentTaskGeneralInfo = getTaskGenerateInfo(currentTask);
-    // if (checkAllTaskFinished(currentNewTasks) && !currentTask.finished) {
-    //   payloads.push({ ...currentTaskGeneralInfo, finished: true });
-    // }
-    // if (!checkAllTaskFinished(currentNewTasks) && currentTask.finished) {
-    //   payloads.push({ ...currentTaskGeneralInfo, finished: false });
-    // }
     bus.emit('push', { action: 'UPDATE', payloads });
   };
 
@@ -443,14 +428,15 @@ export default (props: TaskList) => {
         !isDefault
         && <div className="task-list__deadline">
           <DatePicker
-            startDate={currentTask ? moment(new Date(currentTask.deadline)).add(-1, 'day').startOf('day').toDate() : new Date()}
+            startDate={currentTask ? new Date(currentTask.deadline) : new Date()}
             customComponent={generateStatus(currentTask)}
             zIndex={998}
+            showTimeSelect={true}
             onConfirm={result => {
               if (result instanceof Date) {
                 const newCurrentTaskInfo: TaskListItem = {
                   ...getTaskGenerateInfo(currentTask),
-                  deadline: moment(result).startOf('day').add(1, 'day').toDate().toISOString(),
+                  deadline: result.toISOString(),
                 };
                 bus.emit('push', {
                   action: 'UPDATE',
