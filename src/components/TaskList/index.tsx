@@ -38,6 +38,7 @@ import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
 import {
   getTaskGenerateInfo,
+  checkAllTaskFinished,
 } from '../../utils/task';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
@@ -161,6 +162,25 @@ export default (props: TaskList) => {
       setTasks(currentAllTasks);
     }
     setShownTasks(currentShownTasks);
+  };
+
+  const handleTaskStatusChange = (task: TaskListItem, currentTasks: TaskListItem[]) => {
+    const payloads = [task];
+    const currentNewTasks = Array.from(currentTasks).map(listedTask => {
+      if (task.taskId === listedTask.taskId) {
+        return task;
+      }
+      return listedTask;
+    });
+    if (checkAllTaskFinished(currentNewTasks) && !currentTask.finished) {
+      const currentTaskGeneralInfo = getTaskGenerateInfo(currentTask);
+      if (currentTask.finished) {
+        payloads.push({ ...currentTaskGeneralInfo, finished: false });
+      } else {
+        payloads.push({ ...currentTaskGeneralInfo, finished: true });
+      }
+    }
+    bus.emit('push', { action: 'UPDATE', payloads });
   };
 
   const handleSelectionChange = (task: TaskListItem) => {
@@ -450,7 +470,7 @@ export default (props: TaskList) => {
                                         deadline={item.deadline}
                                         finished={item.finished}
                                         onSelectionChange={handleSelectionChange}
-                                        onChange={task => bus.emit('push', { action: 'UPDATE', payloads: [task] })}
+                                        onChange={task => handleTaskStatusChange(task, tasks)}
                                         parentTaskId={item.parentTaskId}
                                       />
                                     </div>
