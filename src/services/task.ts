@@ -3,7 +3,6 @@ import {
   TaskListItemDetailInfo,
 } from '../components/TaskListItem';
 import idGen from '../core/idgen';
-import moment from 'moment';
 
 export const getTaskInfo = async (
   taskId: string,
