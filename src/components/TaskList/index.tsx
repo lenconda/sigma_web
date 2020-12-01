@@ -208,13 +208,13 @@ export default (props: TaskList) => {
   };
 
   const handleMoveTasks = (newParentTask: TaskListItem) => {
-    console.log('move tasks');
-    const currentSelectedTasks = Array.from(selectedTasks).map(task => ({
+    const currentSelectedTasks = Array.from(selectedTasks);
+    const currentSelectedNewTasks = Array.from(selectedTasks).map(task => ({
       ...task,
       parentTaskId: newParentTask.taskId,
     }));
-    handleDeleteTasks();
-    bus.emit('push', { action: 'ADD', payloads: currentSelectedTasks });
+    bus.emit('push', { action: 'ADD', payloads: currentSelectedNewTasks });
+    bus.emit('push', { action: 'DELETE', payloads: currentSelectedTasks });
   };
 
   const handleFinishAllTasks = () => {
