@@ -95,6 +95,7 @@ const Drawer: React.FC<DrawerProps> = ({
         PaperProps={{
           classes: mergeClasses<PaperPartialClassKey>({
             elevation0: `app-drawer__paper${(stickyClass && sticky) && ` ${stickyClass}` || ''}`,
+            elevation16: `app-drawer__paper${stickyClass && ` ${stickyClass}` || ''}`,
           }, paperClass),
         }}
         variant={generateVariantState()}
