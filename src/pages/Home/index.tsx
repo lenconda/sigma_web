@@ -57,6 +57,7 @@ import {
   ListIcon,
 } from '../../core/icons/index';
 import CustomIconButton from '../../components/IconButton';
+import Drawer from '../../components/Drawer';
 import './index.less';
 
 const ListPage = lazy(() => import('./List'));
@@ -139,6 +140,8 @@ const Home: React.FC<HomePageProps> = props => {
   const [dateRange, setDateRange] = useState<[Date, Date]>([undefined, undefined]);
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
   const [userInfo, setUserInfo] = useState<User>(undefined);
+  const [smallWidth, setSmallWidth] = useState<boolean>(false);
+  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -169,6 +172,19 @@ const Home: React.FC<HomePageProps> = props => {
       setCurrentActiveTaskIds([id]);
     }
   }, [props.location]);
+
+  useEffect(() => {
+    const handler = () => {
+      const innerWidth = window.innerWidth;
+      setSmallWidth(innerWidth < 720);
+    };
+    window.addEventListener('resize', handler);
+    return () => {
+      window.removeEventListener('resize', handler);
+    };
+  }, []);
+
+  useEffect(() => setSmallWidth(window.innerWidth < 720), []);
 
   useEffect(() => {
     dispatcher.start();
@@ -256,55 +272,78 @@ const Home: React.FC<HomePageProps> = props => {
     getNavMenu().then(res => setNavMenus(res));
   }, []);
 
+  const generateSidebarContent = (): JSX.Element => (
+    <>
+      {
+        userInfo &&
+        <div className="app-home__sidebar__header">
+          <PopupProvider
+            className="popup-menu-wrapper"
+            closeOnClick={true}
+            disablePortal={true}
+            trigger={
+              <IconButton>
+                <img className="avatar" src={userInfo.avatar} width="20" />
+              </IconButton>
+            }
+          >
+            <MenuList>
+              {generatePopupMenu(avatarMenus)}
+            </MenuList>
+          </PopupProvider>
+        </div>
+      }
+      <div className="app-home__sidebar__input">
+        <DebouncedTextField
+          className="input"
+          placeholder="键入 Enter 以新建任务清单..."
+        />
+      </div>
+      <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
+        {
+          defaultTasks.map((task, index) => {
+            return <MenuItem classes={{ root: 'item' }} key={index}>
+              <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
+                <ListIcon className="link__icon list" />
+                <Typography noWrap={true} variant="caption">{task.content}</Typography>
+                <CustomIconButton
+                  className="link__icon delete"
+                  type="delete" onClick={event => handleDeleteDefaultTask(event, task)}
+                />
+              </NavLink>
+            </MenuItem>;
+          })
+        }
+      </MenuList>
+    </>
+  );
+
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
-        <Sticky direction="horizontal" className="app-home__sidebar">
-          {
-            userInfo &&
-              <div className="app-home__sidebar__header">
-                <PopupProvider
-                  className="popup-menu-wrapper"
-                  closeOnClick={true}
-                  trigger={
-                    <IconButton>
-                      <img className="avatar" src={userInfo.avatar} width="20" />
-                    </IconButton>
-                  }
-                >
-                  <MenuList>
-                    {generatePopupMenu(avatarMenus)}
-                  </MenuList>
-                </PopupProvider>
-              </div>
-          }
-          <div className="app-home__sidebar__input">
-            <DebouncedTextField
-              className="input"
-              placeholder="键入 Enter 以新建任务清单..."
-            />
-          </div>
-          <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
-            {
-              defaultTasks.map((task, index) => {
-                return <MenuItem classes={{ root: 'item' }} key={index}>
-                  <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
-                    <ListIcon className="link__icon list" />
-                    <Typography noWrap={true} variant="caption">{task.content}</Typography>
-                    <CustomIconButton
-                      className="link__icon delete"
-                      type="delete" onClick={event => handleDeleteDefaultTask(event, task)}
-                    />
-                  </NavLink>
-                </MenuItem>;
-              })
-            }
-          </MenuList>
-        </Sticky>
+        {
+          !smallWidth &&
+          <Sticky direction="horizontal" className="app-home__sidebar">
+            {generateSidebarContent()}
+          </Sticky>
+        }
         <nav className="app-home__nav">
-          {
-            navMenus.length !== 0
-              && <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
+          <div className="app-home__nav__left">
+            {
+              smallWidth &&
+              <Drawer
+                open={drawerVisible}
+                onClose={() => setDrawerVisible(false)}
+                trigger={() => <button onClick={() => setDrawerVisible(true)}>test</button>}
+              >
+                {generateSidebarContent()}
+              </Drawer>
+            }
+          </div>
+          <div className="app-home__nav__center">
+            {
+              navMenus.length !== 0 &&
+              <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
                 {
                   navMenus.map((navMenu, index) => (
                     <Button key={index} className="app-button">
@@ -315,23 +354,24 @@ const Home: React.FC<HomePageProps> = props => {
                   ))
                 }
               </ButtonGroup>
-          }
-          <DatePicker
-            startDate={(dateRange && dateRange[0])}
-            endDate={(dateRange && dateRange[1])}
-            selectsRange={true}
-            onConfirm={result => {
-              if (Array.isArray(result)) {
-                const [start, end] = result;
-                setDateRange([start, end]);
-              }
-            }}
-            customComponent={
-              <Button variant="outlined" className="app-button" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
-                {generateDateString((dateRange && dateRange[0]), (dateRange && dateRange[1]))}
-              </Button>
             }
-          />
+            <DatePicker
+              startDate={(dateRange && dateRange[0])}
+              endDate={(dateRange && dateRange[1])}
+              selectsRange={true}
+              onConfirm={result => {
+                if (Array.isArray(result)) {
+                  const [start, end] = result;
+                  setDateRange([start, end]);
+                }
+              }}
+              customComponent={
+                <Button variant="outlined" className="app-button" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
+                  {generateDateString((dateRange && dateRange[0]), (dateRange && dateRange[1]))}
+                </Button>
+              }
+            />
+          </div>
         </nav>
         <div className="app-home__page">
           <Suspense fallback={<></>}>

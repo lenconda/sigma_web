@@ -9,6 +9,9 @@ import Paper from '@material-ui/core/Paper';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
+import {
+  mergeClasses,
+} from '../../utils/class';
 import './index.less';
 
 type ClassKey = Partial<Record<DialogClassKey, string>>;
@@ -52,19 +55,10 @@ const DraggableDialog: React.FC<DraggableDialogProps> = ({
   },
   onClose,
 }) => {
-  const mergeClasses = (defaultClasses: ClassKey, customClasses: ClassKey): ClassKey => {
-    return Object.keys(defaultClasses).reduce<ClassKey>((result, key) => {
-      const defaultValue = defaultClasses[key];
-      const customValue = customClasses[key] || '';
-      result[key] = `${defaultValue}${(customValue && defaultValue !== customValue) ? ` ${customValue}` : ''}`;
-      return result;
-    }, {} as ClassKey);
-  };
-
   return <Dialog
     open={open}
     fullWidth={fullWidth}
-    classes={mergeClasses({ root: 'app-dialog' }, classes)}
+    classes={mergeClasses<ClassKey>({ root: 'app-dialog' }, classes)}
     aria-labelledby="app-dialog__title"
     PaperComponent={PaperComponent}
     BackdropProps={BackdropProps}
