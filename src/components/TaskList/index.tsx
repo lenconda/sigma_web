@@ -163,7 +163,7 @@ export default (props: TaskList) => {
     setShownTasks(currentShownTasks);
   };
 
-  const handleTaskStatusChange = (task: TaskListItem, currentTasks: TaskListItem[]) => {
+  const handleTaskStatusChange = (task: TaskListItem) => {
     const payloads = [task];
     bus.emit('push', { action: 'UPDATE', payloads });
   };
@@ -479,7 +479,7 @@ export default (props: TaskList) => {
                                         deadline={item.deadline}
                                         finished={item.finished}
                                         onSelectionChange={handleSelectionChange}
-                                        onChange={task => handleTaskStatusChange(task, tasks)}
+                                        onChange={handleTaskStatusChange}
                                         parentTaskId={item.parentTaskId}
                                       />
                                     </div>
