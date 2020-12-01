@@ -172,13 +172,12 @@ export default (props: TaskList) => {
       }
       return listedTask;
     });
+    const currentTaskGeneralInfo = getTaskGenerateInfo(currentTask);
     if (checkAllTaskFinished(currentNewTasks) && !currentTask.finished) {
-      const currentTaskGeneralInfo = getTaskGenerateInfo(currentTask);
-      if (currentTask.finished) {
-        payloads.push({ ...currentTaskGeneralInfo, finished: false });
-      } else {
-        payloads.push({ ...currentTaskGeneralInfo, finished: true });
-      }
+      payloads.push({ ...currentTaskGeneralInfo, finished: true });
+    }
+    if (!checkAllTaskFinished(currentNewTasks) && currentTask.finished) {
+      payloads.push({ ...currentTaskGeneralInfo, finished: false });
     }
     bus.emit('push', { action: 'UPDATE', payloads });
   };
@@ -299,7 +298,7 @@ export default (props: TaskList) => {
       if (!isDefault) {
         // TODO: request sub-tasks info
         setTaskListLoading(true);
-        getTaskListFromTask(currentTaskId, 10)
+        getTaskListFromTask(currentTaskId, 5)
           .then(tasks => setTasks(tasks))
           .finally(() => setTaskListLoading(false));
       }
