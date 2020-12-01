@@ -208,6 +208,7 @@ export default (props: TaskList) => {
   };
 
   const handleMoveTasks = (newParentTask: TaskListItem) => {
+    console.log('move tasks');
     const currentSelectedTasks = Array.from(selectedTasks).map(task => ({
       ...task,
       parentTaskId: newParentTask.taskId,
@@ -268,7 +269,7 @@ export default (props: TaskList) => {
         return startTimestamp <= taskDeadlineTimestamp && endTimeStamp >= taskDeadlineTimestamp;
       }));
     }
-  }, [selectedDateRange]);
+  }, [selectedDateRange, tasks]);
 
   useEffect(() => {
     // TODO: request current task info
@@ -287,6 +288,7 @@ export default (props: TaskList) => {
 
   useEffect(() => {
     const handler = (dispatch: Dispatch) => {
+      if (dispatch.payloads.length === 0) { return }
       switch (dispatch.action) {
       case 'ADD': {
         const tasksToBeAdded = [];
@@ -327,8 +329,7 @@ export default (props: TaskList) => {
       }
       case 'DELETE': {
         const dispatchUpdateTasks = [];
-        const newTasks = tasks
-          .filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1);
+        const newTasks = tasks.filter(task => dispatch.payloads.findIndex(payload => payload.taskId === task.taskId) === -1);
         if (newTasks.length < tasks.length) {
           newTasks.forEach((currentTask, index) => {
             if (currentTask.order !== index) {
@@ -509,7 +510,10 @@ export default (props: TaskList) => {
       }
       <TaskSelector
         visible={taskSelectorVisible}
-        onClose={() => setTaskSelectorVisible(false)}
+        onClose={event => {
+          event.stopPropagation();
+          setTaskSelectorVisible(false);
+        }}
         onSelectTask={handleMoveTasks}
       />
     </div>

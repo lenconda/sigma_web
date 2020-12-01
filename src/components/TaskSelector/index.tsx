@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-// import Dialog from '@material-ui/core/Dialog';
 import DraggableDialog from '../DraggableDialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
@@ -10,9 +9,6 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { TaskListItem } from '../TaskListItem';
-// import Draggable from 'react-draggable';
-// import Paper from '@material-ui/core/Paper';
-// import CloseIcon from '@material-ui/icons/Close';
 import {
   LoadingIcon,
 } from '../../core/icons';
@@ -47,15 +43,6 @@ const generateTaskMenu = async (): Promise<TaskSelectorMenuItem[]> => {
     }, 1000);
   });
 };
-
-// const PaperComponent = props => {
-//   return <Draggable
-//     handle="#task-selector-title"
-//     cancel={'[class*="MuiDialogContent-root"]'}
-//   >
-//     <Paper {...props} />
-//   </Draggable>;
-// };
 
 const TaskSelector: React.FC<TaskSelectorProps> = ({
   visible,
@@ -135,9 +122,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
     <DraggableDialog
       open={visible}
       fullWidth={true}
-      handler="task-selector-title"
       classes={{ root: 'task-selector' }}
-      cancel={'[class*="MuiDialogContent-root"]'}
       onClose={onClose}
       title={
         loading

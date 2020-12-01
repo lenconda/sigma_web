@@ -15,8 +15,6 @@ type ClassKey = Partial<Record<DialogClassKey, string>>;
 
 export interface DraggableDialogProps {
   children: React.ReactNode;
-  handler: string;
-  cancel: string;
   open: boolean;
   title?: string;
   fullWidth?: boolean;
@@ -29,10 +27,14 @@ export interface DraggableDialogProps {
   onClose: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
+const PaperComponent = (props: PaperProps) => {
+  return <Draggable handle=".app-dialog__title" cancel={'[class*="MuiDialogContent-root"]'}>
+    <Paper {...props} />
+  </Draggable>;
+};
+
 const DraggableDialog: React.FC<DraggableDialogProps> = ({
   children,
-  handler,
-  cancel,
   open,
   title = '',
   fullWidth = true,
@@ -50,12 +52,6 @@ const DraggableDialog: React.FC<DraggableDialogProps> = ({
   },
   onClose,
 }) => {
-  const PaperComponent = props => (
-    <Draggable handle={`#${handler}`} cancel={cancel}>
-      <Paper {...props} />
-    </Draggable>
-  );
-
   const mergeClasses = (defaultClasses: ClassKey, customClasses: ClassKey): ClassKey => {
     return Object.keys(defaultClasses).reduce<ClassKey>((result, key) => {
       const defaultValue = defaultClasses[key];
@@ -69,12 +65,12 @@ const DraggableDialog: React.FC<DraggableDialogProps> = ({
     open={open}
     fullWidth={fullWidth}
     classes={mergeClasses({ root: 'app-dialog' }, classes)}
-    aria-labelledby={handler}
+    aria-labelledby="app-dialog__title"
     PaperComponent={PaperComponent}
     BackdropProps={BackdropProps}
     PaperProps={PaperProps}
   >
-    <div className={`app-dialog__title${titleClassName && ` ${titleClassName}` || ''}`} id={handler}>
+    <div className={`app-dialog__title${titleClassName && ` ${titleClassName}` || ''}`}>
       <Typography noWrap={true} variant="subtitle1">{title}</Typography>
       <button className="app-dialog__title__close-button" onClick={onClose}>
         <CloseIcon fontSize="small" />
