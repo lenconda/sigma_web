@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+// import Dialog from '@material-ui/core/Dialog';
+import DraggableDialog from '../DraggableDialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Typography from '@material-ui/core/Typography';
@@ -9,9 +10,9 @@ import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { TaskListItem } from '../TaskListItem';
-import Draggable from 'react-draggable';
-import Paper from '@material-ui/core/Paper';
-import CloseIcon from '@material-ui/icons/Close';
+// import Draggable from 'react-draggable';
+// import Paper from '@material-ui/core/Paper';
+// import CloseIcon from '@material-ui/icons/Close';
 import {
   LoadingIcon,
 } from '../../core/icons';
@@ -19,7 +20,7 @@ import './index.less';
 
 export interface TaskSelectorProps {
   visible: boolean;
-  onClose: () => void;
+  onClose: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
   onSelectTask: (task: TaskListItem) => void;
 }
 
@@ -47,14 +48,14 @@ const generateTaskMenu = async (): Promise<TaskSelectorMenuItem[]> => {
   });
 };
 
-const PaperComponent = props => {
-  return <Draggable
-    handle="#task-selector-title"
-    cancel={'[class*="MuiDialogContent-root"]'}
-  >
-    <Paper {...props} />
-  </Draggable>;
-};
+// const PaperComponent = props => {
+//   return <Draggable
+//     handle="#task-selector-title"
+//     cancel={'[class*="MuiDialogContent-root"]'}
+//   >
+//     <Paper {...props} />
+//   </Draggable>;
+// };
 
 const TaskSelector: React.FC<TaskSelectorProps> = ({
   visible,
@@ -77,7 +78,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
   const renderTree = (menuItem: TaskSelectorMenuItem, currentIndex: string) => (
     <TreeItem
       key={currentIndex}
-      nodeId={`${currentIndex}`}
+      nodeId={currentIndex}
       label={
         <div className="text-wrapper">
           <Typography noWrap={true} variant="caption">{menuItem.content}</Typography>
@@ -131,35 +132,19 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
   );
 
   return (
-    <Dialog
+    <DraggableDialog
       open={visible}
       fullWidth={true}
-      aria-labelledby="task-selector-title"
+      handler="task-selector-title"
       classes={{ root: 'task-selector' }}
-      PaperComponent={PaperComponent}
-      BackdropProps={{
-        classes: {
-          root: 'backdrop',
-        },
-      }}
-      PaperProps={{
-        classes: {
-          elevation24: 'container',
-        },
-      }}
+      cancel={'[class*="MuiDialogContent-root"]'}
+      onClose={onClose}
+      title={
+        loading
+          ? '请稍候...'
+          : `移动任务${selectedTask && `至：${selectedTask.content}` || ''}`
+      }
     >
-      <div className="task-selector__title" id="task-selector-title">
-        <Typography noWrap={true} variant="subtitle1">
-          {
-            loading
-              ? '请稍候...'
-              : `移动任务${selectedTask && `至：${selectedTask.content}` || ''}`
-          }
-        </Typography>
-        <button className="close-button" onClick={onClose}>
-          <CloseIcon fontSize="small" />
-        </button>
-      </div>
       <DialogContent classes={{ root: 'task-selector__content' }}>
         <TreeView
           className="tree-view"
@@ -176,13 +161,13 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           }
         </TreeView>
       </DialogContent>
-      <DialogActions classes={{ root: 'footer' }}>
+      <DialogActions classes={{ root: 'task-selector__footer' }}>
         <Button onClick={onClose} variant="outlined" className="app-button">放弃</Button>
         <Button
           variant="outlined"
           disabled={!selectedTask}
-          onClick={() => {
-            onClose();
+          onClick={event => {
+            onClose(event);
             onSelectTask(selectedTask);
           }}
           className="app-button"
@@ -190,7 +175,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
           好
         </Button>
       </DialogActions>
-    </Dialog>
+    </DraggableDialog>
   );
 };
 
