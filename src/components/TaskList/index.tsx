@@ -137,6 +137,7 @@ export default (props: TaskList) => {
   const [taskListLoading, setTaskListLoading] = useState<boolean>(false);
   const [currentTaskLoading, setCurrentTaskLoading] = useState<boolean>(false);
   const [selectedDateRange, setSelectedDateRange] = useState<[Date, Date]>([undefined, undefined]);
+  const [effectUpdates, setEffectUpdates] = useState<TaskListItem[]>([]);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -166,19 +167,19 @@ export default (props: TaskList) => {
 
   const handleTaskStatusChange = (task: TaskListItem, currentTasks: TaskListItem[]) => {
     const payloads = [task];
-    const currentNewTasks = Array.from(currentTasks).map(listedTask => {
-      if (task.taskId === listedTask.taskId) {
-        return task;
-      }
-      return listedTask;
-    });
-    const currentTaskGeneralInfo = getTaskGenerateInfo(currentTask);
-    if (checkAllTaskFinished(currentNewTasks) && !currentTask.finished) {
-      payloads.push({ ...currentTaskGeneralInfo, finished: true });
-    }
-    if (!checkAllTaskFinished(currentNewTasks) && currentTask.finished) {
-      payloads.push({ ...currentTaskGeneralInfo, finished: false });
-    }
+    // const currentNewTasks = Array.from(currentTasks).map(listedTask => {
+    //   if (task.taskId === listedTask.taskId) {
+    //     return task;
+    //   }
+    //   return listedTask;
+    // });
+    // const currentTaskGeneralInfo = getTaskGenerateInfo(currentTask);
+    // if (checkAllTaskFinished(currentNewTasks) && !currentTask.finished) {
+    //   payloads.push({ ...currentTaskGeneralInfo, finished: true });
+    // }
+    // if (!checkAllTaskFinished(currentNewTasks) && currentTask.finished) {
+    //   payloads.push({ ...currentTaskGeneralInfo, finished: false });
+    // }
     bus.emit('push', { action: 'UPDATE', payloads });
   };
 
@@ -298,7 +299,7 @@ export default (props: TaskList) => {
       if (!isDefault) {
         // TODO: request sub-tasks info
         setTaskListLoading(true);
-        getTaskListFromTask(currentTaskId, 5)
+        getTaskListFromTask(currentTaskId, Math.floor(Math.random() * 8) + 1)
           .then(tasks => setTasks(tasks))
           .finally(() => setTaskListLoading(false));
       }
@@ -332,18 +333,34 @@ export default (props: TaskList) => {
             if (currentActiveTaskIds.indexOf(payload.parentTaskId) === -1) {
               tasksToBeUpdated.push(payload);
             }
+            if (newCurrentTaskInfo.finished) {
+              const unfinishedTasks = Array
+                .from(tasks)
+                .filter(task => !task.finished)
+                .map(task => ({ ...task, finished: true }));
+              if (unfinishedTasks.length > 0) {
+                setEffectUpdates(unfinishedTasks);
+              }
+            }
           } else if (
             currentTaskIndex !== -1
             && payload.parentTaskId === (currentTask && currentTask.taskId)
           ) {
             tasksToBeUpdated.push(payload);
             newTasks.splice(currentTaskIndex, 1, payload);
+            const currentTaskGenerateInfo = getTaskGenerateInfo(currentTask);
+            if (checkAllTaskFinished(newTasks) && !currentTask.finished) {
+              setEffectUpdates([{ ...currentTaskGenerateInfo, finished: true }]);
+            }
+            if (!checkAllTaskFinished(newTasks) && currentTask.finished) {
+              setEffectUpdates([{ ...currentTaskGenerateInfo, finished: false }]);
+            }
           }
         });
-        setTasks(newTasks);
         if (tasksToBeUpdated.length > 0) {
           bus.emit('dispatch', { action: 'UPDATE', payloads: tasksToBeUpdated });
         }
+        setTasks(newTasks);
         break;
       }
       case 'DELETE': {
@@ -378,6 +395,13 @@ export default (props: TaskList) => {
     };
   }, [tasks, currentTask, bus, selectedTasks, currentActiveTaskIds]);
 
+  useEffect(() => {
+    if (effectUpdates.length > 0) {
+      bus.emit('push', { action: 'UPDATE', payloads: effectUpdates });
+      setEffectUpdates([]);
+    }
+  }, [effectUpdates]);
+
   return (
     <div className="task-list">
       <div className="task-list__title-bar">
@@ -408,9 +432,9 @@ export default (props: TaskList) => {
             <IconButton
               type="delete"
               onClick={() => bus.emit('push', {
-                  action: 'DELETE',
-                  payloads: [currentTask],
-                })}
+                action: 'DELETE',
+                payloads: [currentTask],
+              })}
             />
           }
         </div>
