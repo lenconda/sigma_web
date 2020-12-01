@@ -18,11 +18,14 @@ type PaperPartialClassKey = Partial<Record<PaperClassKey, string>>;
 export interface DrawerProps {
   children: React.ReactNode;
   anchor?: 'top' | 'right' | 'bottom' | 'left';
+  variant?: 'permanent' | 'persistent' | 'temporary';
   trigger?: () => React.ReactNode;
   triggerClass?: string;
+  stickyClass?: string;
   open?: boolean;
   backdropClass?: BackdropPartialClassKey;
   paperClass?: PaperPartialClassKey;
+  hideThreshold?: number;
   onClose?: () => void;
 }
 
@@ -36,10 +39,42 @@ const Drawer: React.FC<DrawerProps> = ({
   open = false,
   anchor = 'left',
   triggerClass = '',
+  stickyClass = '',
   paperClass = {},
   backdropClass = {},
+  hideThreshold = 720,
   onClose,
 }) => {
+  const [sticky, setSticky] = useState<boolean>(false);
+  const [smallWidth, setSmallWidth] = useState<boolean>(false);
+
+  const generateVariantState = (): 'permanent' | 'persistent' | 'temporary' => {
+    if (sticky) {
+      return 'permanent';
+    }
+    if (smallWidth) {
+      return 'temporary';
+    }
+    return 'permanent';
+  };
+
+  useEffect(() => {
+    const scrollHandler = () => {
+      setSticky(window.scrollX !== 0);
+    };
+    const resizeHandler = () => {
+      setSmallWidth(window.innerWidth < hideThreshold);
+    };
+    window.addEventListener('scroll', scrollHandler);
+    window.addEventListener('resize', resizeHandler);
+    return () => {
+      window.removeEventListener('scroll', scrollHandler);
+      window.removeEventListener('resize', resizeHandler);
+    };
+  }, []);
+
+  useEffect(() => setSmallWidth(window.innerWidth < hideThreshold));
+
   return (
     <div>
       <div
@@ -59,9 +94,10 @@ const Drawer: React.FC<DrawerProps> = ({
         }}
         PaperProps={{
           classes: mergeClasses<PaperPartialClassKey>({
-            elevation16: 'app-drawer__paper',
+            elevation0: `app-drawer__paper${(stickyClass && sticky) && ` ${stickyClass}` || ''}`,
           }, paperClass),
         }}
+        variant={generateVariantState()}
       >
         {children}
       </MuiDrawer>

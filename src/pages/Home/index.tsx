@@ -36,7 +36,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DebouncedTextField from '../../components/DebouncedTextField';
-import Sticky from '../../components/Sticky';
 import moment from 'moment';
 import _merge from 'lodash/merge';
 import {
@@ -274,9 +273,9 @@ const Home: React.FC<HomePageProps> = props => {
 
   const generateSidebarContent = (): JSX.Element => (
     <>
-      {
-        userInfo &&
-        <div className="app-home__sidebar__header">
+      <div className="app-home__sidebar__header">
+        {
+          userInfo &&
           <PopupProvider
             className="popup-menu-wrapper"
             closeOnClick={true}
@@ -291,8 +290,8 @@ const Home: React.FC<HomePageProps> = props => {
               {generatePopupMenu(avatarMenus)}
             </MenuList>
           </PopupProvider>
-        </div>
-      }
+        }
+      </div>
       <div className="app-home__sidebar__input">
         <DebouncedTextField
           className="input"
@@ -321,24 +320,17 @@ const Home: React.FC<HomePageProps> = props => {
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
-        {
-          !smallWidth &&
-          <Sticky direction="horizontal" className="app-home__sidebar">
-            {generateSidebarContent()}
-          </Sticky>
-        }
         <nav className="app-home__nav">
           <div className="app-home__nav__left">
-            {
-              smallWidth &&
-              <Drawer
-                open={drawerVisible}
-                onClose={() => setDrawerVisible(false)}
-                trigger={() => <button onClick={() => setDrawerVisible(true)}>test</button>}
-              >
-                {generateSidebarContent()}
-              </Drawer>
-            }
+            <Drawer
+              open={drawerVisible}
+              onClose={() => setDrawerVisible(false)}
+              trigger={() => <button onClick={() => setDrawerVisible(true)}>test</button>}
+              paperClass={{ elevation0: 'app-home__sidebar' }}
+              stickyClass="sticky"
+            >
+              {generateSidebarContent()}
+            </Drawer>
           </div>
           <div className="app-home__nav__center">
             {
@@ -382,6 +374,7 @@ const Home: React.FC<HomePageProps> = props => {
                   currentActiveTaskIds={currentActiveTaskIds}
                   onSelectedTasksChange={handleSelectedTasksChange}
                   dateRange={[(dateRange && dateRange[0]), (dateRange && dateRange[1])]}
+                  className={smallWidth ? 'small-width' : ''}
                 />
               </Route>
               <Route path="/home/list">
@@ -390,6 +383,7 @@ const Home: React.FC<HomePageProps> = props => {
                   currentActiveTaskIds={currentActiveTaskIds}
                   onSelectedTasksChange={handleSelectedTasksChange}
                   dateRange={[(dateRange && dateRange[0]), (dateRange && dateRange[1])]}
+                  className={smallWidth ? 'small-width' : ''}
                 />
               </Route>
               <Redirect from="/home" to="/home/list" />

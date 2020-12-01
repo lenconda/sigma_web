@@ -12,6 +12,7 @@ export interface ListPageProps {
   currentActiveTaskIds: string[];
   onSelectedTasksChange: (tasks: TaskListItem[]) => void;
   dateRange: [Date, Date];
+  className?: string;
 }
 
 const List: React.FC<ListPageProps> = ({
@@ -19,9 +20,10 @@ const List: React.FC<ListPageProps> = ({
   currentActiveTaskIds,
   onSelectedTasksChange,
   dateRange,
+  className = '',
 }) => {
   return (
-    <div className="app-list__page">
+    <div className={`app-list__page${className && ` ${className}` || ''}`}>
       {
         currentActiveTaskIds.map((currentActiveTaskId, index) => {
           return (
