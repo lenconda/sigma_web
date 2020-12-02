@@ -34,6 +34,8 @@ import {
 } from '../../services/task';
 import { ProgressIcon } from '../../core/icons';
 import IconButton from '../IconButton';
+import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
+import ChatIcon from '@material-ui/icons/Chat';
 import Chip from '@material-ui/core/Chip';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
@@ -433,7 +435,7 @@ export default (props: TaskList) => {
       </div>
       {
         !isDefault
-        && <div className="task-list__deadline">
+        && <div className="task-list__header">
           <DatePicker
             startDate={currentTask ? new Date(currentTask.deadline) : new Date()}
             customComponent={generateStatus(currentTask)}
@@ -452,6 +454,22 @@ export default (props: TaskList) => {
               }
             }}
           />
+          <div className="icon-buttons">
+            {
+              selectedTasks.length !== 0 &&
+              <>
+                <IconButton
+                  type="move"
+                  style={{ marginLeft: 10 }}
+                  onClick={() => setTaskSelectorVisible(true)}
+                />
+                <IconButton
+                  type="delete"
+                  onClick={handleDeleteTasks}
+                />
+              </>
+            }
+          </div>
         </div>
       }
       <div className="task-list__items-wrapper">
@@ -511,31 +529,16 @@ export default (props: TaskList) => {
               </div>
         }
       </div>
-      <div className="task-list__buttons">
-        <DebouncedTextField
-          value={addTaskContent}
-          className="add-task-content"
-          placeholder="键入 Enter 以添加新的子任务..."
-          onPressEnter={handleAddTask}
-        />
-        {
-          selectedTasks.length !== 0 &&
-            <>
-              <IconButton
-                type="move"
-                style={{ marginLeft: 10 }}
-                onClick={() => setTaskSelectorVisible(true)}
-              />
-              <IconButton
-                type="delete"
-                onClick={handleDeleteTasks}
-              />
-            </>
-        }
-      </div>
-      {
-        !isDefault
-        && <div className="task-list__log-wrapper">
+      <div className="task-list__controls-wrapper">
+        <div className="add-task">
+          <DebouncedTextField
+            value={addTaskContent}
+            className="add-task__content"
+            placeholder="键入 Enter 以添加新的子任务..."
+            onPressEnter={handleAddTask}
+          />
+        </div>
+        <div className="edit-description">
           <DebouncedTextField
             type="textarea"
             placeholder="在这里写下任务描述..."
@@ -543,7 +546,11 @@ export default (props: TaskList) => {
             onChange={event => handleUpdateCurrentTask({ description: event.target.value })}
           />
         </div>
-      }
+        <div className="buttons">
+          <Button startIcon={<PlaylistAddIcon />} variant="outlined">添加子任务</Button>
+          <Button startIcon={<ChatIcon />} variant="outlined">编辑描述</Button>
+        </div>
+      </div>
       <TaskSelector
         visible={taskSelectorVisible}
         onClose={event => {
