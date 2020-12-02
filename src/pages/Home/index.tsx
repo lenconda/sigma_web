@@ -33,6 +33,8 @@ import DatePicker from '../../components/DatePicker';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import FormatIndentIncreaseIcon from '@material-ui/icons/FormatIndentIncrease';
+import NotificationsIcon from '@material-ui/icons/Notifications';
 import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DebouncedTextField from '../../components/DebouncedTextField';
@@ -92,6 +94,20 @@ export interface DateRange {
   end: Date;
 }
 
+export interface NotificationInfo {
+  notificationId: string;
+  title: string;
+  time: string;
+  checked: boolean;
+  subject?: string;
+  sender?: User;
+  receiver?: User;
+}
+
+export interface NotificationDetailInfo extends NotificationInfo {
+  content: string;
+}
+
 const generatePopupMenu = (menus: AppMenuItem[]): JSX.Element[] => {
   return menus.map((menu, index) => {
     const { isDivider, name, path } = menu;
@@ -140,7 +156,9 @@ const Home: React.FC<HomePageProps> = props => {
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
   const [userInfo, setUserInfo] = useState<User>(undefined);
   const [smallWidth, setSmallWidth] = useState<boolean>(false);
-  const [drawerVisible, setDrawerVisible] = useState<boolean>(false);
+  const [menuDrawerVisible, setMenuDrawerVisible] = useState<boolean>(false);
+  const [notificationsDrawerVisible, setNotificationsDrawerVisible] = useState<boolean>(false);
+  const [notifications, setNotifications] = useState<NotificationInfo[]>([]);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -320,13 +338,19 @@ const Home: React.FC<HomePageProps> = props => {
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
-        <nav className="app-home__nav">
+        <nav className={`app-home__nav${smallWidth ? ' small-width' : ''}`}>
           <div className="app-home__nav__left">
             <Drawer
-              open={drawerVisible}
-              onClose={() => setDrawerVisible(false)}
-              trigger={() => <button onClick={() => setDrawerVisible(true)}>test</button>}
-              paperClass={{ elevation0: 'app-home__sidebar' }}
+              open={menuDrawerVisible}
+              onClose={() => setMenuDrawerVisible(false)}
+              trigger={() => (
+                <IconButton
+                  onClick={() => setMenuDrawerVisible(true)}
+                >
+                  <FormatIndentIncreaseIcon fontSize="small" />
+                </IconButton>
+              )}
+              paperClass={{ elevation0: 'app-home__sidebar', elevation16: 'app-home__sidebar' }}
               stickyClass="sticky"
             >
               {generateSidebarContent()}
@@ -363,6 +387,37 @@ const Home: React.FC<HomePageProps> = props => {
                 </Button>
               }
             />
+          </div>
+          <div className="app-home__nav__right">
+            <Drawer
+              open={notificationsDrawerVisible}
+              onClose={() => setNotificationsDrawerVisible(false)}
+              trigger={() => (
+                <IconButton
+                  onClick={() => setNotificationsDrawerVisible(true)}
+                >
+                  <NotificationsIcon fontSize="small" />
+                </IconButton>
+              )}
+              variant="temporary"
+              anchor="right"
+              paperClass={{
+                elevation16: 'app-home__notifications',
+              }}
+            >
+              <div className="app-home__notifications__header">
+                <Typography variant="h6">通知</Typography>
+              </div>
+              {
+                notifications.length === 0
+                  ? <div className="app-home__notifications__content empty">
+                    <img src="/assets/images/no_notifications.svg" alt="没有通知" className="illustrator" />
+                    <h1>没有通知</h1>
+                    <h2>最新的通知将会出现在这里</h2>
+                  </div>
+                  : <div className="app-home__notifications__content"></div>
+              }
+            </Drawer>
           </div>
         </nav>
         <div className="app-home__page">

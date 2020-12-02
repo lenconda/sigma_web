@@ -43,12 +43,16 @@ const Drawer: React.FC<DrawerProps> = ({
   paperClass = {},
   backdropClass = {},
   hideThreshold = 720,
+  variant = 'permanent',
   onClose,
 }) => {
   const [sticky, setSticky] = useState<boolean>(false);
   const [smallWidth, setSmallWidth] = useState<boolean>(false);
 
   const generateVariantState = (): 'permanent' | 'persistent' | 'temporary' => {
+    if (variant === 'temporary') {
+      return 'temporary';
+    }
     if (sticky) {
       return 'permanent';
     }
@@ -60,7 +64,7 @@ const Drawer: React.FC<DrawerProps> = ({
 
   useEffect(() => {
     const scrollHandler = () => {
-      setSticky(window.scrollX !== 0);
+      setSticky(window.scrollX !== 0 && !smallWidth);
     };
     const resizeHandler = () => {
       setSmallWidth(window.innerWidth < hideThreshold);
@@ -71,17 +75,20 @@ const Drawer: React.FC<DrawerProps> = ({
       window.removeEventListener('scroll', scrollHandler);
       window.removeEventListener('resize', resizeHandler);
     };
-  }, []);
+  }, [smallWidth]);
 
   useEffect(() => setSmallWidth(window.innerWidth < hideThreshold));
 
   return (
     <div>
-      <div
-        className={`app-drawer__trigger-wrapper${triggerClass && ` ${triggerClass}` || ''}`}
-      >
-        {trigger()}
-      </div>
+      {
+        (smallWidth || variant === 'temporary') &&
+        <div
+          className={`app-drawer__trigger-wrapper${triggerClass && ` ${triggerClass}` || ''}`}
+        >
+          {trigger()}
+        </div>
+      }
       <MuiDrawer
         open={open}
         anchor={anchor}

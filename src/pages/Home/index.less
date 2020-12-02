@@ -15,6 +15,7 @@
     height: 64px;
     width: 100%;
     padding-left: 320px;
+    padding-right: 20px;
     position: fixed;
     top: 0;
     right: 0;
@@ -23,13 +24,35 @@
     justify-content: center;
     align-items: center;
     z-index: 9;
+    background-color: #fff;
+
+    &.small-width {
+      padding-left: 20px;
+    }
 
     &__center {
+      box-sizing: border-box;
       display: flex;
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
       flex-grow: 1;
+      flex-basis: 60%;
+    }
+
+    &__left,
+    &__right {
+      box-sizing: border-box;
+      flex-basis: 20%;
+      display: flex;
+    }
+
+    &__left {
+      justify-content: flex-start;
+    }
+
+    &__right {
+      justify-content: flex-end;
     }
 
     .app-popup__trigger-wrapper > button {
@@ -176,6 +199,63 @@
             border-left: 0;
             border-right: 0;
           }
+        }
+      }
+    }
+  }
+
+  &__notifications {
+    box-sizing: border-box;
+    width: 420px;
+    border-left: 1px solid @border-color;
+    box-shadow: @box-shadow-focus;
+    display: flex;
+    flex-direction: column;
+
+    * {
+      box-sizing: border-box;
+    }
+
+    &__header {
+      width: 100%;
+      padding: 20px;
+      text-align: center;
+      flex-grow: 0;
+      flex-shrink: 0;
+    }
+
+    &__content {
+      width: 100%;
+      padding: 20px 10px;
+      flex-grow: 1;
+      flex-shrink: 1;
+      min-height: 500px;
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+
+      &.empty {
+        justify-content: center;
+        align-items: center;
+        color: #b0b0b0;
+        user-select: none;
+
+        img.illustrator {
+          width: 180px;
+        }
+
+        h1, h2 {
+          margin: 5px 15px;
+          font-weight: normal;
+        }
+
+        h1 {
+          margin-top: 42px;
+          font-size: 16px;
+        }
+
+        h2 {
+          font-size: 14px;
         }
       }
     }
