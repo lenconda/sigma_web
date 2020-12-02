@@ -57,7 +57,7 @@ const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
     if (
       (keyboardEvent.keyCode === 13 || keyboardEvent.key.toLowerCase() === 'enter')
       && onPressEnter
-      && onPressEnter(event.target.value || (type === 'number' ? 0 : ''))
+      && onPressEnter((event && event.target && event.target.value) || (type === 'number' ? 0 : ''))
     ) {
       setControlledValue('');
     }

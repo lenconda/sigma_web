@@ -46,6 +46,7 @@ export interface TaskListItemProps extends TaskListItem {
   onSelectionChange: (taskInfo: TaskListItem) => void;
   onChange: (taskInfo: TaskListItem) => void;
   onDelete?: (taskInfo: TaskListItem) => void;
+  onPressEnter?: (taskInfo: TaskListItem) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -68,6 +69,7 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
     onSelectionChange,
     onChange,
     onDelete,
+    onPressEnter,
   } = props;
 
   const theme = useStyles();
@@ -94,6 +96,13 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
     if (onDelete && typeof onDelete === 'function') {
       onDelete(taskItem);
     }
+  };
+
+  const handleTextfieldPressEnter = () => {
+    if (onPressEnter && typeof onPressEnter === 'function') {
+      onPressEnter(taskItem);
+    }
+    return false;
   };
 
   return (
@@ -123,6 +132,7 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
             value={content}
             onChange={event => handleContentChange(event.target.value)}
             className={`task-item__content__task-title${finished ? ' finished' : ''}`}
+            onPressEnter={handleTextfieldPressEnter}
           />
         </div>
         <div className="task-item__delete-control" onClick={handleDeleteCurrentTask}>

@@ -265,8 +265,10 @@ const Home: React.FC<HomePageProps> = props => {
             ...task,
             order: defaultTasks.length + index,
           }));
-        bus.emit('dispatch', { action: 'ADD', payloads: tasksToBeAdded });
-        setDefaultTasks(Array.from(defaultTasks).concat(tasksToBeAdded));
+        if (tasksToBeAdded.length !== 0) {
+          bus.emit('dispatch', { action: 'ADD', payloads: tasksToBeAdded });
+          setDefaultTasks(Array.from(defaultTasks).concat(tasksToBeAdded));
+        }
         break;
       }
       case 'DELETE': {

@@ -204,7 +204,7 @@ export default (props: TaskList) => {
         content,
         deadline,
         finished: false,
-        order: tasks.length,
+        order: -1,
         parentTaskId: currentTask.taskId,
         taskId: idGen(),
       };
@@ -303,15 +303,42 @@ export default (props: TaskList) => {
       if (dispatch.payloads.length === 0) { return }
       switch (dispatch.action) {
       case 'ADD': {
+        const tempNewTasks = Array.from(tasks);
         const tasksToBeAdded = [];
+        const tasksToBeAppended = [];
+        const updateTaskPayloads = [];
         dispatch.payloads.forEach(payload => {
           if (payload.parentTaskId === (currentTask && currentTask.taskId)) {
-            const lastTask = tasks[tasks.length - 1];
-            payload.order = (lastTask && lastTask.order || 0) + 1;
-            tasksToBeAdded.push(payload);
+            const appendTasks = () => {
+              payload.order = tempNewTasks.length;
+              tasksToBeAppended.push(payload);
+              tempNewTasks.push(payload);
+            };
+            if (payload.order === -1) {
+              appendTasks();
+            } else {
+              const previousTaskIndex = tempNewTasks.findIndex(task => task.order === payload.order - 1);
+              if (previousTaskIndex === -1) {
+                appendTasks();
+              } else {
+                tempNewTasks.splice(previousTaskIndex + 1, 0, payload);
+                tasksToBeAdded.push(payload);
+              }
+            }
           }
         });
-        setTasks(tasks.concat(tasksToBeAdded));
+        const addTaskPayloads = tasksToBeAdded.concat(tasksToBeAppended);
+        tempNewTasks.forEach((task, index) => {
+          if (task.order !== index) {
+            updateTaskPayloads.push({
+              ...task,
+              order: index,
+            });
+          }
+        });
+        bus.emit('push', { action: 'UPDATE', payloads: updateTaskPayloads });
+        bus.emit('dispatch', { action: 'ADD', payloads: addTaskPayloads });
+        setTasks(tempNewTasks);
         break;
       }
       case 'UPDATE': {
@@ -514,6 +541,19 @@ export default (props: TaskList) => {
                                         onSelectionChange={handleSelectionChange}
                                         onChange={handleTaskStatusChange}
                                         onDelete={task => handleDeleteTasks([task])}
+                                        onPressEnter={task => {
+                                          bus.emit('push', {
+                                            action: 'ADD',
+                                            payloads: [{
+                                              taskId: idGen(),
+                                              content: '',
+                                              order: task.order + 1,
+                                              finished: false,
+                                              deadline: moment().add(1, 'day').startOf('day').toISOString(),
+                                              parentTaskId: currentTask.taskId,
+                                            }],
+                                          });
+                                        }}
                                       />
                                     </div>
                                   )
