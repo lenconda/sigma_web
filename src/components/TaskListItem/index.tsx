@@ -2,7 +2,10 @@ import React from 'react';
 import './index.less';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
-import { DragIcon } from '../../core/icons';
+import {
+  DragIcon,
+  DeleteIcon,
+} from '../../core/icons';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
 
@@ -39,9 +42,10 @@ export interface TaskListItemDetailInfo extends TaskListItem {
 export interface TaskListItemProps extends TaskListItem {
   isDragging: boolean;
   selected?: boolean;
+  className?: string;
   onSelectionChange: (taskInfo: TaskListItem) => void;
   onChange: (taskInfo: TaskListItem) => void;
-  className?: string;
+  onDelete?: (taskInfo: TaskListItem) => void;
 }
 
 const useStyles = makeStyles(() => ({
@@ -59,10 +63,11 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
     order,
     finished,
     selected = false,
-    onSelectionChange,
-    onChange,
     parentTaskId,
     className = '',
+    onSelectionChange,
+    onChange,
+    onDelete,
   } = props;
 
   const theme = useStyles();
@@ -82,6 +87,13 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
       content,
     };
     onChange(newTaskInfo);
+  };
+
+  const handleDeleteCurrentTask = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    event.stopPropagation();
+    if (onDelete && typeof onDelete === 'function') {
+      onDelete(taskItem);
+    }
   };
 
   return (
@@ -112,6 +124,9 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
             onChange={event => handleContentChange(event.target.value)}
             className={`task-item__content__task-title${finished ? ' finished' : ''}`}
           />
+        </div>
+        <div className="task-item__delete-control" onClick={handleDeleteCurrentTask}>
+          <DeleteIcon className="icon" />
         </div>
       </ListItem>
     </div>

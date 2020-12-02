@@ -81,9 +81,25 @@
     box-sizing: border-box;
     width: 100%;
     padding: 0 25px;
+    padding-bottom: 20px;
     background-color: transparent;
     overflow: scroll;
     flex-grow: 1;
+
+    .description {
+      .textfield {
+        box-sizing: border-box;
+        width: 100%;
+        outline: 0;
+        border: 0;
+        resize: none;
+        height: 64px;
+        font-size: 14px;
+        background-color: transparent;
+        padding: 15px 5px;
+        border-radius: @border-radius;
+      }
+    }
 
     .loading {
       box-sizing: border-box;
@@ -160,23 +176,8 @@
         font-size: 13px;
         height: 36px;
         border: 1px solid @border-color;
-        transition: all @transition-duration;
-      }
-    }
-
-    .edit-description {
-      .textfield {
-        box-sizing: border-box;
-        width: 100%;
-        outline: 0;
-        border: 0;
-        resize: none;
-        height: 100px;
-        font-size: 13px;
-        border: 1px solid @border-color;
-        padding: 15px;
-        box-shadow: @box-shadow;
         border-radius: @border-radius;
+        box-shadow: @box-shadow;
         transition: all @transition-duration;
 
         &:focus {

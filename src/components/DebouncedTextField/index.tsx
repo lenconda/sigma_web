@@ -6,10 +6,13 @@ import {
   useDebouncedValue,
   useUpdateEffect,
 } from '../../core/hooks';
+import Textarea from 'react-textarea-autosize';
 import './index.less';
 
 type ChangeEventType = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
 type KeyboardEventType = React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>;
+
+const AutoResizeTextarea = Textarea as any;
 
 export interface DebouncedTextFieldProps {
   type?: 'text' | 'number' | 'textarea';
@@ -72,7 +75,7 @@ const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
 
   return (
     type === 'textarea'
-      ? <textarea
+      ? <AutoResizeTextarea
           className={generateClassName('textarea')}
           placeholder={placeholder}
           value={controlledValue}

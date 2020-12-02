@@ -1,7 +1,7 @@
 import { Dispatch } from '../../components/TaskList';
 
 class Dispatcher {
-  private isDispatching = false;
+  public isDispatching = false;
   private dispatchQueue: Dispatch[] = [];
   private interval: ReturnType<typeof setInterval>;
 

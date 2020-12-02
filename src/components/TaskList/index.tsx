@@ -35,7 +35,6 @@ import {
 import { ProgressIcon } from '../../core/icons';
 import IconButton from '../IconButton';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
-import ChatIcon from '@material-ui/icons/Chat';
 import Chip from '@material-ui/core/Chip';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
@@ -64,7 +63,6 @@ export interface TaskList {
 const useStyles = makeStyles(() => ({
   root: {
     width: '100%',
-    height: '100%',
     padding: 0,
     borderRadius: 6,
   },
@@ -146,7 +144,6 @@ export default (props: TaskList) => {
   const [selectedDateRange, setSelectedDateRange] = useState<[Date, Date]>([undefined, undefined]);
   const [effectUpdates, setEffectUpdates] = useState<TaskListItem[]>([]);
   const [showAddTask, setShowAddTask] = useState<boolean>(false);
-  const [showEditDescription, setShowEditDescription] = useState<boolean>(false);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -194,11 +191,10 @@ export default (props: TaskList) => {
     setSelectedTasks(newSelectedTasks);
   };
 
-  const handleDeleteTasks = () => {
-    if (selectedTasks.length > 0) {
-      const dispatchDeleteTasks = Array.from(selectedTasks);
-      bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
-    }
+  const handleDeleteTasks = (tasks: TaskListItem[] = selectedTasks) => {
+    if (tasks.length === 0) { return }
+    const dispatchDeleteTasks = Array.from(tasks);
+    bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
   };
 
   const handleAddTask = (content: string | number) => {
@@ -467,7 +463,7 @@ export default (props: TaskList) => {
                 />
                 <IconButton
                   type="delete"
-                  onClick={handleDeleteTasks}
+                  onClick={() => handleDeleteTasks()}
                 />
               </>
             }
@@ -475,6 +471,15 @@ export default (props: TaskList) => {
         </div>
       }
       <div className="task-list__items-wrapper">
+        <div className="description">
+          <DebouncedTextField
+            type="textarea"
+            placeholder="在这里写下任务描述..."
+            className="textfield"
+            value={(currentTask && currentTask.description) || ''}
+            onChange={event => handleUpdateCurrentTask({ description: event.target.value })}
+          />
+        </div>
         {
           taskListLoading || currentTaskLoading
             ? <span className="loading">请稍候...</span>
@@ -483,7 +488,7 @@ export default (props: TaskList) => {
                 <DragDropContext onDragEnd={handleDragEnd}>
                   <Droppable droppableId={(currentTask && currentTask.taskId) || Math.random().toString(32).substr(2)}>
                     {
-                      (provided, snapshot) => (
+                      provided => (
                         <div ref={provided.innerRef} className="task-items">
                           {
                             shownTasks.map((item, index) => (
@@ -505,9 +510,10 @@ export default (props: TaskList) => {
                                         order={item.order}
                                         deadline={item.deadline}
                                         finished={item.finished}
+                                        parentTaskId={item.parentTaskId}
                                         onSelectionChange={handleSelectionChange}
                                         onChange={handleTaskStatusChange}
-                                        parentTaskId={item.parentTaskId}
+                                        onDelete={task => handleDeleteTasks([task])}
                                       />
                                     </div>
                                   )
@@ -522,13 +528,7 @@ export default (props: TaskList) => {
                   </Droppable>
                 </DragDropContext>
               </List>
-              : <div className="no-content">
-                <img src="/assets/images/no_tasks.svg" className="illustrator" />
-                <div>
-                  <h1>没有子任务</h1>
-                  <h2>在下方输入任务内容以添加新的子任务</h2>
-                </div>
-              </div>
+              : null
         }
       </div>
       <div className="task-list__controls-wrapper">
@@ -540,15 +540,6 @@ export default (props: TaskList) => {
             onPressEnter={handleAddTask}
           />
         </div>
-        <div className={`edit-description${showEditDescription && ' show' || ''}`}>
-          <DebouncedTextField
-            type="textarea"
-            placeholder="在这里写下任务描述..."
-            className="textfield"
-            value={(currentTask && currentTask.description) || ''}
-            onChange={event => handleUpdateCurrentTask({ description: event.target.value })}
-          />
-        </div>
         <div className="buttons">
           <Button
             startIcon={<PlaylistAddIcon />}
@@ -557,14 +548,6 @@ export default (props: TaskList) => {
             onClick={() => setShowAddTask(!showAddTask)}
           >
             添加子任务
-          </Button>
-          <Button
-            startIcon={<ChatIcon />}
-            variant="outlined"
-            className={`app-button${showEditDescription && ' active' || ''}`}
-            onClick={() => setShowEditDescription(!showEditDescription)}
-          >
-            编辑描述
           </Button>
         </div>
       </div>

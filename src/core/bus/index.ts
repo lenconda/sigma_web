@@ -7,7 +7,7 @@ export type EventSubscriberCallbackType<T> = (data: T) => any;
  * @constructor
  */
 class Bus<T> {
-  public subscribers: EventSubscribersType<T> = {};
+  private subscribers: EventSubscribersType<T> = {};
 
   /**
    * emit an event

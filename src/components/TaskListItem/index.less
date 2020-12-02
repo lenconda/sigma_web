@@ -10,6 +10,7 @@
   transition: all @transition-duration;
 
   &:hover &__drag-control > .icon,
+  &:hover &__delete-control > .icon,
   &.dragging &__drag-control > .icon {
     display: block;
   }
@@ -71,10 +72,18 @@
   }
 
   &__drag-control {
+    cursor: grab;
+  }
+
+  &__delete-control {
+    cursor: pointer;
+  }
+
+  &__drag-control,
+  &__delete-control {
     width: 28px;
     height: 40px;
     position: relative;
-    cursor: grab;
 
     .icon {
       display: none;

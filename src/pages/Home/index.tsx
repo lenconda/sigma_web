@@ -160,6 +160,8 @@ const Home: React.FC<HomePageProps> = props => {
   const [menuDrawerVisible, setMenuDrawerVisible] = useState<boolean>(false);
   const [notificationsDrawerVisible, setNotificationsDrawerVisible] = useState<boolean>(false);
   const [notifications, setNotifications] = useState<NotificationInfo[]>([]);
+  const [defaultTasksLoading, setDefaultTasksLoading] = useState<boolean>(false);
+  const [isDispatching, setIsDispatching] = useState<boolean>(false);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -172,6 +174,13 @@ const Home: React.FC<HomePageProps> = props => {
         setCurrentActiveTaskIds(newActiveTaskIds);
       }
     }
+  };
+
+  const fetchDefaultTasks = () => {
+    setDefaultTasksLoading(true);
+    getTaskListFromTask('default', 6).then(res => {
+      setDefaultTasks(res);
+    }).finally(() => setDefaultTasksLoading(false));
   };
 
   const handleDeleteDefaultTask = (
@@ -302,12 +311,14 @@ const Home: React.FC<HomePageProps> = props => {
     };
   }, [bus, dispatcher]);
 
+  useEffect(() => {
+    setIsDispatching(dispatcher.isDispatching);
+  }, [dispatcher.isDispatching]);
+
   // TODO: Mock
   useEffect(() => {
     const today = moment().startOf('day').toDate();
-    getTaskListFromTask('default', 6).then(res => {
-      setDefaultTasks(res);
-    });
+    fetchDefaultTasks();
     setDateRange([today, today]);
     getUserInfo().then(res => {
       setUserInfo(res);
@@ -336,6 +347,7 @@ const Home: React.FC<HomePageProps> = props => {
             </MenuList>
           </PopupProvider>
         }
+        <div className="right-controls-wrapper"></div>
       </div>
       <div className="app-home__sidebar__input">
         <DebouncedTextField
