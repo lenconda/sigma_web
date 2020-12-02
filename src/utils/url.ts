@@ -12,6 +12,20 @@ export const parseSearch = (search: string): Record<string, any> => {
   return result;
 };
 
+export const stringifySearch = (parsedSearch: Record<string, any>): string => {
+  const result = Object.keys(parsedSearch).reduce<string>((currentResultString, key) => {
+    const currentValue = parsedSearch[key];
+
+    if (currentValue === null || typeof currentValue === 'undefined') {
+      return currentResultString;
+    }
+
+    return `${currentResultString}${currentResultString === '' ? '' : '&'}${key}=${currentValue}`;
+  }, '');
+
+  return `?${result}`;
+};
+
 export const parseParams = (pathname: string, schema: string): Record<string, any> => {
   const parser = UrlParser(pathname, schema);
   return parser.namedParams;

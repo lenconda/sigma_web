@@ -23,6 +23,8 @@ import {
   Link,
   NavLink,
   RouteComponentProps,
+  useLocation,
+  useHistory,
 } from 'react-router-dom';
 import PopupProvider from '../../components/PopupProvider';
 import Button from '@material-ui/core/Button';
@@ -40,10 +42,11 @@ import DateRangeIcon from '@material-ui/icons/DateRange';
 import DebouncedTextField from '../../components/DebouncedTextField';
 import moment from 'moment';
 import idGen from '../../core/idgen';
-import _merge from 'lodash/merge';
 import {
-  parseParams,
+  parseSearch,
+  stringifySearch,
 } from '../../utils/url';
+import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
 import {
   getTaskListFromTask,
@@ -80,8 +83,6 @@ const theme = createMuiTheme({
     fontSize: 12,
   },
 });
-
-const history = createBrowserHistory();
 
 export interface AppMenuItem {
   name?: string;
@@ -162,6 +163,8 @@ const Home: React.FC<HomePageProps> = props => {
   const [notifications, setNotifications] = useState<NotificationInfo[]>([]);
   const [defaultTasksLoading, setDefaultTasksLoading] = useState<boolean>(false);
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
+  const location = useLocation();
+  const history = useHistory();
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -210,13 +213,13 @@ const Home: React.FC<HomePageProps> = props => {
   };
 
   useEffect(() => {
-    const { id = '' } = parseParams(window.location.href, '/home/list/:id');
+    const { id = '' } = parseSearch(props.location.search);
     if (id === '') {
       setCurrentActiveTaskIds([]);
     } else {
       setCurrentActiveTaskIds([id]);
     }
-  }, [props.location]);
+  }, [location]);
 
   useEffect(() => {
     const handler = () => {
@@ -291,9 +294,21 @@ const Home: React.FC<HomePageProps> = props => {
           return task;
         });
         setDefaultTasks(currentDefaultTasks);
-        const { id = '' } = parseParams(window.location.href, '/home/list/:id');
+        const { id = '' } = parseSearch(location.search);
         if (dispatch.payloads.findIndex(payload => payload.taskId === id) !== -1) {
-          history.push('/home/list');
+          const searchObject = parseSearch(location.search);
+          const newSearchString = stringifySearch(Object.keys(searchObject).reduce((current, key) => {
+            if (key !== 'id') {
+              current[key] = searchObject[key];
+            } else {
+              current[key] = '';
+            }
+            return current;
+          }, {}));
+          history.push({
+            pathname: '/home/list',
+            search: newSearchString,
+          });
         }
         bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
         bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
@@ -361,15 +376,30 @@ const Home: React.FC<HomePageProps> = props => {
       <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
         {
           defaultTasks.map((task, index) => {
-            return <MenuItem classes={{ root: 'item' }} key={index}>
-              <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
-                <ListIcon className="link__icon list" />
+            return <MenuItem
+              key={index}
+              classes={{ gutters: 'item' }}
+            >
+              <div
+                className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
+                onClick={() => {
+                  const newSearchString = stringifySearch(_merge(parseSearch(location.search), {
+                    id: task.taskId,
+                  }));
+                  history.push({
+                    pathname: '/home/list',
+                    search: newSearchString,
+                  });
+                }}
+              >
+                <ListIcon className="content__icon list" />
                 <Typography noWrap={true}>{task.content}</Typography>
                 <CustomIconButton
-                  className="link__icon delete"
-                  type="delete" onClick={event => handleDeleteDefaultTask(event, task)}
+                  className="content__icon delete"
+                  type="delete"
+                  onClick={event => handleDeleteDefaultTask(event, task)}
                 />
-              </NavLink>
+              </div>
             </MenuItem>;
           })
         }
@@ -465,15 +495,6 @@ const Home: React.FC<HomePageProps> = props => {
         <div className="app-home__page">
           <Suspense fallback={<></>}>
             <Switch>
-              <Route path="/home/list/:id">
-                <ListPage
-                  bus={bus}
-                  currentActiveTaskIds={currentActiveTaskIds}
-                  onSelectedTasksChange={handleSelectedTasksChange}
-                  dateRange={[(dateRange && dateRange[0]), (dateRange && dateRange[1])]}
-                  className={smallWidth ? 'small-width' : ''}
-                />
-              </Route>
               <Route path="/home/list">
                 <ListPage
                   bus={bus}

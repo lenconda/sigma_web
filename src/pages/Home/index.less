@@ -177,17 +177,20 @@
       .item {
         padding: 0;
 
-        .link {
+        .content {
           box-sizing: border-box;
           width: 100%;
           padding: 10px 42px;
           border: 1px solid transparent;
+          outline: 0;
           border-left: 0;
           border-right: 0;
           display: flex;
+          background-color: transparent;
           justify-content: flex-start;
           align-items: center;
           position: relative;
+          cursor: pointer;
 
           &:hover {
             .delete {
@@ -214,7 +217,7 @@
           }
 
           &.current {
-            background-color: #eee;
+            background-color: @bg-selected-color;
             border: 1px solid @border-color;
             border-left: 0;
             border-right: 0;
