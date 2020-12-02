@@ -45,7 +45,6 @@ import {
 } from '../../utils/task';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import './index.less';
 
 export interface Dispatch {
@@ -532,50 +531,43 @@ export default (props: TaskList) => {
               </div>
         }
       </div>
-      <ClickAwayListener
-        onClickAway={() => {
-          setShowAddTask(false);
-          setShowEditDescription(false);
-        }}
-      >
-        <div className="task-list__controls-wrapper">
-          <div className={`add-task${showAddTask && ' show' || ''}`}>
-            <DebouncedTextField
-              value={addTaskContent}
-              className="textfield"
-              placeholder="键入 Enter 以添加新的子任务..."
-              onPressEnter={handleAddTask}
-            />
-          </div>
-          <div className={`edit-description${showEditDescription && ' show' || ''}`}>
-            <DebouncedTextField
-              type="textarea"
-              placeholder="在这里写下任务描述..."
-              className="textfield"
-              value={(currentTask && currentTask.description) || ''}
-              onChange={event => handleUpdateCurrentTask({ description: event.target.value })}
-            />
-          </div>
-          <div className="buttons">
-            <Button
-              startIcon={<PlaylistAddIcon />}
-              variant="outlined"
-              className={`app-button${showAddTask && ' active' || ''}`}
-              onClick={() => setShowAddTask(!showAddTask)}
-            >
-              添加子任务
-            </Button>
-            <Button
-              startIcon={<ChatIcon />}
-              variant="outlined"
-              className={`app-button${showEditDescription && ' active' || ''}`}
-              onClick={() => setShowEditDescription(!showEditDescription)}
-            >
-              编辑描述
-            </Button>
-          </div>
+      <div className="task-list__controls-wrapper">
+        <div className={`add-task${showAddTask && ' show' || ''}`}>
+          <DebouncedTextField
+            value={addTaskContent}
+            className="textfield"
+            placeholder="键入 Enter 以添加新的子任务..."
+            onPressEnter={handleAddTask}
+          />
         </div>
-      </ClickAwayListener>
+        <div className={`edit-description${showEditDescription && ' show' || ''}`}>
+          <DebouncedTextField
+            type="textarea"
+            placeholder="在这里写下任务描述..."
+            className="textfield"
+            value={(currentTask && currentTask.description) || ''}
+            onChange={event => handleUpdateCurrentTask({ description: event.target.value })}
+          />
+        </div>
+        <div className="buttons">
+          <Button
+            startIcon={<PlaylistAddIcon />}
+            variant="outlined"
+            className={`app-button${showAddTask && ' active' || ''}`}
+            onClick={() => setShowAddTask(!showAddTask)}
+          >
+            添加子任务
+          </Button>
+          <Button
+            startIcon={<ChatIcon />}
+            variant="outlined"
+            className={`app-button${showEditDescription && ' active' || ''}`}
+            onClick={() => setShowEditDescription(!showEditDescription)}
+          >
+            编辑描述
+          </Button>
+        </div>
+      </div>
       <TaskSelector
         visible={taskSelectorVisible}
         onClose={event => {
