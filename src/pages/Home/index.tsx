@@ -300,8 +300,6 @@ const Home: React.FC<HomePageProps> = props => {
           const newSearchString = stringifySearch(Object.keys(searchObject).reduce((current, key) => {
             if (key !== 'id') {
               current[key] = searchObject[key];
-            } else {
-              current[key] = '';
             }
             return current;
           }, {}));
@@ -309,9 +307,9 @@ const Home: React.FC<HomePageProps> = props => {
             pathname: '/home/list',
             search: newSearchString,
           });
+          bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
+          bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
         }
-        bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
-        bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
         break;
       }
       default:
@@ -397,7 +395,10 @@ const Home: React.FC<HomePageProps> = props => {
                 <CustomIconButton
                   className="content__icon delete"
                   type="delete"
-                  onClick={event => handleDeleteDefaultTask(event, task)}
+                  onClick={event => {
+                    event.stopPropagation();
+                    handleDeleteDefaultTask(event, task);
+                  }}
                 />
               </div>
             </MenuItem>;

@@ -10,9 +10,8 @@ import {
   Route,
   Switch,
   Redirect,
-  Router,
+  BrowserRouter as Router,
 } from 'react-router-dom';
-import { createBrowserHistory } from 'history';
 
 const HomePage = lazy(() => import('./pages/Home'));
 
@@ -33,8 +32,6 @@ const theme = createMuiTheme({
   },
 });
 
-const history = createBrowserHistory();
-
 export interface AppMenu {
   name: string;
   path: string;
@@ -48,7 +45,7 @@ export interface DateRange {
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <Router history={history}>
+      <Router>
         <Suspense fallback={<></>}>
           <Switch>
             <Route path="/home" component={HomePage} />
