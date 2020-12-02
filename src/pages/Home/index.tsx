@@ -39,6 +39,7 @@ import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DebouncedTextField from '../../components/DebouncedTextField';
 import moment from 'moment';
+import idGen from '../../core/idgen';
 import _merge from 'lodash/merge';
 import {
   parseParams,
@@ -181,6 +182,24 @@ const Home: React.FC<HomePageProps> = props => {
     bus.emit('push', { action: 'DELETE', payloads: [task] });
   };
 
+  const handleAddDefaultTask = (content: string | number) => {
+    const taskContent = (typeof content === 'number') ? content.toString() : content;
+    bus.emit('push', {
+      action: 'ADD',
+      payloads: [
+        {
+          taskId: idGen(),
+          content: taskContent,
+          order: defaultTasks.length,
+          deadline: moment().add(1, 'day').startOf('day').toISOString(),
+          parentTaskId: 'default',
+          finished: false,
+        },
+      ],
+    });
+    return true;
+  };
+
   useEffect(() => {
     const { id = '' } = parseParams(window.location.href, '/home/list/:id');
     if (id === '') {
@@ -230,7 +249,15 @@ const Home: React.FC<HomePageProps> = props => {
       if (dispatch.payloads.length === 0) { return }
       switch (dispatch.action) {
       case 'ADD': {
-        bus.emit('dispatch', { action: 'ADD', payloads: dispatch.payloads });
+        const tasksToBeAdded = Array
+          .from(dispatch.payloads)
+          .filter(payload => payload.parentTaskId === 'default')
+          .map((task, index) => ({
+            ...task,
+            order: defaultTasks.length + index,
+          }));
+        bus.emit('dispatch', { action: 'ADD', payloads: tasksToBeAdded });
+        setDefaultTasks(Array.from(defaultTasks).concat(tasksToBeAdded));
         break;
       }
       case 'DELETE': {
@@ -314,6 +341,7 @@ const Home: React.FC<HomePageProps> = props => {
         <DebouncedTextField
           className="input"
           placeholder="键入 Enter 以新建任务清单..."
+          onPressEnter={handleAddDefaultTask}
         />
       </div>
       <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
