@@ -32,6 +32,7 @@ export interface IconButtonProps {
   style?: React.CSSProperties;
   iconClasses?: string[];
   disabled?: boolean;
+  spin?: boolean;
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, ref) => {
@@ -43,6 +44,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
     style = {},
     iconClasses = [],
     disabled = false,
+    spin = false,
   } = props;
 
   const icons: IconTypes = {
@@ -65,7 +67,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
     disabled={disabled}
     className={`icon-button${className ? ` ${className}` : ''}`}
   >
-    <Icon className={iconClasses.join(' ')} fontSize={size} style={style} />
+    <Icon className={iconClasses.join(' ')} fontSize={size} style={style} spin={spin} />
   </button>;
 });
 
