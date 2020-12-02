@@ -23,8 +23,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9;
+    z-index: 999;
     background-color: #fff;
+    min-width: 540px;
+    overflow-x: visible;
 
     &.small-width {
       padding-left: 20px;
@@ -43,8 +45,10 @@
     &__left,
     &__right {
       box-sizing: border-box;
-      flex-basis: 20%;
+      flex-basis: 12%;
       display: flex;
+      flex-shrink: 1;
+      flex-grow: 0;
     }
 
     &__left {
