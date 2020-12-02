@@ -210,6 +210,7 @@ export default (props: TaskList) => {
       };
       bus.emit('push', { action: 'ADD', payloads: [taskToBeAdded] });
       setAddTaskContent('');
+      setSelectedTasks([]);
     }
     return true;
   };
@@ -328,16 +329,19 @@ export default (props: TaskList) => {
           }
         });
         const addTaskPayloads = tasksToBeAdded.concat(tasksToBeAppended);
-        tempNewTasks.forEach((task, index) => {
+        tempNewTasks.map((task, index) => {
           if (task.order !== index) {
-            updateTaskPayloads.push({
-              ...task,
-              order: index,
-            });
+            task.order = index;
+            updateTaskPayloads.push(task);
           }
+          return task;
         });
-        bus.emit('push', { action: 'UPDATE', payloads: updateTaskPayloads });
-        bus.emit('dispatch', { action: 'ADD', payloads: addTaskPayloads });
+        if (addTaskPayloads.length !== 0) {
+          bus.emit('dispatch', { action: 'ADD', payloads: addTaskPayloads });
+        }
+        if (updateTaskPayloads.length !== 0) {
+          bus.emit('push', { action: 'UPDATE', payloads: updateTaskPayloads });
+        }
         setTasks(tempNewTasks);
         break;
       }
@@ -376,10 +380,10 @@ export default (props: TaskList) => {
             }
           }
         });
+        setTasks(newTasks);
         if (tasksToBeUpdated.length > 0) {
           bus.emit('dispatch', { action: 'UPDATE', payloads: tasksToBeUpdated });
         }
-        setTasks(newTasks);
         break;
       }
       case 'DELETE': {
@@ -541,17 +545,20 @@ export default (props: TaskList) => {
                                         onSelectionChange={handleSelectionChange}
                                         onChange={handleTaskStatusChange}
                                         onDelete={task => handleDeleteTasks([task])}
+                                        focus={selectedTasks.length === 1 && selectedTasks[0].taskId === item.taskId}
                                         onPressEnter={task => {
+                                          const taskInfo: TaskListItem = {
+                                            taskId: idGen(),
+                                            content: '',
+                                            order: task.order + 1,
+                                            finished: false,
+                                            deadline: moment().add(1, 'day').startOf('day').toISOString(),
+                                            parentTaskId: currentTask.taskId,
+                                          };
+                                          setSelectedTasks([taskInfo]);
                                           bus.emit('push', {
                                             action: 'ADD',
-                                            payloads: [{
-                                              taskId: idGen(),
-                                              content: '',
-                                              order: task.order + 1,
-                                              finished: false,
-                                              deadline: moment().add(1, 'day').startOf('day').toISOString(),
-                                              parentTaskId: currentTask.taskId,
-                                            }],
+                                            payloads: [taskInfo],
                                           });
                                         }}
                                       />

@@ -1,6 +1,7 @@
 import React, {
   useState,
   useEffect,
+  useRef,
 } from 'react';
 import {
   useDebouncedValue,
@@ -20,6 +21,7 @@ export interface DebouncedTextFieldProps {
   delay?: number;
   placeholder?: string;
   value?: string | number;
+  focus?: boolean;
   onKeyPress?: (event: KeyboardEventType) => void;
   onKeyUp?: (event: KeyboardEventType) => void;
   onKeyDown?: (event: KeyboardEventType) => void;
@@ -33,6 +35,7 @@ const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
   delay = 500,
   placeholder = '',
   value = '',
+  focus = false,
   onChange,
   onKeyPress,
   onKeyDown,
@@ -42,6 +45,7 @@ const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
   const [event, setEvent] = useState<ChangeEventType | undefined>(undefined);
   const [controlledValue, setControlledValue] = useState<string | number>('');
   const debouncedEvent = useDebouncedValue(event, delay);
+  const ref = useRef(null);
 
   const generateClassName = (type: 'input' | 'textarea') => {
     return `app-debounced-textfield ${type} ${className && ` ${className}` || ''}`;
@@ -86,6 +90,7 @@ const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
       />
       : <input
           type={type}
+          ref={el => { focus && el && el.focus() }}
           className={generateClassName('input')}
           placeholder={placeholder}
           value={controlledValue}

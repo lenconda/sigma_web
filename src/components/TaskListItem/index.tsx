@@ -43,6 +43,7 @@ export interface TaskListItemProps extends TaskListItem {
   isDragging: boolean;
   selected?: boolean;
   className?: string;
+  focus?: boolean;
   onSelectionChange: (taskInfo: TaskListItem) => void;
   onChange: (taskInfo: TaskListItem) => void;
   onDelete?: (taskInfo: TaskListItem) => void;
@@ -66,6 +67,7 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
     selected = false,
     parentTaskId,
     className = '',
+    focus = false,
     onSelectionChange,
     onChange,
     onDelete,
@@ -130,6 +132,7 @@ export default React.forwardRef((props: TaskListItemProps, ref: React.LegacyRef<
           />
           <DebouncedTextField
             value={content}
+            focus={focus}
             onChange={event => handleContentChange(event.target.value)}
             className={`task-item__content__task-title${finished ? ' finished' : ''}`}
             onPressEnter={handleTextfieldPressEnter}
