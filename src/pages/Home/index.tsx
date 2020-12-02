@@ -362,7 +362,7 @@ const Home: React.FC<HomePageProps> = props => {
             return <MenuItem classes={{ root: 'item' }} key={index}>
               <NavLink className="link" activeClassName="current" to={`/home/list/${task.taskId}`}>
                 <ListIcon className="link__icon list" />
-                <Typography noWrap={true} variant="caption">{task.content}</Typography>
+                <Typography noWrap={true}>{task.content}</Typography>
                 <CustomIconButton
                   className="link__icon delete"
                   type="delete" onClick={event => handleDeleteDefaultTask(event, task)}
