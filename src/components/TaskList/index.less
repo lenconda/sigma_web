@@ -29,6 +29,9 @@
     background-color: #fff;
     border-radius: @border-radius;
     border: 1px solid @border-color;
+    box-shadow: @box-shadow;
+    max-height: calc(100% - 2px);
+    overflow: scroll;
 
     & > div:last-child {
       & .task-item-wrapper {
@@ -79,6 +82,7 @@
     width: 100%;
     padding: 0 25px;
     background-color: transparent;
+    overflow: scroll;
     flex-grow: 1;
 
     .loading {
@@ -129,8 +133,7 @@
 
   &__controls-wrapper {
     box-sizing: border-box;
-    padding: 10px 25px;
-    padding-top: 10px;
+    padding: 15px 25px;
     flex-grow: 0;
     flex-shrink: 0;
     display: flex;
@@ -139,28 +142,36 @@
     .add-task,
     .edit-description {
       box-sizing: border-box;
-      display: flex;
-      padding-bottom: 10px;
+      display: none;
+      padding-bottom: 0;
+      transition: all @transition-duration;
+
+      &.show {
+        display: flex;
+        padding-bottom: 15px;
+        transition: all @transition-duration;
+      }
     }
 
     .add-task {
-      &__content {
+      .textfield {
         box-sizing: border-box;
         flex-grow: 1;
         font-size: 13px;
         height: 36px;
         border: 1px solid @border-color;
+        transition: all @transition-duration;
       }
     }
 
     .edit-description {
-      & > textarea {
+      .textfield {
         box-sizing: border-box;
         width: 100%;
         outline: 0;
         border: 0;
         resize: none;
-        height: 72px;
+        height: 100px;
         font-size: 13px;
         border: 1px solid @border-color;
         padding: 15px;
@@ -177,6 +188,10 @@
 
     .buttons button {
       margin-right: 10px;
+
+      &.active {
+        background-color: @bg-selected-color;
+      }
     }
   }
 
