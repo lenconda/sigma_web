@@ -61,6 +61,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
           className={`app-popup${className && ` ${className}` || ''}`}
           style={{ zIndex }}
           disablePortal={disablePortal}
+          onClick={() => setPopupVisible(true)}
         >
           <div className="app-popup__popup-wrapper__content" onClick={() => closeOnClick && handleClose()}>
             {
