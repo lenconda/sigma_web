@@ -305,78 +305,6 @@ const Home: React.FC<HomePageProps> = props => {
     getNavMenu().then(res => setNavMenus(res));
   }, []);
 
-  const generateSidebarContent = (): JSX.Element => (
-    <>
-      <div className="app-home__sidebar__header">
-        {
-          userInfo &&
-          <PopupProvider
-            className="popup-menu-wrapper"
-            closeOnClick={true}
-            disablePortal={true}
-            trigger={
-              <IconButton>
-                <img className="avatar" src={userInfo.avatar} width="20" />
-              </IconButton>
-            }
-          >
-            <MenuList>
-              {generatePopupMenu(avatarMenus)}
-            </MenuList>
-          </PopupProvider>
-        }
-        <div className="right-controls-wrapper">
-          <CustomIconButton
-            size={18}
-            className="button"
-            type="refresh"
-            disabled={defaultTasksLoading || isDispatching}
-            spin={defaultTasksLoading || isDispatching}
-            onClick={fetchDefaultTasks}
-          />
-        </div>
-      </div>
-      <div className="app-home__sidebar__input">
-        <DebouncedTextField
-          className="input"
-          placeholder="键入 Enter 以新建任务清单..."
-          onPressEnter={handleAddDefaultTask}
-        />
-      </div>
-      <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
-        {
-          defaultTasks.map((task, index) => {
-            return <MenuItem
-              key={index}
-              classes={{ gutters: 'item' }}
-            >
-              <div
-                className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
-                onClick={() => {
-                  history.push({
-                    pathname: '/home/list',
-                    search: updateSearch(location.search, { id: task.taskId }),
-                  });
-                }}
-              >
-                <ListIcon className="content__icon list" />
-                <Typography noWrap={true}>{task.content}</Typography>
-                <CustomIconButton
-                  className="content__icon delete"
-                  type="delete"
-                  onClick={event => {
-                    event.stopPropagation();
-                    handleDeleteDefaultTask(event, task);
-                  }}
-                />
-              </div>
-            </MenuItem>;
-          })
-        }
-      </MenuList>
-    </>
-  );
-
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
@@ -395,7 +323,73 @@ const Home: React.FC<HomePageProps> = props => {
               paperClass={{ elevation0: 'app-home__sidebar', elevation16: 'app-home__sidebar' }}
               stickyClass="sticky"
             >
-              {generateSidebarContent()}
+              <div className="app-home__sidebar__header">
+                {
+                  userInfo &&
+                  <PopupProvider
+                    className="popup-menu-wrapper"
+                    closeOnClick={true}
+                    disablePortal={true}
+                    trigger={
+                      <IconButton>
+                        <img className="avatar" src={userInfo.avatar} width="20" />
+                      </IconButton>
+                    }
+                  >
+                    <MenuList>
+                      {generatePopupMenu(avatarMenus)}
+                    </MenuList>
+                  </PopupProvider>
+                }
+                <div className="right-controls-wrapper">
+                  <CustomIconButton
+                    size={18}
+                    className="button"
+                    type="refresh"
+                    disabled={defaultTasksLoading || isDispatching}
+                    spin={defaultTasksLoading || isDispatching}
+                    onClick={fetchDefaultTasks}
+                  />
+                </div>
+              </div>
+              <div className="app-home__sidebar__input">
+                <DebouncedTextField
+                  className="input"
+                  placeholder="键入 Enter 以新建任务清单..."
+                  onPressEnter={handleAddDefaultTask}
+                />
+              </div>
+              <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
+                {
+                  defaultTasks.map((task, index) => {
+                    return <MenuItem
+                      key={index}
+                      classes={{ gutters: 'item' }}
+                    >
+                      <div
+                        className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
+                        onClick={() => {
+                          history.push({
+                            pathname: '/home/list',
+                            search: updateSearch(location.search, { id: task.taskId }),
+                          });
+                        }}
+                      >
+                        <ListIcon className="content__icon list" />
+                        <Typography noWrap={true}>{task.content}</Typography>
+                        <CustomIconButton
+                          className="content__icon delete"
+                          type="delete"
+                          onClick={event => {
+                            event.stopPropagation();
+                            handleDeleteDefaultTask(event, task);
+                          }}
+                        />
+                      </div>
+                    </MenuItem>;
+                  })
+                }
+              </MenuList>
             </Drawer>
           </div>
           <div className="app-home__nav__center">

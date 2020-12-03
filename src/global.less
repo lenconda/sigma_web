@@ -1,16 +1,56 @@
-@bg-blue: #03a9f4;
-@bg-green: #28a745;
-@bg-yellow: #ffc107;
-@bg-teal: #20c997;
-@bg-cyan: #17a2b8;
-@bg-gray: #fcfcfc;
-@text-color: #333;
-@text-color-gray: #b0b0b0;
+@gray-00: #000;
+@gray-33: #333;
+@gray-66: #666;
+@gray-99: #999;
+@gray-b0: #b0b0b0;
+@gray-cc: #ccc;
+@gray-df: #dfdfdf;
+@gray-e0: #e0e0e0;
+@gray-ee: #eee;
+@gray-f0: #f0f0f0;
+@gray-f5: #f5f5f5;
+@gray-fa: #fafafa;
+@gray-fc: #fcfcfc;
+@gray-ff: #fff;
+
+@blue: #03a9f4;
+@green: #28a745;
+@yellow: #ffc107;
+@teal: #20c997;
+@cyan: #17a2b8;
+@gray: #fcfcfc;
+@white: @gray-ff;
+@black: @gray-00;
+
+@text-color: @gray-33;
+@text-color-gray: @gray-b0;
+
 @box-shadow: 0 5px 15px 2.5px rgba(0, 0, 0, .03);
 @box-shadow-focus: 0 10px 30px 5px rgba(0, 0, 0, .08);
 @box-shadow-hover: 0 26px 30px 5px rgba(0, 0, 0, .1);
+
 @border-radius: 6px;
+
 @transition-duration: .25s;
-@border-color: #e0e0e0;
-@bg-hover-color: #f0f0f0;
-@bg-selected-color: #eee;
+
+@bg-color-selected: @gray-ee;
+@bg-color-selected--secondary: @gray-f0;
+@bg-color-hover: @gray-f0;
+@bg-color-empty: @gray-b0;
+
+@icon-color: @gray-b0;
+@icon-color-hover: @gray-66;
+
+@divider-color: @gray-ee;
+@border-color: @gray-e0;
+@border-color--secondary: @gray-f5;
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

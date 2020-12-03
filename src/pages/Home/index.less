@@ -202,6 +202,10 @@
           position: relative;
           cursor: pointer;
 
+          p {
+            font-size: 13px;
+          }
+
           &:hover {
             .delete {
               display: block;
@@ -227,7 +231,7 @@
           }
 
           &.current {
-            background-color: @bg-selected-color;
+            background-color: @bg-color-selected;
             border: 1px solid @border-color;
             border-left: 0;
             border-right: 0;
@@ -270,7 +274,7 @@
       &.empty {
         justify-content: center;
         align-items: center;
-        color: #b0b0b0;
+        color: @bg-color-empty;
         user-select: none;
 
         img.illustrator {

@@ -1,3 +1,5 @@
+@import '../../global.less';
+
 input[type=checkbox].app-checkbox {
   box-sizing: border-box;
   position: relative;
@@ -15,9 +17,9 @@ input[type=checkbox].app-checkbox::before {
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid #dfdfdf;
+  border: 1px solid @gray-df;
   border-radius: 2px;
-  background-color: #fafafa;
+  background-color: @gray-fa;
 }
 
 input[type=checkbox].app-checkbox:checked {
@@ -26,7 +28,7 @@ input[type=checkbox].app-checkbox:checked {
     display: block;
     width: 3px;
     height: 7px;
-    border: solid #fff;
+    border: solid @white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
     position: absolute;
@@ -35,6 +37,6 @@ input[type=checkbox].app-checkbox:checked {
   }
 
   &::before {
-    background-color: #dfdfdf;
+    background-color: @gray-df;
   }
 }

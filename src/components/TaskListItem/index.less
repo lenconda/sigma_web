@@ -5,7 +5,7 @@
   display: flex;
   justify-content: space-between;
   padding: 0;
-  background-color: #fff;
+  background-color: @white;
   border: 1px solid transparent;
   transition: all @transition-duration;
 
@@ -17,7 +17,7 @@
 
   &.selected {
     transition: all @transition-duration;
-    background-color: #eee;
+    background-color: @bg-color-selected;
   }
 
   &.dragging {
@@ -36,7 +36,7 @@
     margin-bottom: 0;
     align-items: center;
     position: relative;
-    border-bottom: 1px solid #f5f5f5;
+    border-bottom: 1px solid @border-color--secondary;
 
     &.dragging {
       border-bottom: 0;
@@ -91,7 +91,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      color: #b0b0b0;
+      color: @icon-color;
       font-size: 12px;
     }
   }
