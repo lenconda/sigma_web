@@ -37,14 +37,13 @@ import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import FormatIndentIncreaseIcon from '@material-ui/icons/FormatIndentIncrease';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { createBrowserHistory } from 'history';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DebouncedTextField from '../../components/DebouncedTextField';
 import moment from 'moment';
 import idGen from '../../core/idgen';
 import {
-  parseSearch,
-  stringifySearch,
+  updateSearch,
+  deleteSearch,
 } from '../../utils/url';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
@@ -61,6 +60,9 @@ import {
 import {
   ListIcon,
 } from '../../core/icons/index';
+import {
+  useId,
+} from '../../core/hooks';
 import CustomIconButton from '../../components/IconButton';
 import Drawer from '../../components/Drawer';
 import './index.less';
@@ -165,6 +167,7 @@ const Home: React.FC<HomePageProps> = props => {
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
   const location = useLocation();
   const history = useHistory();
+  const currentId = useId(location);
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -213,13 +216,12 @@ const Home: React.FC<HomePageProps> = props => {
   };
 
   useEffect(() => {
-    const { id = '' } = parseSearch(props.location.search);
-    if (id === '') {
+    if (currentId === '') {
       setCurrentActiveTaskIds([]);
     } else {
-      setCurrentActiveTaskIds([id]);
+      setCurrentActiveTaskIds([currentId]);
     }
-  }, [location]);
+  }, [currentId]);
 
   useEffect(() => {
     const handler = () => {
@@ -294,18 +296,10 @@ const Home: React.FC<HomePageProps> = props => {
           return task;
         });
         setDefaultTasks(currentDefaultTasks);
-        const { id = '' } = parseSearch(location.search);
-        if (dispatch.payloads.findIndex(payload => payload.taskId === id) !== -1) {
-          const searchObject = parseSearch(location.search);
-          const newSearchString = stringifySearch(Object.keys(searchObject).reduce((current, key) => {
-            if (key !== 'id') {
-              current[key] = searchObject[key];
-            }
-            return current;
-          }, {}));
+        if (dispatch.payloads.findIndex(payload => payload.taskId === currentId) !== -1) {
           history.push({
             pathname: '/home/list',
-            search: newSearchString,
+            search: deleteSearch(location.search, ['id']),
           });
           bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
           bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
@@ -381,12 +375,9 @@ const Home: React.FC<HomePageProps> = props => {
               <div
                 className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
                 onClick={() => {
-                  const newSearchString = stringifySearch(_merge(parseSearch(location.search), {
-                    id: task.taskId,
-                  }));
                   history.push({
                     pathname: '/home/list',
-                    search: newSearchString,
+                    search: updateSearch(location.search, { id: task.taskId }),
                   });
                 }}
               >

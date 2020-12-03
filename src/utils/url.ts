@@ -1,4 +1,5 @@
 import { UrlParser } from 'url-params-parser';
+import _merge from 'lodash/merge';
 
 export const parseSearch = (search: string): Record<string, any> => {
   const rawSearchString = search.startsWith('?') ? search.slice(1) : search;
@@ -29,4 +30,23 @@ export const stringifySearch = (parsedSearch: Record<string, any>): string => {
 export const parseParams = (pathname: string, schema: string): Record<string, any> => {
   const parser = UrlParser(pathname, schema);
   return parser.namedParams;
+};
+
+export const updateSearch = (searchString: string, updateItems: Record<string, any>): string => {
+  const originalSearchObject = parseSearch(searchString);
+  const newSearchObject = _merge(originalSearchObject, updateItems);
+  return stringifySearch(newSearchObject);
+};
+
+export const deleteSearch = (searchString: string, keys: string[]): string => {
+  const originalSearchObject = parseSearch(searchString);
+  const newSearchObject = Object
+    .keys(originalSearchObject)
+    .reduce<Record<string, any>>((currentResult, key) => {
+      if (keys.indexOf(key) === -1) {
+        currentResult[key] = originalSearchObject[key];
+      }
+      return currentResult;
+    }, {} as Record<string, any>);
+  return stringifySearch(newSearchObject);
 };
