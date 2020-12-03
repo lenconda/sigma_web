@@ -356,7 +356,16 @@ const Home: React.FC<HomePageProps> = props => {
             </MenuList>
           </PopupProvider>
         }
-        <div className="right-controls-wrapper"></div>
+        <div className="right-controls-wrapper">
+          <CustomIconButton
+            size={18}
+            className="button"
+            type="refresh"
+            disabled={defaultTasksLoading || isDispatching}
+            spin={defaultTasksLoading || isDispatching}
+            onClick={fetchDefaultTasks}
+          />
+        </div>
       </div>
       <div className="app-home__sidebar__input">
         <DebouncedTextField

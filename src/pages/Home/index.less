@@ -141,6 +141,16 @@
         justify-content: flex-end;
         font-size: 22px;
         font-weight: 700;
+        flex-grow: 1;
+
+        .button {
+          font-weight: 700;
+
+          &[disabled],
+          &[disabled=true] {
+            color: #999;
+          }
+        }
       }
     }
 
