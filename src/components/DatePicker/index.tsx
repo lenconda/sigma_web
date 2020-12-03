@@ -93,7 +93,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                 onClick={decreaseMonth}
                 disabled={prevMonthButtonDisabled}
               />
-              <div className="selector-wrapper">
+              <div className="selector-control-wrapper">
                 <Select
                   value={date.getFullYear()}
                   onChange={event => changeYear(event.target.value as number)}

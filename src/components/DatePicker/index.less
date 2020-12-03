@@ -35,21 +35,19 @@
     justify-content: space-between;
     font-size: 15px;
 
-    .menu-wrapper {
-      box-shadow: @box-shadow-focus !important;
-      border: 1px solid @border-color !important;
-    }
-    .select {
-      padding: 15px 10px;
-      font-size: 15px;
+    .selector-control-wrapper {
+      .select {
+        padding: 15px 10px;
+        font-size: 15px;
 
-      &::before {
+        &::before {
+          display: none;
+        }
+      }
+
+      .icon {
         display: none;
       }
-    }
-
-    .icon {
-      display: none;
     }
   }
 
