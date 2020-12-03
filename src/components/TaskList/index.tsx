@@ -4,10 +4,7 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
-import Item, {
-  TaskListItem,
-  TaskListItemDetailInfo,
-} from '../TaskListItem';
+import Item from '../TaskListItem';
 import {
   DragDropContext,
   Droppable,
@@ -23,7 +20,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
-import Bus from '../../core/bus';
 import moment from 'moment';
 import idGen from '../../core/idgen';
 import TaskSelector from '../TaskSelector';
@@ -44,21 +40,13 @@ import {
 } from '../../utils/task';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
+import {
+  TaskListItem,
+  TaskListItemDetailInfo,
+  Dispatch,
+  TaskList,
+} from '../../interfaces';
 import './index.less';
-
-export interface Dispatch {
-  action: 'UPDATE' | 'DELETE' | 'ADD';
-  payloads: TaskListItem[] | TaskListItemDetailInfo[];
-}
-
-export interface TaskList {
-  currentTaskId: string;
-  bus: Bus<Dispatch>;
-  onSelectedTasksChange: (tasks: TaskListItem[]) => void;
-  currentActiveTaskIds?: string[];
-  isDefault?: boolean;
-  dateRange: [Date, Date];
-}
 
 const useStyles = makeStyles(() => ({
   root: {

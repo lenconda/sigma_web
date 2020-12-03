@@ -1,7 +1,6 @@
 import React from 'react';
 import Draggable from 'react-draggable';
 import {
-  BackdropProps,
   DialogClassKey,
   PaperProps,
 } from '@material-ui/core';
@@ -12,23 +11,12 @@ import CloseIcon from '@material-ui/icons/Close';
 import {
   mergeClasses,
 } from '../../utils/class';
+import {
+  DraggableDialogProps,
+} from '../../interfaces';
 import './index.less';
 
-type ClassKey = Partial<Record<DialogClassKey, string>>;
-
-export interface DraggableDialogProps {
-  children: React.ReactNode;
-  open: boolean;
-  title?: string;
-  fullWidth?: boolean;
-  classes?: ClassKey;
-  titleClassName?: string;
-  contentClassName?: string;
-  footerClassName?: string;
-  BackdropProps?: Partial<BackdropProps>;
-  PaperProps?: Partial<PaperProps>;
-  onClose: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}
+type DialogPartialClassKey = Partial<Record<DialogClassKey, string>>;
 
 const PaperComponent = (props: PaperProps) => {
   return <Draggable handle=".app-dialog__title" cancel={'[class*="MuiDialogContent-root"]'}>
@@ -58,7 +46,7 @@ const DraggableDialog: React.FC<DraggableDialogProps> = ({
   return <Dialog
     open={open}
     fullWidth={fullWidth}
-    classes={mergeClasses<ClassKey>({ root: 'app-dialog' }, classes)}
+    classes={mergeClasses<DialogPartialClassKey>({ root: 'app-dialog' }, classes)}
     aria-labelledby="app-dialog__title"
     PaperComponent={PaperComponent}
     BackdropProps={BackdropProps}

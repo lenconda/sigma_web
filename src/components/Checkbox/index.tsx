@@ -2,14 +2,8 @@ import React, {
   useState,
   useEffect,
 } from 'react';
+import { CheckboxProps } from '../../interfaces';
 import './index.less';
-
-export interface CheckboxProps {
-  checked: boolean;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  className?: string;
-  onClick?: (event: React.MouseEvent<HTMLInputElement>) => void;
-}
 
 const Checkbox: React.FC<CheckboxProps> = ({
   checked,

@@ -1,5 +1,4 @@
 import React from 'react';
-import './index.less';
 import ListItem from '@material-ui/core/ListItem';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -8,47 +7,11 @@ import {
 } from '../../core/icons';
 import Checkbox from '../Checkbox';
 import DebouncedTextField from '../DebouncedTextField';
-
-export interface TaskListItemBase {
-  content: string;
-  deadline: string;
-  order: number;
-  finished: boolean;
-  finishedDate?: string;
-  description?: string;
-  parentTaskId: string;
-}
-
-export interface User {
-  email: string;
-  avatar: string;
-  name?: string;
-  birthday?: string;
-  motto?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface TaskListItem extends TaskListItemBase {
-  taskId: string;
-}
-
-export interface TaskListItemDetailInfo extends TaskListItem {
-  creator: User;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface TaskListItemProps extends TaskListItem {
-  isDragging: boolean;
-  selected?: boolean;
-  className?: string;
-  focus?: boolean;
-  onSelectionChange: (taskInfo: TaskListItem) => void;
-  onChange: (taskInfo: TaskListItem) => void;
-  onDelete?: (taskInfo: TaskListItem) => void;
-  onPressEnter?: (taskInfo: TaskListItem) => void;
-}
+import {
+  TaskListItem,
+  TaskListItemProps,
+} from '../../interfaces';
+import './index.less';
 
 const useStyles = makeStyles(() => ({
   taskListItem: {

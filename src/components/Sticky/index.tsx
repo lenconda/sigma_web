@@ -3,14 +3,8 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
+import { StickyProps } from '../../interfaces';
 import './index.less';
-
-export interface StickyProps {
-  className?: string;
-  zIndex?: number;
-  children: React.ReactNode;
-  direction?: 'vertical' | 'horizontal';
-}
 
 const Sticky: React.FC<StickyProps> = ({
   className = '',

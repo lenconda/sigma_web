@@ -1,33 +1,20 @@
 import React, {
   useState,
   useEffect,
-  useRef,
 } from 'react';
 import {
   useDebouncedValue,
   useUpdateEffect,
 } from '../../core/hooks';
 import Textarea from 'react-textarea-autosize';
+import {
+  DebouncedTextFieldProps,
+} from '../../interfaces';
 import './index.less';
 
 type ChangeEventType = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>;
-type KeyboardEventType = React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>;
 
 const AutoResizeTextarea = Textarea as any;
-
-export interface DebouncedTextFieldProps {
-  type?: 'text' | 'number' | 'textarea';
-  className?: string;
-  delay?: number;
-  placeholder?: string;
-  value?: string | number;
-  focus?: boolean;
-  onKeyPress?: (event: KeyboardEventType) => void;
-  onKeyUp?: (event: KeyboardEventType) => void;
-  onKeyDown?: (event: KeyboardEventType) => void;
-  onChange?: (event: ChangeEventType) => void;
-  onPressEnter?: (content: string | number) => boolean;
-}
 
 const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
   type = 'text',
@@ -45,7 +32,6 @@ const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
   const [event, setEvent] = useState<ChangeEventType | undefined>(undefined);
   const [controlledValue, setControlledValue] = useState<string | number>('');
   const debouncedEvent = useDebouncedValue(event, delay);
-  const ref = useRef(null);
 
   const generateClassName = (type: 'input' | 'textarea') => {
     return `app-debounced-textfield ${type} ${className && ` ${className}` || ''}`;

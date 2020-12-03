@@ -5,21 +5,10 @@ import React, {
 } from 'react';
 import Popper from '@material-ui/core/Popper';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import {
+  PopupProviderProps,
+} from '../../interfaces';
 import './index.less';
-
-export interface PopupProviderProps {
-  trigger: JSX.Element;
-  children: React.ReactNode;
-  id?: string;
-  triggerClass?: string;
-  zIndex?: number;
-  open?: boolean;
-  disablePortal?: boolean;
-  closeOnClick?: boolean;
-  className?: string;
-  onOpen?: () => void;
-  onClose?: () => void;
-}
 
 const PopupProvider: React.FC<PopupProviderProps> = ({
   trigger,

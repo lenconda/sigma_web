@@ -6,17 +6,8 @@ import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PopupProvider from '../PopupProvider';
 import Button from '@material-ui/core/Button';
+import { DatePickerProps } from '../../interfaces';
 import './index.less';
-
-export interface DatePickerProps {
-  startDate?: Date;
-  endDate?: Date;
-  customComponent?: JSX.Element;
-  onConfirm: (data: Date | [Date, Date], event: React.SyntheticEvent<any, Event>) => void;
-  selectsRange?: boolean;
-  showTimeSelect?: boolean;
-  zIndex?: number;
-}
 
 const DatePicker: React.FC<DatePickerProps> = ({
   startDate = new Date(),
