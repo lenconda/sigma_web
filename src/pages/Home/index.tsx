@@ -168,6 +168,7 @@ const Home: React.FC<HomePageProps> = props => {
   const location = useLocation();
   const history = useHistory();
   const currentId = useId(location);
+  const dispatchStatus = dispatcher.useDispatchStatus();
 
   const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
     if (tasks.length === 1) {
@@ -321,8 +322,8 @@ const Home: React.FC<HomePageProps> = props => {
   }, [bus, dispatcher]);
 
   useEffect(() => {
-    setIsDispatching(dispatcher.isDispatching);
-  }, [dispatcher.isDispatching]);
+    setIsDispatching(dispatchStatus);
+  }, [dispatchStatus]);
 
   // TODO: Mock
   useEffect(() => {
