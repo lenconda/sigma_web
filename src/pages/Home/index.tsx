@@ -11,11 +11,6 @@ import {
 } from '@material-ui/core';
 import Bus from '../../core/bus';
 import Dispatcher from '../../core/dispatcher';
-import { Dispatch } from '../../components/TaskList';
-import {
-  TaskListItem,
-  User,
-} from '../../components/TaskListItem';
 import {
   Route,
   Switch,
@@ -47,24 +42,23 @@ import {
 } from '../../utils/url';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
-import {
-  getTaskListFromTask,
-} from '../../services/task';
-import {
-  getUserInfo,
-} from '../../services/user';
+import { getTaskListFromTask } from '../../services/task';
+import { getUserInfo } from '../../services/user';
 import {
   getNavMenu,
   getAvatarMenu,
 } from '../../services/menus';
-import {
-  ListIcon,
-} from '../../core/icons/index';
-import {
-  useId,
-} from '../../core/hooks';
+import { ListIcon } from '../../core/icons/index';
+import { useId } from '../../core/hooks';
 import CustomIconButton from '../../components/IconButton';
 import Drawer from '../../components/Drawer';
+import {
+  AppMenuItem,
+  NotificationInfo,
+  TaskListItem,
+  User,
+  Dispatch,
+} from '../../interfaces';
 import './index.less';
 
 const ListPage = lazy(() => import('./List'));
@@ -85,32 +79,6 @@ const theme = createMuiTheme({
     fontSize: 12,
   },
 });
-
-export interface AppMenuItem {
-  name?: string;
-  path?: string;
-  isDivider?: boolean;
-  icon?: string;
-}
-
-export interface DateRange {
-  start: Date;
-  end: Date;
-}
-
-export interface NotificationInfo {
-  notificationId: string;
-  title: string;
-  time: string;
-  checked: boolean;
-  subject?: string;
-  sender?: User;
-  receiver?: User;
-}
-
-export interface NotificationDetailInfo extends NotificationInfo {
-  content: string;
-}
 
 const generatePopupMenu = (menus: AppMenuItem[]): JSX.Element[] => {
   return menus.map((menu, index) => {

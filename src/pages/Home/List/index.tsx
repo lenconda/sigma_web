@@ -1,19 +1,7 @@
 import React from 'react';
-import Bus from '../../../core/bus';
-import TaskList, {
-  Empty,
-  Dispatch,
-} from '../../../components/TaskList';
-import { TaskListItem } from '../../../components/TaskListItem';
+import TaskList, { Empty } from '../../../components/TaskList';
+import { ListPageProps } from '../../../interfaces/pages/home/list';
 import './index.less';
-
-export interface ListPageProps {
-  bus: Bus<Dispatch>;
-  currentActiveTaskIds: string[];
-  onSelectedTasksChange: (tasks: TaskListItem[]) => void;
-  dateRange: [Date, Date];
-  className?: string;
-}
 
 const List: React.FC<ListPageProps> = ({
   bus,

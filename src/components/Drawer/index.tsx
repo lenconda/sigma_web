@@ -10,28 +10,13 @@ import MuiDrawer from '@material-ui/core/Drawer';
 import {
   mergeClasses,
 } from '../../utils/class';
+import {
+  DrawerProps,
+} from '../../interfaces';
 import './index.less';
 
 type BackdropPartialClassKey = Partial<Record<BackdropClassKey, string>>;
 type PaperPartialClassKey = Partial<Record<PaperClassKey, string>>;
-
-export interface DrawerProps {
-  children: React.ReactNode;
-  anchor?: 'top' | 'right' | 'bottom' | 'left';
-  variant?: 'permanent' | 'persistent' | 'temporary';
-  trigger?: () => React.ReactNode;
-  triggerClass?: string;
-  stickyClass?: string;
-  open?: boolean;
-  backdropClass?: BackdropPartialClassKey;
-  paperClass?: PaperPartialClassKey;
-  hideThreshold?: number;
-  onClose?: () => void;
-}
-
-export interface TriggerProps {
-  onClick: (event: React.MouseEvent<HTMLElement, MouseEvent>) => any;
-}
 
 const Drawer: React.FC<DrawerProps> = ({
   children,

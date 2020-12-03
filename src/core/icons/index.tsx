@@ -1,14 +1,7 @@
 import React from 'react';
+import { IconProps } from '../../interfaces';
 import './iconfont.css';
 import './index.less';
-
-export interface IconProps {
-  fontSize?: number;
-  className?: string;
-  style?: React.CSSProperties;
-  spin?: boolean;
-  spinDuration?: string;
-}
 
 const generateIcon = (name: string): React.FC<IconProps> => {
   return ({

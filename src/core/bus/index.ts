@@ -1,5 +1,5 @@
-export type EventSubscribersType<T> = Record<string, Array<EventSubscriberCallbackType<T>>>;
-export type EventSubscriberCallbackType<T> = (data: T) => any;
+type EventSubscribersType<T> = Record<string, Array<EventSubscriberCallbackType<T>>>;
+type EventSubscriberCallbackType<T> = (data: T) => any;
 
 /**
  * an event emitter based on publisher-subscriber pattern

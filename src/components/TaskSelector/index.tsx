@@ -8,21 +8,15 @@ import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import { TaskListItem } from '../TaskListItem';
 import {
   LoadingIcon,
 } from '../../core/icons';
+import {
+  TaskSelectorProps,
+  TaskSelectorMenuItem,
+  TaskListItem,
+} from '../../interfaces';
 import './index.less';
-
-export interface TaskSelectorProps {
-  visible: boolean;
-  onClose: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-  onSelectTask: (task: TaskListItem) => void;
-}
-
-export interface TaskSelectorMenuItem extends TaskListItem {
-  children: TaskSelectorMenuItem[];
-}
 
 // TODO: Mock
 const getItems = (count: number, id: string): TaskSelectorMenuItem[] => Array.from({ length: count }, (v, k) => k).map(k => ({

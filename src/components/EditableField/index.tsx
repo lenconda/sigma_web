@@ -2,13 +2,8 @@ import React, {
   useState,
   useEffect,
 } from 'react';
+import { EditableFieldProps } from '../../interfaces';
 import './index.less';
-
-export interface EditableFieldProps {
-  content: string;
-  onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  className?: string;
-}
 
 const EditableField: React.FC<EditableFieldProps> = ({
   content,

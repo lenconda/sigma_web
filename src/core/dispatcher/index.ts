@@ -1,4 +1,4 @@
-import { Dispatch } from '../../components/TaskList';
+import { Dispatch } from '../../interfaces';
 import {
   useState,
   useEffect,
