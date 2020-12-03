@@ -5,7 +5,6 @@ import {
 } from 'react';
 
 class Dispatcher {
-  public isDispatching = false;
   private dispatchQueue: Dispatch[] = [];
   private interval: ReturnType<typeof setInterval>;
   private dispatchStatus = useState<boolean>(false);
@@ -22,15 +21,13 @@ class Dispatcher {
   public start(intervalMilliseconds: number = 1000) {
     this.interval = setInterval(() => {
       const [dispatchState, setDispatchState] = this.dispatchStatus;
-      if (!this.isDispatching && this.dispatchQueue.length !== 0) {
-        this.isDispatching = true;
+      if (!dispatchState && this.dispatchQueue.length !== 0) {
         setDispatchState(true);
         const dispatches = Array.from(this.dispatchQueue);
         this.dispatchQueue = [];
         this.dispatch().then(res => {
           console.log('dispatching: ', dispatches);
         }).finally(() => {
-          this.isDispatching = false;
           setDispatchState(false);
         });
       }
