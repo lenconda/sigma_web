@@ -30,8 +30,6 @@ import DatePicker from '../../components/DatePicker';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import FormatIndentIncreaseIcon from '@material-ui/icons/FormatIndentIncrease';
-import NotificationsIcon from '@material-ui/icons/Notifications';
 import DateRangeIcon from '@material-ui/icons/DateRange';
 import DebouncedTextField from '../../components/DebouncedTextField';
 import moment from 'moment';
@@ -48,7 +46,9 @@ import {
   getNavMenu,
   getAvatarMenu,
 } from '../../services/menus';
-import { ListIcon } from '../../core/icons/index';
+import {
+  ListIcon,
+} from '../../core/icons';
 import { useId } from '../../core/hooks';
 import CustomIconButton from '../../components/IconButton';
 import Drawer from '../../components/Drawer';
@@ -314,11 +314,11 @@ const Home: React.FC<HomePageProps> = props => {
               open={menuDrawerVisible}
               onClose={() => setMenuDrawerVisible(false)}
               trigger={() => (
-                <IconButton
+                <CustomIconButton
+                  size={20}
+                  type="list-expand"
                   onClick={() => setMenuDrawerVisible(true)}
-                >
-                  <FormatIndentIncreaseIcon fontSize="small" />
-                </IconButton>
+                />
               )}
               paperClass={{ elevation0: 'app-home__sidebar', elevation16: 'app-home__sidebar' }}
               stickyClass="sticky"
@@ -429,11 +429,11 @@ const Home: React.FC<HomePageProps> = props => {
               open={notificationsDrawerVisible}
               onClose={() => setNotificationsDrawerVisible(false)}
               trigger={() => (
-                <IconButton
+                <CustomIconButton
+                  type="notification-bordered"
+                  size={20}
                   onClick={() => setNotificationsDrawerVisible(true)}
-                >
-                  <NotificationsIcon fontSize="small" />
-                </IconButton>
+                />
               )}
               variant="temporary"
               anchor="right"

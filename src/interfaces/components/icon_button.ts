@@ -8,6 +8,9 @@ import {
   RefreshIcon,
   NotificationIcon,
   LoadingIcon,
+  NotificationBorderedIcon,
+  ListExpandIcon,
+  DeleteListIcon,
 } from '../../core/icons';
 
 export interface IconTypes {
@@ -20,6 +23,9 @@ export interface IconTypes {
   refresh: typeof RefreshIcon;
   notification: typeof NotificationIcon;
   loading: typeof LoadingIcon;
+  'notification-bordered': typeof NotificationBorderedIcon;
+  'list-expand': typeof ListExpandIcon;
+  'delete-list': typeof DeleteListIcon;
 }
 
 export interface IconButtonProps {

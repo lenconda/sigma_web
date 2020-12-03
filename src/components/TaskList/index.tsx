@@ -481,7 +481,7 @@ export default (props: TaskList) => {
                   onClick={() => setTaskSelectorVisible(true)}
                 />
                 <IconButton
-                  type="delete"
+                  type="delete-list"
                   onClick={() => handleDeleteTasks()}
                 />
               </>

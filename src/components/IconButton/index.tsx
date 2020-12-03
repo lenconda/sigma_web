@@ -9,6 +9,9 @@ import {
   RefreshIcon,
   NotificationIcon,
   LoadingIcon,
+  NotificationBorderedIcon,
+  ListExpandIcon,
+  DeleteListIcon,
 } from '../../core/icons';
 import {
   IconTypes,
@@ -38,6 +41,9 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
     refresh: RefreshIcon,
     notification: NotificationIcon,
     loading: LoadingIcon,
+    'notification-bordered': NotificationBorderedIcon,
+    'list-expand': ListExpandIcon,
+    'delete-list': DeleteListIcon,
   };
 
   const Icon = icons[type];

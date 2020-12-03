@@ -25,6 +25,9 @@ const ListIcon = generateIcon('list');
 const RefreshIcon = generateIcon('refresh');
 const NotificationIcon = generateIcon('notification');
 const LoadingIcon = generateIcon('loading');
+const NotificationBorderedIcon = generateIcon('notification-bordered');
+const ListExpandIcon = generateIcon('list-expand');
+const DeleteListIcon = generateIcon('delete-list');
 
 export {
   DeleteIcon,
@@ -36,4 +39,7 @@ export {
   RefreshIcon,
   NotificationIcon,
   LoadingIcon,
+  NotificationBorderedIcon,
+  ListExpandIcon,
+  DeleteListIcon,
 };
