@@ -28,6 +28,13 @@ const LoadingIcon = generateIcon('loading');
 const NotificationBorderedIcon = generateIcon('notification-bordered');
 const ListExpandIcon = generateIcon('list-expand');
 const DeleteListIcon = generateIcon('delete-list');
+const ArrowUpIcon = generateIcon('arrow-up');
+const ArrowRightIcon = generateIcon('arrow-right');
+const ArrowDownIcon = generateIcon('arrow-down');
+const ArrowLeftIcon = generateIcon('arrow-left');
+const CalendarIcon = generateIcon('calendar');
+const AlarmIcon = generateIcon('alarm');
+const AddListIcon = generateIcon('add-list');
 
 export {
   DeleteIcon,
@@ -42,4 +49,11 @@ export {
   NotificationBorderedIcon,
   ListExpandIcon,
   DeleteListIcon,
+  ArrowUpIcon,
+  ArrowRightIcon,
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  CalendarIcon,
+  AlarmIcon,
+  AddListIcon,
 };

@@ -28,7 +28,10 @@ import {
   getTaskListFromTask,
   getCurrentTaskInfo,
 } from '../../services/task';
-import { ProgressIcon } from '../../core/icons';
+import {
+  AlarmIcon,
+  AddListIcon,
+} from '../../core/icons';
 import IconButton from '../IconButton';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import Chip from '@material-ui/core/Chip';
@@ -89,7 +92,7 @@ const generateStatus = (task: TaskListItem): JSX.Element => {
   const dateString = moment(deadline).format('YYYY-MM-DD HH:mm');
   return (
     <div>
-      <Button size="small" startIcon={<ProgressIcon style={{ color: '#aaa' }} />}>
+      <Button size="small" startIcon={<AlarmIcon style={{ color: '#aaa' }} />}>
         <Typography
           color="textSecondary"
           variant="body2"
@@ -577,7 +580,7 @@ export default (props: TaskList) => {
         </div>
         <div className="buttons">
           <Button
-            startIcon={<PlaylistAddIcon />}
+            startIcon={<AddListIcon style={{ fontSize: 12 }} />}
             variant="outlined"
             className={`app-button${showAddTask && ' active' || ''}`}
             onClick={() => setShowAddTask(!showAddTask)}

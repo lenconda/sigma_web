@@ -12,6 +12,13 @@ import {
   NotificationBorderedIcon,
   ListExpandIcon,
   DeleteListIcon,
+  ArrowUpIcon,
+  ArrowRightIcon,
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  CalendarIcon,
+  AlarmIcon,
+  AddListIcon,
 } from '../../core/icons';
 import {
   IconTypes,
@@ -44,6 +51,13 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>((props, 
     'notification-bordered': NotificationBorderedIcon,
     'list-expand': ListExpandIcon,
     'delete-list': DeleteListIcon,
+    'arrow-up': ArrowUpIcon,
+    'arrow-right': ArrowRightIcon,
+    'arrow-down': ArrowDownIcon,
+    'arrow-left': ArrowLeftIcon,
+    calendar: CalendarIcon,
+    alarm: AlarmIcon,
+    'add-list': AddListIcon,
   };
 
   const Icon = icons[type];

@@ -11,6 +11,13 @@ import {
   NotificationBorderedIcon,
   ListExpandIcon,
   DeleteListIcon,
+  ArrowUpIcon,
+  ArrowRightIcon,
+  ArrowDownIcon,
+  ArrowLeftIcon,
+  CalendarIcon,
+  AlarmIcon,
+  AddListIcon,
 } from '../../core/icons';
 
 export interface IconTypes {
@@ -26,6 +33,13 @@ export interface IconTypes {
   'notification-bordered': typeof NotificationBorderedIcon;
   'list-expand': typeof ListExpandIcon;
   'delete-list': typeof DeleteListIcon;
+  'arrow-up': typeof ArrowUpIcon;
+  'arrow-right': typeof ArrowRightIcon;
+  'arrow-down': typeof ArrowDownIcon;
+  'arrow-left': typeof ArrowLeftIcon;
+  calendar: typeof CalendarIcon;
+  alarm: typeof AlarmIcon;
+  'add-list': typeof AddListIcon;
 }
 
 export interface IconButtonProps {

@@ -29,8 +29,6 @@ import Typography from '@material-ui/core/Typography';
 import DatePicker from '../../components/DatePicker';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import DateRangeIcon from '@material-ui/icons/DateRange';
 import DebouncedTextField from '../../components/DebouncedTextField';
 import moment from 'moment';
 import idGen from '../../core/idgen';
@@ -48,6 +46,8 @@ import {
 } from '../../services/menus';
 import {
   ListIcon,
+  CalendarIcon,
+  ArrowDownIcon,
 } from '../../core/icons';
 import { useId } from '../../core/hooks';
 import CustomIconButton from '../../components/IconButton';
@@ -418,7 +418,12 @@ const Home: React.FC<HomePageProps> = props => {
                 }
               }}
               customComponent={
-                <Button variant="outlined" className="app-button" startIcon={<DateRangeIcon />} endIcon={<ExpandMoreIcon />}>
+                <Button
+                  variant="outlined"
+                  className="app-button"
+                  startIcon={<CalendarIcon />}
+                  endIcon={<ArrowDownIcon fontSize={12} />}
+                >
                   {generateDateString((dateRange && dateRange[0]), (dateRange && dateRange[1]))}
                 </Button>
               }
