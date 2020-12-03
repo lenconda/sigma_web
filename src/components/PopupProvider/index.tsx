@@ -27,7 +27,9 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
   const [popupVisible, setPopupVisible] = useState<boolean>(false);
 
   const handleClose = () => {
-    setPopupVisible(false);
+    if (closeOnClick) {
+      setPopupVisible(false);
+    }
     if (onClose && typeof onClose === 'function') {
       onClose();
     }
@@ -38,7 +40,7 @@ const PopupProvider: React.FC<PopupProviderProps> = ({
   }, [open]);
 
   return (
-    <ClickAwayListener onClickAway={() => handleClose()}>
+    <ClickAwayListener onClickAway={handleClose}>
       <div>
         <div
           className={`app-popup__trigger-wrapper${triggerClass && ` ${triggerClass}` || ''}`}

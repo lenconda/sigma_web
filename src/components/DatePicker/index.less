@@ -27,6 +27,32 @@
     outline: none;
   }
 
+  .header {
+    box-sizing: border-box;
+    padding: 15px 10px;
+    padding-top: 7px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 15px;
+
+    .menu-wrapper {
+      box-shadow: @box-shadow-focus !important;
+      border: 1px solid @border-color !important;
+    }
+    .select {
+      padding: 15px 10px;
+      font-size: 15px;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    .icon {
+      display: none;
+    }
+  }
+
   .react-datepicker {
     &__header {
       background-color: @white;

@@ -6,6 +6,9 @@ import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PopupProvider from '../PopupProvider';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '../IconButton';
 import { DatePickerProps } from '../../interfaces';
 import './index.less';
 
@@ -22,6 +25,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const [controlledStartDate, setControlledStartDate] = useState<Date>(undefined);
   const [controlledEndDate, setControlledEndDate] = useState<Date>(undefined);
   const [controlledSelectedDate, setControlledSelectedDate] = useState<Date>(undefined);
+
+  const years = new Array(20).fill(null).map((year, index) => {
+    return new Date().getFullYear() - 10 + index;
+  });
+  const months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
 
   useEffect(() => {
     setDates(startDate, endDate, startDate);
@@ -70,6 +78,60 @@ const DatePicker: React.FC<DatePickerProps> = ({
           customInput={customComponent}
           calendarClassName="date-picker-component"
           showTimeSelect={showTimeSelect}
+          renderCustomHeader={({
+            date,
+            changeYear,
+            changeMonth,
+            decreaseMonth,
+            increaseMonth,
+            prevMonthButtonDisabled,
+            nextMonthButtonDisabled,
+          }) => (
+            <div className="header">
+              <IconButton
+                type="arrow-left"
+                onClick={decreaseMonth}
+                disabled={prevMonthButtonDisabled}
+              />
+              <div className="selector-wrapper">
+                <Select
+                  value={date.getFullYear()}
+                  onChange={event => changeYear(event.target.value as number)}
+                  onClick={event => event.stopPropagation()}
+                  classes={{
+                    root: 'select',
+                    icon: 'icon',
+                  }}
+                  disableUnderline={true}
+                >
+                  {
+                    years.map(option => (
+                      <MenuItem key={option} value={option}>{option}</MenuItem>
+                    ))
+                  }
+                </Select>
+                <Select
+                  value={months[date.getMonth()]}
+                  onChange={event => changeMonth(months.indexOf(event.target.value as string))}
+                  onClick={event => event.stopPropagation()}
+                  classes={{
+                    root: 'select',
+                    icon: 'icon',
+                  }}
+                  disableUnderline={true}
+                >
+                  {
+                    months.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)
+                  }
+                </Select>
+              </div>
+              <IconButton
+                type="arrow-right"
+                onClick={increaseMonth}
+                disabled={nextMonthButtonDisabled}
+              />
+            </div>
+          )}
         />
         <div className="app-date-picker__controls">
           <Button
