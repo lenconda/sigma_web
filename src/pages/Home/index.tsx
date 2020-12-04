@@ -317,6 +317,15 @@ const Home: React.FC<HomePageProps> = props => {
     getNotifications().then(res => setNotifications(res));
   }, []);
 
+  useEffect(() => {
+    if (defaultTasks.findIndex(defaultTask => defaultTask.taskId === currentId) === -1) {
+      history.push({
+        pathname: '/home/list',
+        search: deleteSearch(location.search, ['id']),
+      });
+    }
+  }, [defaultTasks, currentId]);
+
   return (
     <ThemeProvider theme={theme}>
       <StylesProvider injectFirst={true}>
