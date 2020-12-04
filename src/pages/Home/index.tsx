@@ -40,6 +40,7 @@ import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
 import { getTaskListFromTask } from '../../services/task';
 import { getUserInfo } from '../../services/user';
+import { getNotifications } from '../../services/notifications';
 import {
   getNavMenu,
   getAvatarMenu,
@@ -52,6 +53,7 @@ import {
 import { useId } from '../../core/hooks';
 import CustomIconButton from '../../components/IconButton';
 import Drawer from '../../components/Drawer';
+import NotificationItem from '../../components/NotificationItem';
 import {
   AppMenuItem,
   NotificationInfo,
@@ -303,6 +305,7 @@ const Home: React.FC<HomePageProps> = props => {
     });
     getAvatarMenu().then(res => setAvatarMenus(res));
     getNavMenu().then(res => setNavMenus(res));
+    getNotifications().then(res => setNotifications(res));
   }, []);
 
   return (
@@ -457,7 +460,11 @@ const Home: React.FC<HomePageProps> = props => {
                     <h1>没有通知</h1>
                     <h2>最新的通知将会出现在这里</h2>
                   </div>
-                  : <div className="app-home__notifications__content"></div>
+                  : <div className="app-home__notifications__content">
+                    {
+                      notifications.map((notification, index) => <NotificationItem notification={notification} key={index} />)
+                    }
+                  </div>
               }
             </Drawer>
           </div>

@@ -1,0 +1,36 @@
+@import '../../global.less';
+
+.app-notification-item {
+  box-sizing: border-box;
+  position: relative;
+  padding: 15px;
+  padding-left: 30px;
+  margin-bottom: 8px;
+  border-radius: @border-radius;
+  border: 1px solid @border-color;
+  background-color: @white;
+  user-select: none;
+  cursor: pointer;
+  transition: all @transition-duration;
+
+  .title {
+    font-weight: 700;
+  }
+
+  &.unchecked::before {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: @red;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  &:hover {
+    background-color: @bg-color-hover;
+    transition: all @transition-duration;
+  }
+}

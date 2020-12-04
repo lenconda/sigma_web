@@ -25,4 +25,5 @@ export {
   TaskListItemProps,
   TaskListItemDetailInfo,
   TaskList,
+  NotificationItemProps,
 } from './components';
