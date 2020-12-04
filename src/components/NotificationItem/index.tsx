@@ -76,7 +76,10 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
       >
         {
           (!!notificationDetailInfo && !notificationDetailInfoLoading)
-          && <div className="app-notification-item__content"></div>
+          && <div className="app-notification-item__content">
+            <div className="info-wrapper"></div>
+            <div className="content-wrapper"></div>
+          </div>
         }
       </DraggableDialog>
     </>
