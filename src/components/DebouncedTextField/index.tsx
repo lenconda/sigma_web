@@ -16,19 +16,20 @@ type ChangeEventType = React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
 
 const AutoResizeTextarea = Textarea as any;
 
-const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
-  type = 'text',
-  className = '',
-  delay = 500,
-  placeholder = '',
-  value = '',
-  focus = false,
-  onChange,
-  onKeyPress,
-  onKeyDown,
-  onKeyUp,
-  onPressEnter,
-}) => {
+const DebouncedTextField = React.forwardRef<HTMLElement, DebouncedTextFieldProps>((props, ref) => {
+  const {
+    type = 'text',
+    className = '',
+    delay = 500,
+    placeholder = '',
+    value = '',
+    focus = false,
+    onChange,
+    onKeyPress,
+    onKeyDown,
+    onKeyUp,
+    onPressEnter,
+  } = props;
   const [event, setEvent] = useState<ChangeEventType | undefined>(undefined);
   const [controlledValue, setControlledValue] = useState<string | number>('');
   const debouncedEvent = useDebouncedValue(event, delay);
@@ -86,6 +87,6 @@ const DebouncedTextField: React.FC<DebouncedTextFieldProps> = ({
           onKeyUp={handleInputKeyPress}
       />
   );
-};
+});
 
 export default DebouncedTextField;

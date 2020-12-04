@@ -33,7 +33,6 @@ import {
   AddListIcon,
 } from '../../core/icons';
 import IconButton from '../IconButton';
-import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import Chip from '@material-ui/core/Chip';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
@@ -135,6 +134,7 @@ export default (props: TaskList) => {
   const [selectedDateRange, setSelectedDateRange] = useState<[Date, Date]>([undefined, undefined]);
   const [effectUpdates, setEffectUpdates] = useState<TaskListItem[]>([]);
   const [showAddTask, setShowAddTask] = useState<boolean>(false);
+  const [currentFocusedTask, setCurrentFocusedTask] = useState<TaskListItem>(undefined);
   const theme = useStyles();
 
   const handleDragEnd = (result: DropResult) => {
@@ -163,6 +163,9 @@ export default (props: TaskList) => {
   };
 
   const handleTaskStatusChange = (task: TaskListItem) => {
+    if ((currentFocusedTask && currentFocusedTask.taskId) === task.taskId) {
+      setCurrentFocusedTask(undefined);
+    }
     const payloads = [task];
     bus.emit('push', { action: 'UPDATE', payloads });
   };
@@ -201,7 +204,7 @@ export default (props: TaskList) => {
       };
       bus.emit('push', { action: 'ADD', payloads: [taskToBeAdded] });
       setAddTaskContent('');
-      setSelectedTasks([]);
+      // setSelectedTasks([]);
     }
     return true;
   };
@@ -536,7 +539,7 @@ export default (props: TaskList) => {
                                         onSelectionChange={handleSelectionChange}
                                         onChange={handleTaskStatusChange}
                                         onDelete={task => handleDeleteTasks([task])}
-                                        focus={selectedTasks.length === 1 && selectedTasks[0].taskId === item.taskId}
+                                        focus={(currentFocusedTask && currentFocusedTask.taskId) === item.taskId}
                                         onPressEnter={task => {
                                           const taskInfo: TaskListItem = {
                                             taskId: idGen(),
@@ -547,6 +550,7 @@ export default (props: TaskList) => {
                                             parentTaskId: currentTask.taskId,
                                           };
                                           setSelectedTasks([taskInfo]);
+                                          setCurrentFocusedTask(taskInfo);
                                           bus.emit('push', {
                                             action: 'ADD',
                                             payloads: [taskInfo],
