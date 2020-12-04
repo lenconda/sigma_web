@@ -330,6 +330,7 @@ const Home: React.FC<HomePageProps> = props => {
                     className="popup-menu-wrapper"
                     closeOnClick={true}
                     disablePortal={true}
+                    closeOnClickSelf={true}
                     trigger={
                       <IconButton>
                         <img className="avatar" src={userInfo.avatar} width="20" />

@@ -7,6 +7,7 @@ export interface PopupProviderProps {
   open?: boolean;
   disablePortal?: boolean;
   closeOnClick?: boolean;
+  closeOnClickSelf?: boolean;
   className?: string;
   onOpen?: () => void;
   onClose?: () => void;
