@@ -20,6 +20,10 @@ const theme = createMuiTheme({
     MuiButtonBase: {
       disableRipple: true,
     },
+    MuiButtonGroup: {
+      disableFocusRipple: true,
+      disableRipple: true,
+    },
   },
   palette: {
     primary: {

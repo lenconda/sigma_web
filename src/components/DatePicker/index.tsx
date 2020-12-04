@@ -6,8 +6,6 @@ import ReactDatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import PopupProvider from '../PopupProvider';
 import Button from '@material-ui/core/Button';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '../IconButton';
 import { DatePickerProps } from '../../interfaces';
 import './index.less';
@@ -25,15 +23,14 @@ const DatePicker: React.FC<DatePickerProps> = ({
   const [controlledStartDate, setControlledStartDate] = useState<Date>(undefined);
   const [controlledEndDate, setControlledEndDate] = useState<Date>(undefined);
   const [controlledSelectedDate, setControlledSelectedDate] = useState<Date>(undefined);
+  const [yearSelectorVisible, setYearSelectorVisible] = useState<boolean>(false);
+  const [monthSelectorVisible, setMonthSelectorVisible] = useState<boolean>(false);
+  const [selectorWidth, setSelectorWidth] = useState<number>(0);
 
   const years = new Array(20).fill(null).map((year, index) => {
     return new Date().getFullYear() - 10 + index;
   });
   const months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
-
-  useEffect(() => {
-    setDates(startDate, endDate, startDate);
-  }, [startDate, endDate]);
 
   const setDates = (startDate: Date, endDate: Date, selectedDate: Date) => {
     setControlledStartDate(startDate);
@@ -57,6 +54,10 @@ const DatePicker: React.FC<DatePickerProps> = ({
     onConfirm(result, event);
     setDatepickerVisible(false);
   };
+
+  useEffect(() => {
+    setDates(startDate, endDate, startDate);
+  }, [startDate, endDate]);
 
   return (
     <PopupProvider
@@ -88,49 +89,83 @@ const DatePicker: React.FC<DatePickerProps> = ({
             prevMonthButtonDisabled,
             nextMonthButtonDisabled,
           }) => (
-            <div className="header">
-              <IconButton
-                type="arrow-left"
-                onClick={decreaseMonth}
-                disabled={prevMonthButtonDisabled}
-              />
-              <div className="selector-control-wrapper">
-                <Select
-                  value={date.getFullYear()}
-                  onChange={event => changeYear(event.target.value as number)}
-                  onClick={event => event.stopPropagation()}
-                  classes={{
-                    root: 'select',
-                    icon: 'icon',
-                  }}
-                  disableUnderline={true}
-                >
-                  {
-                    years.map(option => (
-                      <MenuItem key={option} value={option}>{option}</MenuItem>
-                    ))
-                  }
-                </Select>
-                <Select
-                  value={months[date.getMonth()]}
-                  onChange={event => changeMonth(months.indexOf(event.target.value as string))}
-                  onClick={event => event.stopPropagation()}
-                  classes={{
-                    root: 'select',
-                    icon: 'icon',
-                  }}
-                  disableUnderline={true}
-                >
-                  {
-                    months.map(option => <MenuItem key={option} value={option}>{option}</MenuItem>)
-                  }
-                </Select>
+            <div
+              ref={el => {
+                if (el) {
+                  const rect = el.getBoundingClientRect();
+                  setSelectorWidth(parseFloat(rect.width.toFixed(2)));
+                }
+              }}
+            >
+              <div className="date-header">
+                <IconButton
+                  type="arrow-left"
+                  onClick={decreaseMonth}
+                  disabled={prevMonthButtonDisabled}
+                />
+                <div className="selector-control-wrapper">
+                  <Button
+                    onClick={() => {
+                      setYearSelectorVisible(!yearSelectorVisible);
+                      setMonthSelectorVisible(false);
+                    }}
+                    className={yearSelectorVisible ? 'active' : ''}
+                  >
+                    {date.getFullYear()}
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setYearSelectorVisible(false);
+                      setMonthSelectorVisible(!monthSelectorVisible);
+                    }}
+                    className={monthSelectorVisible ? 'active' : ''}
+                  >
+                    {date.getMonth() + 1}
+                  </Button>
+                </div>
+                <IconButton
+                  type="arrow-right"
+                  onClick={increaseMonth}
+                  disabled={nextMonthButtonDisabled}
+                />
               </div>
-              <IconButton
-                type="arrow-right"
-                onClick={increaseMonth}
-                disabled={nextMonthButtonDisabled}
-              />
+              {
+                (yearSelectorVisible || monthSelectorVisible)
+                && <div className="selector-wrapper" style={{ width: selectorWidth }}>
+                  <div className="items">
+                    {
+                      yearSelectorVisible && years.map((year, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            changeYear(year);
+                            setYearSelectorVisible(false);
+                            setMonthSelectorVisible(false);
+                          }}
+                          className={`item${date.getFullYear() === year ? ' current' : ''}`}
+                        >
+                          {year}
+                        </button>
+                      ))
+                    }
+                    {
+                      monthSelectorVisible && months.map((month, index) => (
+                        <button
+                          key={index}
+                          onClick={() => {
+                            changeMonth(parseInt(month, 10) - 1);
+                            setYearSelectorVisible(false);
+                            setMonthSelectorVisible(false);
+                          }}
+                          className={`item${months[date.getMonth()] === month ? ' current' : ''}`}
+                        >
+                          {month}
+                        </button>
+                      ))
+                    }
+                  </div>
+                </div>
+              }
             </div>
           )}
         />
