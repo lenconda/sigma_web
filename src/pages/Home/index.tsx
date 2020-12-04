@@ -160,6 +160,15 @@ const Home: React.FC<HomePageProps> = props => {
     }).finally(() => setDefaultTasksLoading(false));
   };
 
+  const handleNotificationItemClick = (event: React.MouseEvent<HTMLElement, MouseEvent>, index: number) => {
+    const currentNotificationItems = Array.from(notifications);
+    currentNotificationItems.splice(index, 1, {
+      ...notifications[index],
+      checked: true,
+    });
+    setNotifications(currentNotificationItems);
+  };
+
   const handleDeleteDefaultTask = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     task: TaskListItem,
@@ -462,7 +471,13 @@ const Home: React.FC<HomePageProps> = props => {
                   </div>
                   : <div className="app-home__notifications__content">
                     {
-                      notifications.map((notification, index) => <NotificationItem notification={notification} key={index} />)
+                      notifications.map((notification, index) => (
+                        <NotificationItem
+                          key={index}
+                          notification={notification}
+                          onClick={event => handleNotificationItemClick(event, index)}
+                        />
+                      ))
                     }
                   </div>
               }
