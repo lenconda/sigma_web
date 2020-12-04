@@ -1,6 +1,8 @@
 import {
   NotificationInfo,
   NotificationDetailInfo,
+  PaginationResponse,
+  PaginationConfig,
 } from '../interfaces';
 
 export const generateNotification = async (
@@ -26,13 +28,19 @@ export const generateNotification = async (
 };
 
 export const getNotifications = async (
+  pagination: PaginationConfig,
   count: number = 10,
-): Promise<NotificationInfo[]> => {
-  const result = [];
+): Promise<PaginationResponse<NotificationInfo[]>> => {
+  const items = [];
   for (let i = 0; i < count; i += 1) {
-    result.push(await generateNotification());
+    items.push(await generateNotification());
   }
-  return result;
+  return {
+    items,
+    total: 1000,
+    current: 10,
+    size: 10,
+  };
 };
 
 export const getNotificationDetailInfo = async (
@@ -47,6 +55,12 @@ export const getNotificationDetailInfo = async (
         time: new Date().toISOString(),
         checked: Math.floor(Math.random() * 10) % 2 === 0,
         content: Math.random().toString(32),
+        sender: {
+          name: Math.random().toString(32),
+          email: `${Math.random().toString(32)}@example.com`,
+          avatar: '/assets/images/default_avatar.jpg',
+          createdAt: new Date().toISOString(),
+        },
       });
     }, 500);
   });

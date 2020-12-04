@@ -60,6 +60,7 @@ import {
   TaskListItem,
   User,
   Dispatch,
+  PaginationConfig,
 } from '../../interfaces';
 import './index.less';
 
@@ -135,6 +136,12 @@ const Home: React.FC<HomePageProps> = props => {
   const [notifications, setNotifications] = useState<NotificationInfo[]>([]);
   const [defaultTasksLoading, setDefaultTasksLoading] = useState<boolean>(false);
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
+  const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
+  const [hasMoreNotifications, setHasMoreNotifications] = useState<boolean>(false);
+  const [notificationsPagination, setNotificationsPagination] = useState<PaginationConfig>({
+    current: 1,
+    size: 10,
+  });
   const location = useLocation();
   const history = useHistory();
   const currentId = useId(location);
@@ -193,6 +200,30 @@ const Home: React.FC<HomePageProps> = props => {
       ],
     });
     return true;
+  };
+
+  const fetchNotifications = (pagination?: PaginationConfig) => {
+    const {
+      current: requestCurrent = 1,
+      size: requestSize = 10,
+    } = pagination || {};
+    setNotificationsLoading(true);
+    getNotifications({
+      current: requestCurrent,
+      size: requestSize,
+    }).then(res => {
+      const {
+        items,
+        current,
+        size,
+        total,
+      } = res;
+      setNotifications(Array.from(notifications).concat(items));
+      setHasMoreNotifications(total - (current * size) !== 0);
+    }).finally(() => {
+      setNotificationsLoading(false);
+      setNotificationsPagination(pagination);
+    });
   };
 
   useEffect(() => {
@@ -314,8 +345,11 @@ const Home: React.FC<HomePageProps> = props => {
     });
     getAvatarMenu().then(res => setAvatarMenus(res));
     getNavMenu().then(res => setNavMenus(res));
-    getNotifications().then(res => setNotifications(res));
   }, []);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [notificationsPagination]);
 
   useEffect(() => {
     if (defaultTasks.findIndex(defaultTask => defaultTask.taskId === currentId) === -1) {
@@ -469,7 +503,7 @@ const Home: React.FC<HomePageProps> = props => {
               }}
             >
               <div className="app-home__notifications__header">
-                <Typography variant="h6">通知</Typography>
+                <Typography variant="h6">{notificationsLoading ? '请稍候...' : '通知'}</Typography>
               </div>
               {
                 notifications.length === 0
@@ -488,6 +522,18 @@ const Home: React.FC<HomePageProps> = props => {
                         />
                       ))
                     }
+                    <Button
+                      disabled={notificationsLoading}
+                      onClick={() => fetchNotifications()}
+                    >
+                      {
+                        notificationsLoading
+                          ? '加载中...'
+                          : hasMoreNotifications
+                            ? '加载更多'
+                            : '暂无更多通知'
+                      }
+                    </Button>
                   </div>
               }
             </Drawer>

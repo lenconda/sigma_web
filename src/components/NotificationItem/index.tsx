@@ -8,6 +8,8 @@ import {
 } from '../../interfaces';
 import moment from 'moment';
 import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
 import DraggableDialog from '../DraggableDialog';
 import {
   getNotificationDetailInfo,
@@ -77,8 +79,33 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
         {
           (!!notificationDetailInfo && !notificationDetailInfoLoading)
           && <div className="app-notification-item__content">
-            <div className="info-wrapper"></div>
-            <div className="content-wrapper"></div>
+            <div className="info-wrapper">
+              {
+                notificationDetailInfo.sender
+                && <Tooltip title={notificationDetailInfo.sender.email} arrow={true}>
+                  <div className="user-info">
+                    <img src={notificationDetailInfo.sender.avatar} alt="avatar" />
+                    <span>{notificationDetailInfo.sender.name || notificationDetailInfo.sender.email}</span>
+                  </div>
+                </Tooltip>
+              }
+              <div className="time-info">{moment(notificationDetailInfo.time).format('YYYY-MM-DD HH:mm:ss')}</div>
+            </div>
+            <div
+              className="content-wrapper"
+              dangerouslySetInnerHTML={{
+                __html: notificationDetailInfo.content || '',
+              }}
+            ></div>
+            <div className="foot-wrapper">
+              <Button
+                variant="outlined"
+                className="app-button"
+                onClick={() => setNotificationDetailVisible(false)}
+              >
+                好
+              </Button>
+            </div>
           </div>
         }
       </DraggableDialog>

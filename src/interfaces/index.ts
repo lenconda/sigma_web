@@ -6,6 +6,8 @@ export {
   DateRange,
   NotificationInfo,
   NotificationDetailInfo,
+  PaginationResponse,
+  PaginationConfig,
 } from './common';
 export {
   CheckboxProps,

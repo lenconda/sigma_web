@@ -5,6 +5,10 @@ export {
   NotificationInfo,
   NotificationDetailInfo,
 } from './notification';
+export {
+  PaginationConfig,
+  PaginationResponse,
+} from './http';
 
 export interface AppMenuItem {
   name?: string;
