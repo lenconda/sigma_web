@@ -1,11 +1,13 @@
 import React from 'react';
 import dva from 'dva';
+import { createBrowserHistory } from 'history';
 import App from './App';
 import './index.less';
 
 import GlobalModel from './models/global';
 
-const app = dva();
+const history = createBrowserHistory();
+const app = dva({ history });
 
 app.router(() => <App />);
 

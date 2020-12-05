@@ -19,7 +19,7 @@ const GlobalModel: GlobalModelType = {
     profile: {
       name: 'lenconda',
       email: 'i@lenconda.top',
-      avatar: '/assets/default_avatar.jpg',
+      avatar: '/assets/images/default_avatar.jpg',
       createdAt: new Date().toISOString(),
     },
     notifications: [],
