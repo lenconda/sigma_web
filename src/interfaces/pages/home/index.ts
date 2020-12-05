@@ -7,4 +7,5 @@ import { GlobalState } from '../../models/global';
 
 export interface HomePageProps extends RouteComponentProps, GlobalState {
   dispatch: Dispatch<AnyAction>;
+  fetchNotificationsLoading: boolean;
 }

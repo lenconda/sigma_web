@@ -38,7 +38,6 @@ import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
 import { getTaskListFromTask } from '../../services/task';
 import { getUserInfo } from '../../services/user';
-import { getNotifications } from '../../services/notifications';
 import {
   getNavMenu,
   getAvatarMenu,
@@ -56,7 +55,6 @@ import {
   AppMenuItem,
   TaskListItem,
   Dispatch,
-  PaginationConfig,
 } from '../../interfaces';
 import { HomePageProps } from '../../interfaces/pages/home';
 import { ConnectState } from '../../interfaces/models';
@@ -122,30 +120,22 @@ const Home: React.FC<HomePageProps> = ({
   dispatch: modelDispatch,
   profile: userInfo,
   notifications,
+  hasMoreNotifications,
+  notificationPagination,
+  fetchNotificationsLoading: notificationsLoading,
   dateRange,
   currentActiveTaskIds,
   bus,
+  smallWidth,
 }) => {
-  // const bus = new Bus<Dispatch>();
   const dispatcher = new Dispatcher();
-  // const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
   const [navMenus, setNavMenus] = useState<AppMenuItem[]>([]);
   const [avatarMenus, setAvatarMenus] = useState<AppMenuItem[]>([]);
-  // const [dateRange, setDateRange] = useState<[Date, Date]>([undefined, undefined]);
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
-  // const [userInfo, setUserInfo] = useState<User>(undefined);
-  const [smallWidth, setSmallWidth] = useState<boolean>(false);
   const [menuDrawerVisible, setMenuDrawerVisible] = useState<boolean>(false);
   const [notificationsDrawerVisible, setNotificationsDrawerVisible] = useState<boolean>(false);
-  // const [notifications, setNotifications] = useState<NotificationInfo[]>([]);
   const [defaultTasksLoading, setDefaultTasksLoading] = useState<boolean>(false);
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
-  const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
-  const [hasMoreNotifications, setHasMoreNotifications] = useState<boolean>(false);
-  const [notificationsPagination, setNotificationsPagination] = useState<PaginationConfig>({
-    current: 1,
-    size: 10,
-  });
   const location = useLocation();
   const history = useHistory();
   const currentId = useId(location);
@@ -212,52 +202,12 @@ const Home: React.FC<HomePageProps> = ({
     return true;
   };
 
-  const fetchNotifications = (pagination?: PaginationConfig) => {
-    const {
-      current: requestCurrent = 1,
-      size: requestSize = 10,
-    } = pagination || {};
-    setNotificationsLoading(true);
-    getNotifications({
-      current: requestCurrent,
-      size: requestSize,
-    }).then(res => {
-      const {
-        items,
-        current,
-        size,
-        total,
-      } = res;
-      modelDispatch({
-        type: 'global/setNotifications',
-        payload: Array.from(notifications).concat(items),
-      });
-      setHasMoreNotifications(total - (current * size) !== 0);
-    }).finally(() => {
-      setNotificationsLoading(false);
-      setNotificationsPagination(pagination);
-    });
-  };
-
   useEffect(() => {
     modelDispatch({
       type: 'global/setCurrentActiveTaskIds',
       payload: currentId === '' ? [] : [currentId],
     });
   }, [currentId]);
-
-  useEffect(() => {
-    const handler = () => {
-      const innerWidth = window.innerWidth;
-      setSmallWidth(innerWidth < 720);
-    };
-    window.addEventListener('resize', handler);
-    return () => {
-      window.removeEventListener('resize', handler);
-    };
-  }, []);
-
-  useEffect(() => setSmallWidth(window.innerWidth < 720), []);
 
   useEffect(() => {
     dispatcher.start();
@@ -361,10 +311,6 @@ const Home: React.FC<HomePageProps> = ({
     getAvatarMenu().then(res => setAvatarMenus(res));
     getNavMenu().then(res => setNavMenus(res));
   }, []);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [notificationsPagination]);
 
   useEffect(() => {
     if (defaultTasks.findIndex(defaultTask => defaultTask.taskId === currentId) === -1) {
@@ -542,7 +488,19 @@ const Home: React.FC<HomePageProps> = ({
                     }
                     <Button
                       disabled={notificationsLoading}
-                      onClick={() => fetchNotifications()}
+                      onClick={() => {
+                        const {
+                          current,
+                          size,
+                        } = notificationPagination;
+                        modelDispatch({
+                          type: 'global/fetchNotifications',
+                          payload: {
+                            current: current + 1,
+                            size,
+                          },
+                        });
+                      }}
                     >
                       {
                         notificationsLoading
@@ -578,4 +536,6 @@ const Home: React.FC<HomePageProps> = ({
   );
 };
 
-export default connect(({ global }: ConnectState) => global)(Home);
+export default connect(({ global }: ConnectState) => ({
+  ...global,
+}))(Home);

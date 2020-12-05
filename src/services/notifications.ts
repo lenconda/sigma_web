@@ -28,7 +28,7 @@ export const generateNotification = async (
 };
 
 export const getNotifications = async (
-  pagination: PaginationConfig,
+  pagination: PaginationConfig = { current: 1, size: 10 },
   count: number = 10,
 ): Promise<PaginationResponse<NotificationInfo[]>> => {
   const items = [];
