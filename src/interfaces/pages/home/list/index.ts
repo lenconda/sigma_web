@@ -1,15 +1,10 @@
 import {
-  TaskListItem,
-} from '../../../components';
-import {
-  Dispatch,
-} from '../../../common';
-import Bus from '../../../../core/bus';
+  Dispatch as ReduxDispatch,
+  AnyAction,
+} from 'redux';
+import { GlobalState } from '../../../../interfaces/models/global';
 
-export interface ListPageProps {
-  bus: Bus<Dispatch>;
-  currentActiveTaskIds: string[];
-  onSelectedTasksChange: (tasks: TaskListItem[]) => void;
-  dateRange: [Date, Date];
+export interface ListPageProps extends GlobalState {
+  dispatch: ReduxDispatch<AnyAction>;
   className?: string;
 }

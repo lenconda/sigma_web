@@ -141,22 +141,6 @@ const Home: React.FC<HomePageProps> = ({
   const currentId = useId(location);
   const dispatchStatus = dispatcher.useDispatchStatus();
 
-  const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
-    if (tasks.length === 1) {
-      const task = tasks[0];
-      const activeParentIndex = currentActiveTaskIds.indexOf(task.parentTaskId);
-      if (activeParentIndex !== -1) {
-        const newActiveTaskIds = activeParentIndex === currentActiveTaskIds.length - 1
-          ? Array.from(currentActiveTaskIds).concat([task.taskId])
-          : Array.from(currentActiveTaskIds).slice(0, activeParentIndex + 1).concat([task.taskId]);
-        modelDispatch({
-          type: 'global/setCurrentActiveTaskIds',
-          payload: newActiveTaskIds,
-        });
-      }
-    }
-  };
-
   const fetchDefaultTasks = () => {
     setDefaultTasksLoading(true);
     getTaskListFromTask('default', 6).then(res => {
@@ -518,15 +502,7 @@ const Home: React.FC<HomePageProps> = ({
         <div className="app-home__page">
           <Suspense fallback={<></>}>
             <Switch>
-              <Route path="/home/list">
-                <ListPage
-                  bus={bus}
-                  currentActiveTaskIds={currentActiveTaskIds}
-                  onSelectedTasksChange={handleSelectedTasksChange}
-                  dateRange={[(dateRange && dateRange[0]), (dateRange && dateRange[1])]}
-                  className={smallWidth ? 'small-width' : ''}
-                />
-              </Route>
+              <Route path="/home/list" component={ListPage} />
               <Redirect from="/home" to="/home/list" />
             </Switch>
           </Suspense>
@@ -536,6 +512,4 @@ const Home: React.FC<HomePageProps> = ({
   );
 };
 
-export default connect(({ global }: ConnectState) => ({
-  ...global,
-}))(Home);
+export default connect((state: ConnectState) => state.global)(Home);
