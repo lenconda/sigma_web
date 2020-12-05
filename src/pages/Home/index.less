@@ -68,9 +68,10 @@
 
       > button {
         padding: 0;
+        border-color: transparent !important;
 
         &:hover {
-          background-color: rgba(0, 0, 0, 0);
+          background-color: transparent;
         }
 
         &:last-child {
@@ -89,7 +90,7 @@
           border-radius: 4px 4px 3px 3px;
 
           &:hover {
-            background-color: rgba(0, 0, 0, .04);
+            background-color: @bg-color-hover;
             transition: all @transition-duration;
           }
 
@@ -98,7 +99,7 @@
           }
 
           &.active {
-            background-color: #eee;
+            background-color: @bg-color-selected;
             font-weight: bold;
           }
         }

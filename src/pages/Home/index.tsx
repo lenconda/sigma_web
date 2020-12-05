@@ -401,7 +401,6 @@ const Home: React.FC<HomePageProps> = ({
             }}
             customComponent={
               <Button
-                variant="outlined"
                 className="app-button"
                 startIcon={<CalendarIcon />}
                 endIcon={<ArrowDownIcon fontSize={12} />}
