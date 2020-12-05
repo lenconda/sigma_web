@@ -27,9 +27,8 @@ const theme = createMuiTheme({
   },
   palette: {
     primary: {
-      main: '#c0c0c0',
+      main: '#17a2b8',
     },
-    tonalOffset: 0.3,
   },
   typography: {
     fontSize: 13,

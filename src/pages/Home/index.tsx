@@ -63,23 +63,6 @@ import './index.less';
 
 const ListPage = lazy(() => import('./List'));
 
-const theme = createMuiTheme({
-  props: {
-    MuiButtonBase: {
-      disableRipple: true,
-    },
-  },
-  palette: {
-    primary: {
-      main: '#c0c0c0',
-    },
-    tonalOffset: 0.3,
-  },
-  typography: {
-    fontSize: 12,
-  },
-});
-
 const generatePopupMenu = (menus: AppMenuItem[]): JSX.Element[] => {
   return menus.map((menu, index) => {
     const { isDivider, name, path } = menu;
@@ -306,209 +289,207 @@ const Home: React.FC<HomePageProps> = ({
   }, [defaultTasks, currentId]);
 
   return (
-    <ThemeProvider theme={theme}>
-      <StylesProvider injectFirst={true}>
-        <nav className={`app-home__nav${smallWidth ? ' small-width' : ''}`}>
-          <div className="app-home__nav__left">
-            <Drawer
-              open={menuDrawerVisible}
-              onClose={() => setMenuDrawerVisible(false)}
-              trigger={() => (
-                <CustomIconButton
-                  size={20}
-                  type="list-expand"
-                  onClick={() => setMenuDrawerVisible(true)}
-                />
-              )}
-              paperClass={{ elevation0: 'app-home__sidebar', elevation16: 'app-home__sidebar' }}
-              stickyClass="sticky"
-            >
-              <div className="app-home__sidebar__header">
-                {
-                  userInfo &&
-                  <PopupProvider
-                    className="popup-menu-wrapper"
-                    closeOnClick={true}
-                    disablePortal={true}
-                    closeOnClickSelf={true}
-                    trigger={
-                      <IconButton>
-                        <img className="avatar" src={userInfo.avatar} width="20" />
-                      </IconButton>
-                    }
-                  >
-                    <MenuList>
-                      {generatePopupMenu(avatarMenus)}
-                    </MenuList>
-                  </PopupProvider>
-                }
-                <div className="right-controls-wrapper">
-                  <CustomIconButton
-                    size={18}
-                    className="button"
-                    type="refresh"
-                    disabled={defaultTasksLoading || isDispatching}
-                    spin={defaultTasksLoading || isDispatching}
-                    onClick={fetchDefaultTasks}
-                  />
-                </div>
-              </div>
-              <div className="app-home__sidebar__input">
-                <DebouncedTextField
-                  className="input"
-                  placeholder="键入 Enter 以新建任务清单..."
-                  onPressEnter={handleAddDefaultTask}
-                />
-              </div>
-              <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
-                {
-                  defaultTasks.map((task, index) => {
-                    return <MenuItem
-                      key={index}
-                      classes={{ gutters: 'item' }}
-                    >
-                      <div
-                        className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
-                        onClick={() => {
-                          history.push({
-                            pathname: '/home/list',
-                            search: updateSearch(location.search, { id: task.taskId }),
-                          });
-                        }}
-                      >
-                        <ListIcon className="content__icon list" />
-                        <Typography noWrap={true}>{task.content}</Typography>
-                        <CustomIconButton
-                          className="content__icon delete"
-                          type="delete"
-                          onClick={event => {
-                            event.stopPropagation();
-                            handleDeleteDefaultTask(event, task);
-                          }}
-                        />
-                      </div>
-                    </MenuItem>;
-                  })
-                }
-              </MenuList>
-            </Drawer>
-          </div>
-          <div className="app-home__nav__center">
-            {
-              navMenus.length !== 0 &&
-              <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
-                {
-                  navMenus.map((navMenu, index) => (
-                    <Button key={index} className="app-button">
-                      <NavLink className="nav-link" to={navMenu.path} activeClassName="active">
-                        {navMenu.name}
-                      </NavLink>
-                    </Button>
-                  ))
-                }
-              </ButtonGroup>
-            }
-            <DatePicker
-              startDate={(dateRange && dateRange[0])}
-              endDate={(dateRange && dateRange[1])}
-              selectsRange={true}
-              onConfirm={result => {
-                if (Array.isArray(result)) {
-                  const [start, end] = result;
-                  modelDispatch({
-                    type: 'global/setDateRange',
-                    payload: [start, end],
-                  });
-                }
-              }}
-              customComponent={
-                <Button
-                  variant="outlined"
-                  className="app-button"
-                  startIcon={<CalendarIcon />}
-                  endIcon={<ArrowDownIcon fontSize={12} />}
-                >
-                  {generateDateString((dateRange && dateRange[0]), (dateRange && dateRange[1]))}
-                </Button>
-              }
-            />
-          </div>
-          <div className="app-home__nav__right">
-            <Drawer
-              open={notificationsDrawerVisible}
-              onClose={() => setNotificationsDrawerVisible(false)}
-              trigger={() => (
-                <CustomIconButton
-                  type="notification-bordered"
-                  size={20}
-                  onClick={() => setNotificationsDrawerVisible(true)}
-                />
-              )}
-              variant="temporary"
-              anchor="right"
-              paperClass={{
-                elevation16: 'app-home__notifications',
-              }}
-            >
-              <div className="app-home__notifications__header">
-                <Typography variant="h6">{notificationsLoading ? '请稍候...' : '通知'}</Typography>
-              </div>
+    <>
+      <nav className={`app-home__nav${smallWidth ? ' small-width' : ''}`}>
+        <div className="app-home__nav__left">
+          <Drawer
+            open={menuDrawerVisible}
+            onClose={() => setMenuDrawerVisible(false)}
+            trigger={() => (
+              <CustomIconButton
+                size={20}
+                type="list-expand"
+                onClick={() => setMenuDrawerVisible(true)}
+              />
+            )}
+            paperClass={{ elevation0: 'app-home__sidebar', elevation16: 'app-home__sidebar' }}
+            stickyClass="sticky"
+          >
+            <div className="app-home__sidebar__header">
               {
-                notifications.length === 0
-                  ? <div className="app-home__notifications__content empty">
-                    <img src="/assets/images/no_notifications.svg" alt="没有通知" className="illustrator" />
-                    <h1>没有通知</h1>
-                    <h2>最新的通知将会出现在这里</h2>
-                  </div>
-                  : <div className="app-home__notifications__content">
-                    {
-                      notifications.map((notification, index) => (
-                        <NotificationItem
-                          key={index}
-                          notification={notification}
-                          onClick={event => handleNotificationItemClick(event, index)}
-                        />
-                      ))
-                    }
-                    <Button
-                      disabled={notificationsLoading}
+                userInfo &&
+                <PopupProvider
+                  className="popup-menu-wrapper"
+                  closeOnClick={true}
+                  disablePortal={true}
+                  closeOnClickSelf={true}
+                  trigger={
+                    <IconButton>
+                      <img className="avatar" src={userInfo.avatar} width="20" />
+                    </IconButton>
+                  }
+                >
+                  <MenuList>
+                    {generatePopupMenu(avatarMenus)}
+                  </MenuList>
+                </PopupProvider>
+              }
+              <div className="right-controls-wrapper">
+                <CustomIconButton
+                  size={18}
+                  className="button"
+                  type="refresh"
+                  disabled={defaultTasksLoading || isDispatching}
+                  spin={defaultTasksLoading || isDispatching}
+                  onClick={fetchDefaultTasks}
+                />
+              </div>
+            </div>
+            <div className="app-home__sidebar__input">
+              <DebouncedTextField
+                className="input"
+                placeholder="键入 Enter 以新建任务清单..."
+                onPressEnter={handleAddDefaultTask}
+              />
+            </div>
+            <MenuList classes={{ root: 'app-home__sidebar__menu' }}>
+              {
+                defaultTasks.map((task, index) => {
+                  return <MenuItem
+                    key={index}
+                    classes={{ gutters: 'item' }}
+                  >
+                    <div
+                      className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
                       onClick={() => {
-                        const {
-                          current,
-                          size,
-                        } = notificationPagination;
-                        modelDispatch({
-                          type: 'global/fetchNotifications',
-                          payload: {
-                            current: current + 1,
-                            size,
-                          },
+                        history.push({
+                          pathname: '/home/list',
+                          search: updateSearch(location.search, { id: task.taskId }),
                         });
                       }}
                     >
-                      {
-                        notificationsLoading
-                          ? '加载中...'
-                          : hasMoreNotifications
-                            ? '加载更多'
-                            : '暂无更多通知'
-                      }
-                    </Button>
-                  </div>
+                      <ListIcon className="content__icon list" />
+                      <Typography noWrap={true}>{task.content}</Typography>
+                      <CustomIconButton
+                        className="content__icon delete"
+                        type="delete"
+                        onClick={event => {
+                          event.stopPropagation();
+                          handleDeleteDefaultTask(event, task);
+                        }}
+                      />
+                    </div>
+                  </MenuItem>;
+                })
               }
-            </Drawer>
-          </div>
-        </nav>
-        <div className="app-home__page">
-          <Suspense fallback={<></>}>
-            <Switch>
-              <Route path="/home/list" component={ListPage} />
-              <Redirect from="/home" to="/home/list" />
-            </Switch>
-          </Suspense>
+            </MenuList>
+          </Drawer>
         </div>
-      </StylesProvider>
-    </ThemeProvider>
+        <div className="app-home__nav__center">
+          {
+            navMenus.length !== 0 &&
+            <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
+              {
+                navMenus.map((navMenu, index) => (
+                  <Button key={index} className="app-button">
+                    <NavLink className="nav-link" to={navMenu.path} activeClassName="active">
+                      {navMenu.name}
+                    </NavLink>
+                  </Button>
+                ))
+              }
+            </ButtonGroup>
+          }
+          <DatePicker
+            startDate={(dateRange && dateRange[0])}
+            endDate={(dateRange && dateRange[1])}
+            selectsRange={true}
+            onConfirm={result => {
+              if (Array.isArray(result)) {
+                const [start, end] = result;
+                modelDispatch({
+                  type: 'global/setDateRange',
+                  payload: [start, end],
+                });
+              }
+            }}
+            customComponent={
+              <Button
+                variant="outlined"
+                className="app-button"
+                startIcon={<CalendarIcon />}
+                endIcon={<ArrowDownIcon fontSize={12} />}
+              >
+                {generateDateString((dateRange && dateRange[0]), (dateRange && dateRange[1]))}
+              </Button>
+            }
+          />
+        </div>
+        <div className="app-home__nav__right">
+          <Drawer
+            open={notificationsDrawerVisible}
+            onClose={() => setNotificationsDrawerVisible(false)}
+            trigger={() => (
+              <CustomIconButton
+                type="notification-bordered"
+                size={20}
+                onClick={() => setNotificationsDrawerVisible(true)}
+              />
+            )}
+            variant="temporary"
+            anchor="right"
+            paperClass={{
+              elevation16: 'app-home__notifications',
+            }}
+          >
+            <div className="app-home__notifications__header">
+              <Typography variant="h6">{notificationsLoading ? '请稍候...' : '通知'}</Typography>
+            </div>
+            {
+              notifications.length === 0
+                ? <div className="app-home__notifications__content empty">
+                  <img src="/assets/images/no_notifications.svg" alt="没有通知" className="illustrator" />
+                  <h1>没有通知</h1>
+                  <h2>最新的通知将会出现在这里</h2>
+                </div>
+                : <div className="app-home__notifications__content">
+                  {
+                    notifications.map((notification, index) => (
+                      <NotificationItem
+                        key={index}
+                        notification={notification}
+                        onClick={event => handleNotificationItemClick(event, index)}
+                      />
+                    ))
+                  }
+                  <Button
+                    disabled={notificationsLoading}
+                    onClick={() => {
+                      const {
+                        current,
+                        size,
+                      } = notificationPagination;
+                      modelDispatch({
+                        type: 'global/fetchNotifications',
+                        payload: {
+                          current: current + 1,
+                          size,
+                        },
+                      });
+                    }}
+                  >
+                    {
+                      notificationsLoading
+                        ? '加载中...'
+                        : hasMoreNotifications
+                          ? '加载更多'
+                          : '暂无更多通知'
+                    }
+                  </Button>
+                </div>
+            }
+          </Drawer>
+        </div>
+      </nav>
+      <div className="app-home__page">
+        <Suspense fallback={<></>}>
+          <Switch>
+            <Route path="/home/list" component={ListPage} />
+            <Redirect from="/home" to="/home/list" />
+          </Switch>
+        </Suspense>
+      </div>
+    </>
   );
 };
 
