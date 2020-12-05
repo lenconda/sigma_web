@@ -78,6 +78,7 @@
     "antd": "^3.26.12",
     "autoprefixer": "^9.6.1",
     "axios": "^0.19.2",
+    "dva": "^2.4.1",
     "js-base64": "^2.5.2",
     "js-file-download": "^0.4.10",
     "lodash": "^4.17.20",
@@ -93,6 +94,7 @@
     "react-router-dom": "^5.2.0",
     "react-textarea-autosize": "^8.3.0",
     "react-transition-group": "^4.3.0",
+    "redux": "^4.0.5",
     "typescript": "3.5.2",
     "url-params-parser": "^1.0.3",
     "uuid": "^8.3.1"

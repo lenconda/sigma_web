@@ -1,6 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import dva from 'dva';
+import { createBrowserHistory } from 'history';
 import App from './App';
 import './index.less';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import GlobalModel from './models/global';
+
+const history = createBrowserHistory();
+const app = dva({ history });
+
+app.router(() => <App />);
+
+app.model(GlobalModel);
+
+app.start('#root');

@@ -9,7 +9,6 @@ import {
   ThemeProvider,
   StylesProvider,
 } from '@material-ui/core';
-import Bus from '../../core/bus';
 import Dispatcher from '../../core/dispatcher';
 import {
   Route,
@@ -17,7 +16,6 @@ import {
   Redirect,
   Link,
   NavLink,
-  RouteComponentProps,
   useLocation,
   useHistory,
 } from 'react-router-dom';
@@ -40,7 +38,6 @@ import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
 import { getTaskListFromTask } from '../../services/task';
 import { getUserInfo } from '../../services/user';
-import { getNotifications } from '../../services/notifications';
 import {
   getNavMenu,
   getAvatarMenu,
@@ -56,12 +53,12 @@ import Drawer from '../../components/Drawer';
 import NotificationItem from '../../components/NotificationItem';
 import {
   AppMenuItem,
-  NotificationInfo,
   TaskListItem,
-  User,
   Dispatch,
-  PaginationConfig,
 } from '../../interfaces';
+import { HomePageProps } from '../../interfaces/pages/home';
+import { ConnectState } from '../../interfaces/models';
+import { connect } from 'dva';
 import './index.less';
 
 const ListPage = lazy(() => import('./List'));
@@ -119,46 +116,30 @@ const generateDateString = (start?: Date, end: Date = start): string => {
   }
 };
 
-export interface HomePageProps extends RouteComponentProps {}
-
-const Home: React.FC<HomePageProps> = props => {
-  const bus = new Bus<Dispatch>();
+const Home: React.FC<HomePageProps> = ({
+  dispatch: modelDispatch,
+  profile: userInfo,
+  notifications,
+  hasMoreNotifications,
+  notificationPagination,
+  fetchNotificationsLoading: notificationsLoading,
+  dateRange,
+  currentActiveTaskIds,
+  bus,
+  smallWidth,
+}) => {
   const dispatcher = new Dispatcher();
-  const [currentActiveTaskIds, setCurrentActiveTaskIds] = useState<string[]>([]);
   const [navMenus, setNavMenus] = useState<AppMenuItem[]>([]);
   const [avatarMenus, setAvatarMenus] = useState<AppMenuItem[]>([]);
-  const [dateRange, setDateRange] = useState<[Date, Date]>([undefined, undefined]);
   const [defaultTasks, setDefaultTasks] = useState<TaskListItem[]>([]);
-  const [userInfo, setUserInfo] = useState<User>(undefined);
-  const [smallWidth, setSmallWidth] = useState<boolean>(false);
   const [menuDrawerVisible, setMenuDrawerVisible] = useState<boolean>(false);
   const [notificationsDrawerVisible, setNotificationsDrawerVisible] = useState<boolean>(false);
-  const [notifications, setNotifications] = useState<NotificationInfo[]>([]);
   const [defaultTasksLoading, setDefaultTasksLoading] = useState<boolean>(false);
   const [isDispatching, setIsDispatching] = useState<boolean>(false);
-  const [notificationsLoading, setNotificationsLoading] = useState<boolean>(false);
-  const [hasMoreNotifications, setHasMoreNotifications] = useState<boolean>(false);
-  const [notificationsPagination, setNotificationsPagination] = useState<PaginationConfig>({
-    current: 1,
-    size: 10,
-  });
   const location = useLocation();
   const history = useHistory();
   const currentId = useId(location);
   const dispatchStatus = dispatcher.useDispatchStatus();
-
-  const handleSelectedTasksChange = (tasks: TaskListItem[]) => {
-    if (tasks.length === 1) {
-      const task = tasks[0];
-      const activeParentIndex = currentActiveTaskIds.indexOf(task.parentTaskId);
-      if (activeParentIndex !== -1) {
-        const newActiveTaskIds = activeParentIndex === currentActiveTaskIds.length - 1
-          ? Array.from(currentActiveTaskIds).concat([task.taskId])
-          : Array.from(currentActiveTaskIds).slice(0, activeParentIndex + 1).concat([task.taskId]);
-        setCurrentActiveTaskIds(newActiveTaskIds);
-      }
-    }
-  };
 
   const fetchDefaultTasks = () => {
     setDefaultTasksLoading(true);
@@ -173,7 +154,10 @@ const Home: React.FC<HomePageProps> = props => {
       ...notifications[index],
       checked: true,
     });
-    setNotifications(currentNotificationItems);
+    modelDispatch({
+      type: 'global/setNotifications',
+      payload: currentNotificationItems,
+    });
   };
 
   const handleDeleteDefaultTask = (
@@ -202,54 +186,15 @@ const Home: React.FC<HomePageProps> = props => {
     return true;
   };
 
-  const fetchNotifications = (pagination?: PaginationConfig) => {
-    const {
-      current: requestCurrent = 1,
-      size: requestSize = 10,
-    } = pagination || {};
-    setNotificationsLoading(true);
-    getNotifications({
-      current: requestCurrent,
-      size: requestSize,
-    }).then(res => {
-      const {
-        items,
-        current,
-        size,
-        total,
-      } = res;
-      setNotifications(Array.from(notifications).concat(items));
-      setHasMoreNotifications(total - (current * size) !== 0);
-    }).finally(() => {
-      setNotificationsLoading(false);
-      setNotificationsPagination(pagination);
-    });
-  };
-
   useEffect(() => {
-    if (currentId === '') {
-      setCurrentActiveTaskIds([]);
-    } else {
-      setCurrentActiveTaskIds([currentId]);
-    }
+    modelDispatch({
+      type: 'global/setCurrentActiveTaskIds',
+      payload: currentId === '' ? [] : [currentId],
+    });
   }, [currentId]);
 
   useEffect(() => {
-    const handler = () => {
-      const innerWidth = window.innerWidth;
-      setSmallWidth(innerWidth < 720);
-    };
-    window.addEventListener('resize', handler);
-    return () => {
-      window.removeEventListener('resize', handler);
-    };
-  }, []);
-
-  useEffect(() => setSmallWidth(window.innerWidth < 720), []);
-
-  useEffect(() => {
     dispatcher.start();
-
     const dispatchHandler = (dispatch: Dispatch) => {
       if (dispatch.payloads.length !== 0) {
         dispatcher.enqueue(dispatch);
@@ -259,7 +204,10 @@ const Home: React.FC<HomePageProps> = props => {
             // eslint-disable-next-line max-nested-callbacks
             const payloadActiveIndex = currentActiveTaskIds.findIndex(taskId => payload.taskId === taskId);
             if (payloadActiveIndex !== -1) {
-              setCurrentActiveTaskIds(currentActiveTaskIds.slice(0, payloadActiveIndex));
+              modelDispatch({
+                type: 'global/setCurrentActiveTaskIds',
+                payload: currentActiveTaskIds.slice(0, payloadActiveIndex),
+              });
             }
           });
           break;
@@ -269,7 +217,6 @@ const Home: React.FC<HomePageProps> = props => {
         }
       }
     };
-
     const pushHandler = (dispatch: Dispatch) => {
       if (dispatch.payloads.length === 0) { return }
       switch (dispatch.action) {
@@ -339,17 +286,15 @@ const Home: React.FC<HomePageProps> = props => {
   useEffect(() => {
     const today = moment().startOf('day').toDate();
     fetchDefaultTasks();
-    setDateRange([today, today]);
     getUserInfo().then(res => {
-      setUserInfo(res);
+      modelDispatch({
+        type: 'global/setProfile',
+        payload: res,
+      });
     });
     getAvatarMenu().then(res => setAvatarMenus(res));
     getNavMenu().then(res => setNavMenus(res));
   }, []);
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [notificationsPagination]);
 
   useEffect(() => {
     if (defaultTasks.findIndex(defaultTask => defaultTask.taskId === currentId) === -1) {
@@ -470,7 +415,10 @@ const Home: React.FC<HomePageProps> = props => {
               onConfirm={result => {
                 if (Array.isArray(result)) {
                   const [start, end] = result;
-                  setDateRange([start, end]);
+                  modelDispatch({
+                    type: 'global/setDateRange',
+                    payload: [start, end],
+                  });
                 }
               }}
               customComponent={
@@ -524,7 +472,19 @@ const Home: React.FC<HomePageProps> = props => {
                     }
                     <Button
                       disabled={notificationsLoading}
-                      onClick={() => fetchNotifications()}
+                      onClick={() => {
+                        const {
+                          current,
+                          size,
+                        } = notificationPagination;
+                        modelDispatch({
+                          type: 'global/fetchNotifications',
+                          payload: {
+                            current: current + 1,
+                            size,
+                          },
+                        });
+                      }}
                     >
                       {
                         notificationsLoading
@@ -542,15 +502,7 @@ const Home: React.FC<HomePageProps> = props => {
         <div className="app-home__page">
           <Suspense fallback={<></>}>
             <Switch>
-              <Route path="/home/list">
-                <ListPage
-                  bus={bus}
-                  currentActiveTaskIds={currentActiveTaskIds}
-                  onSelectedTasksChange={handleSelectedTasksChange}
-                  dateRange={[(dateRange && dateRange[0]), (dateRange && dateRange[1])]}
-                  className={smallWidth ? 'small-width' : ''}
-                />
-              </Route>
+              <Route path="/home/list" component={ListPage} />
               <Redirect from="/home" to="/home/list" />
             </Switch>
           </Suspense>
@@ -560,4 +512,4 @@ const Home: React.FC<HomePageProps> = props => {
   );
 };
 
-export default Home;
+export default connect((state: ConnectState) => state.global)(Home);
