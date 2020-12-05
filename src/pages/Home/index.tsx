@@ -4,11 +4,6 @@ import React, {
   Suspense,
   lazy,
 } from 'react';
-import {
-  createMuiTheme,
-  ThemeProvider,
-  StylesProvider,
-} from '@material-ui/core';
 import Dispatcher from '../../core/dispatcher';
 import {
   Route,
@@ -49,6 +44,7 @@ import {
 } from '../../core/icons';
 import { useId } from '../../core/hooks';
 import CustomIconButton from '../../components/IconButton';
+import { AvatarImage } from '../../components/Image';
 import Drawer from '../../components/Drawer';
 import NotificationItem from '../../components/NotificationItem';
 import {
@@ -315,7 +311,7 @@ const Home: React.FC<HomePageProps> = ({
                   closeOnClickSelf={true}
                   trigger={
                     <IconButton>
-                      <img className="avatar" src={userInfo.avatar} width="20" />
+                      <AvatarImage className="avatar" src={userInfo.avatar} width="20" />
                     </IconButton>
                   }
                 >

@@ -22,3 +22,7 @@ export { DebouncedTextFieldProps } from './debounced_text_field';
 export { DatePickerProps } from './date_picker';
 export { CheckboxProps } from './checkbox';
 export { NotificationItemProps } from './notification_item';
+export {
+  ImageBaseProps,
+  ImageProps,
+} from './image';

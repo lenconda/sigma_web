@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Tooltip from '@material-ui/core/Tooltip';
 import Button from '@material-ui/core/Button';
 import DraggableDialog from '../DraggableDialog';
+import { AvatarImage } from '../Image';
 import {
   getNotificationDetailInfo,
 } from '../../services/notifications';
@@ -84,7 +85,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
                 notificationDetailInfo.sender
                 && <Tooltip title={notificationDetailInfo.sender.email} arrow={true}>
                   <div className="user-info">
-                    <img src={notificationDetailInfo.sender.avatar} alt="avatar" />
+                    <AvatarImage src={notificationDetailInfo.sender.avatar} alt="avatar" />
                     <span>{notificationDetailInfo.sender.name || notificationDetailInfo.sender.email}</span>
                   </div>
                 </Tooltip>

@@ -1,6 +1,4 @@
-import {
-  User,
-} from '../components/TaskListItem';
+import { User } from '../interfaces';
 
 export const getUserInfo = async (): Promise<User> => {
   return new Promise(resolve => {
