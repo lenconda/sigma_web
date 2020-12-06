@@ -127,8 +127,8 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
       <DialogContent classes={{ root: 'task-selector__content' }}>
         <TreeView
           className="tree-view"
-          defaultCollapseIcon={<ExpandMoreIcon color="primary" />}
-          defaultExpandIcon={<ChevronRightIcon color="primary" />}
+          defaultCollapseIcon={<ExpandMoreIcon color="disabled" />}
+          defaultExpandIcon={<ChevronRightIcon color="disabled" />}
           expanded={expanded}
           onNodeToggle={(event, nodeIds) => {
             event.preventDefault();

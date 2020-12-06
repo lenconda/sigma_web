@@ -38,7 +38,7 @@ const DraggableDialog: React.FC<DraggableDialogProps> = ({
   },
   PaperProps = {
     classes: {
-      elevation24: 'app-dialog__paper',
+      rounded: 'app-dialog__paper',
     },
   },
   onClose,
