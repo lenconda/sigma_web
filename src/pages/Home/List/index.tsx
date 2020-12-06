@@ -30,11 +30,11 @@ const List: React.FC<ListPageProps> = ({
   };
 
   return (
-    <div className={`app-list__page${className && ` ${className}` || ''}`}>
+    <div className={`app-home-list__page${className && ` ${className}` || ''}`}>
       {
         currentActiveTaskIds.map((currentActiveTaskId, index) => {
           return (
-            <div className="app-list__page__task-wrapper" key={currentActiveTaskId}>
+            <div className="app-home-list__page__task-wrapper" key={currentActiveTaskId}>
               <TaskList
                 bus={bus}
                 currentTaskId={currentActiveTaskId}
@@ -48,7 +48,7 @@ const List: React.FC<ListPageProps> = ({
       }
       {
         currentActiveTaskIds.length === 0
-          && <div className="app-list__page__task-wrapper empty">
+          && <div className="app-home-list__page__task-wrapper empty">
             <Empty />
           </div>
       }
