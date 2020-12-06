@@ -476,7 +476,7 @@ const Home: React.FC<HomePageProps> = ({
           </Drawer>
         </div>
       </nav>
-      <div className="app-home__page">
+      <div className={`app-home__page${smallWidth ? ' small-width' : ''}`}>
         <Suspense fallback={<></>}>
           <Switch>
             <Route path="/home/list" component={ListPage} />
