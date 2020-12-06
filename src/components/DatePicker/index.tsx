@@ -174,7 +174,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
         <div className="app-date-picker__controls">
           <Button
             variant="contained"
-            style={{ width: '100%' }}
+            fullWidth={true}
             color="primary"
             onClick={handleConfirmDateSelection}
             className="app-button"
