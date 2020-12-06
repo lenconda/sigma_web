@@ -21,11 +21,11 @@ class Dispatcher {
   public start(intervalMilliseconds: number = 1000) {
     this.interval = setInterval(() => {
       const [dispatchState, setDispatchState] = this.dispatchStatus;
-      if (!dispatchState && this.dispatchQueue.length !== 0) {
+      if (this.dispatchQueue.length !== 0) {
         setDispatchState(true);
         const dispatches = Array.from(this.dispatchQueue);
         this.dispatchQueue = [];
-        this.dispatch().then(res => {
+        this.dispatch().then(() => {
           console.log('dispatching: ', dispatches);
         }).finally(() => {
           setDispatchState(false);
