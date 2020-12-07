@@ -9,6 +9,10 @@ export {
   PaginationConfig,
   PaginationResponse,
 } from './http';
+export {
+  Template,
+  TemplateBase,
+} from './template';
 
 export interface AppMenuItem {
   name?: string;

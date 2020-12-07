@@ -33,6 +33,17 @@
     min-width: 540px;
     overflow-x: visible;
 
+    .nav-button {
+      border: 1px solid transparent;
+      border-color: transparent !important;
+      font-size: 13px !important;
+
+      &:hover {
+        border-color: @border-color !important;
+        background-color: @bg-color-hover !important;
+      }
+    }
+
     &.small-width {
       padding-left: 20px;
     }
@@ -69,11 +80,17 @@
     }
 
     &__pills {
+      box-sizing: border-box;
       margin: 5px;
+      padding: 4px 5px;
+      border-radius: @border-radius;
+      background-color: @bg-color-selected;
+      border: 1px solid @border-color;
 
       > button {
         padding: 0;
-        border-color: transparent !important;
+        border: 0 !important;
+        background-color: transparent;
 
         &:hover {
           background-color: transparent;
@@ -86,13 +103,15 @@
         .nav-link {
           display: inline-block;
           box-sizing: border-box;
-          padding: 5px 15px;
+          padding: 3px 15px;
+          min-width: 75px;
+          font-size: 11px;
           text-decoration: none;
           color: inherit;
           font-weight: inherit;
           cursor: pointer;
           transition: all @transition-duration;
-          border-radius: 4px 4px 3px 3px;
+          border-radius: 3px;
 
           &:hover {
             background-color: @bg-color-hover;
@@ -104,8 +123,9 @@
           }
 
           &.active {
-            background-color: @bg-color-selected;
+            background-color: @white;
             font-weight: bold;
+            box-shadow: @box-shadow;
           }
         }
       }

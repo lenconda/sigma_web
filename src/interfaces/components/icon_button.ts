@@ -6,7 +6,7 @@ import {
   FinishIcon,
   ListIcon,
   RefreshIcon,
-  NotificationIcon,
+  TemplateIcon,
   LoadingIcon,
   NotificationBorderedIcon,
   ListExpandIcon,
@@ -28,7 +28,7 @@ export interface IconTypes {
   finish: typeof FinishIcon;
   list: typeof ListIcon;
   refresh: typeof RefreshIcon;
-  notification: typeof NotificationIcon;
+  template: typeof TemplateIcon;
   loading: typeof LoadingIcon;
   'notification-bordered': typeof NotificationBorderedIcon;
   'list-expand': typeof ListExpandIcon;

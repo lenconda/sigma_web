@@ -12,7 +12,11 @@ const generateIcon = (name: string): React.FC<IconProps> => {
     spinDuration: animationDuration = '1s',
   }) => <i
     className={`iconfont sg_${name}${className && ` ${className}` || ''}${spin && ' spin' || ''}`}
-    style={{ ...style, fontSize, animationDuration: spin ? animationDuration : 'none' }}
+    style={{
+      ...style,
+      fontSize,
+      animationDuration: spin ? animationDuration : 'none',
+    }}
   ></i>;
 };
 
@@ -23,7 +27,7 @@ const ProgressIcon = generateIcon('progress');
 const FinishIcon = generateIcon('finish');
 const ListIcon = generateIcon('list');
 const RefreshIcon = generateIcon('refresh');
-const NotificationIcon = generateIcon('notification');
+const TemplateIcon = generateIcon('template');
 const LoadingIcon = generateIcon('loading');
 const NotificationBorderedIcon = generateIcon('notification-bordered');
 const ListExpandIcon = generateIcon('list-expand');
@@ -44,7 +48,7 @@ export {
   FinishIcon,
   ListIcon,
   RefreshIcon,
-  NotificationIcon,
+  TemplateIcon,
   LoadingIcon,
   NotificationBorderedIcon,
   ListExpandIcon,

@@ -409,7 +409,7 @@ const Home: React.FC<HomePageProps> = ({
             }}
             customComponent={
               <Button
-                className="app-button"
+                className="app-button nav-button"
                 startIcon={<CalendarIcon />}
                 endIcon={<ArrowDownIcon fontSize={12} />}
               >

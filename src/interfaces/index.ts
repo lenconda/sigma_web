@@ -8,6 +8,8 @@ export {
   NotificationDetailInfo,
   PaginationResponse,
   PaginationConfig,
+  Template,
+  TemplateBase,
 } from './common';
 export {
   CheckboxProps,
