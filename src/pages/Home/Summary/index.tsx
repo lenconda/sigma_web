@@ -137,7 +137,9 @@ const Summary: React.FC<SummaryPageProps> = () => {
           </div>
         }
       </PopupProvider>
-      <div className="summary-content"></div>
+      <div className="app-home-summary__page__content">
+        <textarea contentEditable={false} readOnly={true}></textarea>
+      </div>
     </div>
   );
 };
