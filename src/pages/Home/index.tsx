@@ -58,6 +58,7 @@ import { connect } from 'dva';
 import './index.less';
 
 const ListPage = lazy(() => import('./List'));
+const SummaryPage = lazy(() => import('./Summary'));
 
 const generatePopupMenu = (menus: AppMenuItem[]): JSX.Element[] => {
   return menus.map((menu, index) => {
@@ -235,7 +236,7 @@ const Home: React.FC<HomePageProps> = ({
         setDefaultTasks(currentDefaultTasks);
         if (dispatch.payloads.findIndex(payload => payload.taskId === currentId) !== -1) {
           history.push({
-            pathname: '/home/list',
+            pathname: location.pathname,
             search: deleteSearch(location.search, ['id']),
           });
           bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
@@ -278,7 +279,7 @@ const Home: React.FC<HomePageProps> = ({
   useEffect(() => {
     if (defaultTasks.findIndex(defaultTask => defaultTask.taskId === currentId) === -1) {
       history.push({
-        pathname: '/home/list',
+        pathname: location.pathname,
         search: deleteSearch(location.search, ['id']),
       });
     }
@@ -349,7 +350,7 @@ const Home: React.FC<HomePageProps> = ({
                       className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
                       onClick={() => {
                         history.push({
-                          pathname: '/home/list',
+                          pathname: location.pathname,
                           search: updateSearch(location.search, { id: task.taskId }),
                         });
                       }}
@@ -378,7 +379,14 @@ const Home: React.FC<HomePageProps> = ({
               {
                 navMenus.map((navMenu, index) => (
                   <Button key={index} className="app-button">
-                    <NavLink className="nav-link" to={navMenu.path} activeClassName="active">
+                    <NavLink
+                      className="nav-link"
+                      to={{
+                        pathname: navMenu.path,
+                        search: location.search,
+                      }}
+                      activeClassName="active"
+                    >
                       {navMenu.name}
                     </NavLink>
                   </Button>
@@ -480,6 +488,7 @@ const Home: React.FC<HomePageProps> = ({
         <Suspense fallback={<></>}>
           <Switch>
             <Route path="/home/list" component={ListPage} />
+            <Route path="/home/summary" component={SummaryPage} />
             <Redirect from="/home" to="/home/list" />
           </Switch>
         </Suspense>
