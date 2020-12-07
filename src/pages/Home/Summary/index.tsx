@@ -69,8 +69,11 @@ const Summary: React.FC<SummaryPageProps> = ({
   };
 
   useEffect(() => {
-    console.log(currentActiveTaskIds);
-    fetchSummaryContent();
+    if (!currentActiveTaskIds[0]) {
+      setSummaryContent('');
+    } else {
+      fetchSummaryContent();
+    }
   }, [dateRange, currentActiveTaskIds]);
 
   useEffect(() => {
