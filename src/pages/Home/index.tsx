@@ -236,6 +236,7 @@ const Home: React.FC<HomePageProps> = ({
         setDefaultTasks(currentDefaultTasks);
         if (dispatch.payloads.findIndex(payload => payload.taskId === currentId) !== -1) {
           history.push({
+            ...location,
             pathname: location.pathname,
             search: deleteSearch(location.search, ['id']),
           });
@@ -264,7 +265,6 @@ const Home: React.FC<HomePageProps> = ({
 
   // TODO: Mock
   useEffect(() => {
-    const today = moment().startOf('day').toDate();
     fetchDefaultTasks();
     getUserInfo().then(res => {
       modelDispatch({
@@ -279,7 +279,7 @@ const Home: React.FC<HomePageProps> = ({
   useEffect(() => {
     if (defaultTasks.findIndex(defaultTask => defaultTask.taskId === currentId) === -1) {
       history.push({
-        pathname: location.pathname,
+        ...location,
         search: deleteSearch(location.search, ['id']),
       });
     }
@@ -350,7 +350,7 @@ const Home: React.FC<HomePageProps> = ({
                       className={`content${currentActiveTaskIds[0] === task.taskId ? ' current' : ''}`}
                       onClick={() => {
                         history.push({
-                          pathname: location.pathname,
+                          ...location,
                           search: updateSearch(location.search, { id: task.taskId }),
                         });
                       }}
@@ -382,8 +382,8 @@ const Home: React.FC<HomePageProps> = ({
                     <NavLink
                       className="nav-link"
                       to={{
+                        ...location,
                         pathname: navMenu.path,
-                        search: location.search,
                       }}
                       activeClassName="active"
                     >
