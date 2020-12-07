@@ -2,6 +2,7 @@ import React, {
   useState,
   useEffect,
 } from 'react';
+import { connect } from 'dva';
 import PopupProvider from '../../../components/PopupProvider';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,14 +14,20 @@ import {
   ArrowDownIcon,
 } from '../../../core/icons';
 import IconButton from '../../../components/IconButton';
+import { getSummary } from '../../../services/summary';
 import { SummaryPageProps } from '../../../interfaces/pages/home/summary';
 import {
   TemplateBase,
   PaginationConfig,
+  DateRange,
 } from '../../../interfaces';
+import { ConnectState } from '../../../interfaces/models';
 import './index.less';
 
-const Summary: React.FC<SummaryPageProps> = () => {
+const Summary: React.FC<SummaryPageProps> = ({
+  currentActiveTaskIds,
+  dateRange,
+}) => {
   const [templateMenuVisible, setTemplateMenuVisible] = useState<boolean>(false);
   const [templateItems, setTemplateItems] = useState<TemplateBase[]>([]);
   const [templateItemsPagination, setTemplateItemsPagination] = useState<PaginationConfig>({ current: 1, size: 10 });
@@ -28,6 +35,8 @@ const Summary: React.FC<SummaryPageProps> = () => {
   const [templateSelectedTemplate, setTemplateSelectedTemplate] = useState<TemplateBase>(undefined);
   const [moreTemplateItems, setMoreTemplateItems] = useState<boolean>(false);
   const [templateItemsLoading, setTemplateItemsLoading] = useState<boolean>(false);
+  const [summaryContent, setSummaryContent] = useState<string>('');
+  const [summaryContentLoading, setSummaryContentLoading] = useState<boolean>(false);
 
   const fetchTemplateItems = (pagination: PaginationConfig) => {
     setTemplateItemsLoading(true);
@@ -49,6 +58,20 @@ const Summary: React.FC<SummaryPageProps> = () => {
       }
     }).finally(() => setTemplateItemsLoading(false));
   };
+
+  const fetchSummaryContent = () => {
+    if (currentActiveTaskIds[0]) {
+      setSummaryContentLoading(true);
+      getSummary(currentActiveTaskIds[0], dateRange).then(res => {
+        setSummaryContent(res);
+      }).finally(() => setSummaryContentLoading(false));
+    }
+  };
+
+  useEffect(() => {
+    console.log(currentActiveTaskIds);
+    fetchSummaryContent();
+  }, [dateRange, currentActiveTaskIds]);
 
   useEffect(() => {
     fetchTemplateItems(templateItemsPagination);
@@ -74,17 +97,34 @@ const Summary: React.FC<SummaryPageProps> = () => {
         className="template-selector-wrapper"
       >
         <div className="header-wrapper">
-          <Button size="small" className="app-button--link">管理我的模板</Button>
+          <Button
+            size="small"
+            className="app-button--link"
+            onClick={() => {
+              const { protocol, host } = window.location;
+              const url = `${protocol}//${host}/settings/templates`;
+              window.open(url);
+            }}
+          >
+            管理我的模板
+          </Button>
           <IconButton
             type="refresh"
             size={14}
             style={{ fontWeight: 700 }}
             spin={templateItemsLoading}
             disabled={templateItemsLoading}
-            onClick={() => fetchTemplateItems(templateItemsPagination)}
+            onClick={() => fetchTemplateItems({ ...templateItemsPagination, current: 1 })}
           />
         </div>
         <MenuList className="items-wrapper">
+          {
+            templateItems.length === 0 && (
+              templateItemsLoading
+                ? <div className="loading">请稍候...</div>
+                : <div className="empty">没有模板</div>
+            )
+          }
           {
             templateItems.map((templateItem, index) => (
               <div key={index} onClick={() => setTemplateSelectedTemplate(templateItem)}>
@@ -95,6 +135,7 @@ const Summary: React.FC<SummaryPageProps> = () => {
                     : ''
                   }
                 >
+                  <TemplateIcon />
                   <Typography noWrap={true}>{templateItem.name}</Typography>
                 </MenuItem>
               </div>
@@ -138,10 +179,20 @@ const Summary: React.FC<SummaryPageProps> = () => {
         }
       </PopupProvider>
       <div className="app-home-summary__page__content">
-        <textarea contentEditable={false} readOnly={true}></textarea>
+        {
+          !summaryContentLoading && summaryContent !== ''
+          && <textarea defaultValue={summaryContent} readOnly={true}></textarea>
+        }
+        {
+          summaryContent === '' && (
+            summaryContentLoading
+            ? <span>请稍候...</span>
+            : <span>暂无摘要</span>
+          )
+        }
       </div>
     </div>
   );
 };
 
-export default Summary;
+export default connect(({ global }: ConnectState) => global)(Summary);
