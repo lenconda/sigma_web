@@ -19,7 +19,6 @@ import { SummaryPageProps } from '../../../interfaces/pages/home/summary';
 import {
   TemplateBase,
   PaginationConfig,
-  DateRange,
 } from '../../../interfaces';
 import { ConnectState } from '../../../interfaces/models';
 import './index.less';
@@ -61,6 +60,7 @@ const Summary: React.FC<SummaryPageProps> = ({
 
   const fetchSummaryContent = () => {
     if (currentActiveTaskIds[0]) {
+      setSummaryContent('');
       setSummaryContentLoading(true);
       getSummary(currentActiveTaskIds[0], dateRange).then(res => {
         setSummaryContent(res);
