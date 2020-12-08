@@ -200,7 +200,7 @@ const Summary: React.FC<SummaryPageProps> = ({
               color="primary"
               fullWidth={true}
               variant="contained"
-              disabled={!currentSelectedTemplate}
+              disabled={!selectedTemplate}
               onClick={() => {
                 setTemplateMenuVisible(false);
                 history.push({
