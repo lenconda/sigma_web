@@ -32,7 +32,7 @@ const List: React.FC<ListPageProps> = ({
   return (
     <div className={`app-home-list__page${className && ` ${className}` || ''}`}>
       {
-        currentActiveTaskIds.map((currentActiveTaskId, index) => {
+        currentActiveTaskIds.map(currentActiveTaskId => {
           return (
             <div className="app-home-list__page__task-wrapper" key={currentActiveTaskId}>
               <TaskList
@@ -56,4 +56,4 @@ const List: React.FC<ListPageProps> = ({
   );
 };
 
-export default connect((state: ConnectState) => state.global)(List);
+export default connect(({ global }: ConnectState) => global)(List);

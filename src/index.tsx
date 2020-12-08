@@ -7,10 +7,8 @@ import './index.less';
 import GlobalModel from './models/global';
 
 const history = createBrowserHistory();
+
 const app = dva({ history });
-
 app.router(() => <App />);
-
 app.model(GlobalModel);
-
 app.start('#root');

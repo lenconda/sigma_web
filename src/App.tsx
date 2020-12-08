@@ -8,7 +8,6 @@ import {
 } from '@material-ui/core';
 import {
   Route,
-  Switch,
   Redirect,
   BrowserRouter as Router,
 } from 'react-router-dom';
@@ -50,10 +49,8 @@ const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <Router>
         <Suspense fallback={<></>}>
-          <Switch>
-            <Route path="/home" component={HomePage} />
-            <Redirect from="/" to="/home" exact={true} />
-          </Switch>
+          <Route path="/home" component={HomePage} />
+          <Redirect from="/" to="/home/list" exact={true} />
         </Suspense>
       </Router>
     </ThemeProvider>

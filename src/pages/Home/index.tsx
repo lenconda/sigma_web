@@ -7,7 +7,6 @@ import React, {
 import Dispatcher from '../../core/dispatcher';
 import {
   Route,
-  Switch,
   Redirect,
   Link,
   NavLink,
@@ -486,15 +485,13 @@ const Home: React.FC<HomePageProps> = ({
       </nav>
       <div className={`app-home__page${smallWidth ? ' small-width' : ''}`}>
         <Suspense fallback={<></>}>
-          <Switch>
-            <Route path="/home/list" component={ListPage} />
-            <Route path="/home/summary" component={SummaryPage} />
-            <Redirect from="/home" to="/home/list" />
-          </Switch>
+          <Route path="/home/list" component={ListPage} />
+          <Route path="/home/summary" component={SummaryPage} />
+          <Redirect from="/home" to="/home/list" />
         </Suspense>
       </div>
     </>
   );
 };
 
-export default connect((state: ConnectState) => state.global)(Home);
+export default connect(({ global }: ConnectState) => global)(Home);
