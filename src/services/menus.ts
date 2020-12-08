@@ -1,6 +1,6 @@
 import {
   AppMenuItem,
-} from '../pages/Home';
+} from '../interfaces';
 
 export const getNavMenu = async (): Promise<AppMenuItem[]> => {
   return new Promise(resolve => {
@@ -28,8 +28,8 @@ export const getAvatarMenu = async (): Promise<AppMenuItem[]> => {
           path: '/settings/profile',
         },
         {
-          name: '活跃设备',
-          path: '/settings/sessions',
+          name: '摘要模板',
+          path: '/settings/templates',
         },
         {
           isDivider: true,

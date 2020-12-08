@@ -1,7 +1,7 @@
 import {
   TaskListItem,
   TaskListItemDetailInfo,
-} from '../components/TaskListItem';
+} from '../interfaces';
 import idGen from '../core/idgen';
 
 export const getTaskInfo = async (

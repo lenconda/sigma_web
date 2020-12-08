@@ -6,6 +6,7 @@ export interface TemplateBase {
   creator: User;
   createdAt: string;
   updatedAt?: string;
+  deletedAt?: string;
 }
 
 export interface Template extends TemplateBase {

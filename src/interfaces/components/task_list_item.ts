@@ -18,6 +18,7 @@ export interface TaskListItemDetailInfo extends TaskListItem {
   creator: User;
   createdAt: string;
   updatedAt?: string;
+  deletedAt?: string;
 }
 
 export interface TaskListItemProps extends TaskListItem {
