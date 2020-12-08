@@ -3,11 +3,19 @@ import React, {
   useEffect,
 } from 'react';
 import { connect } from 'dva';
+import {
+  useHistory,
+  useLocation,
+} from 'react-router-dom';
 import PopupProvider from '../../../components/PopupProvider';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import {
+  updateSearch,
+  deleteSearch,
+} from '../../../utils/url';
 import { getTemplateList } from '../../../services/templates';
 import {
   TemplateIcon,
@@ -26,16 +34,19 @@ import './index.less';
 const Summary: React.FC<SummaryPageProps> = ({
   currentActiveTaskIds,
   dateRange,
+  currentTemplateId,
 }) => {
   const [templateMenuVisible, setTemplateMenuVisible] = useState<boolean>(false);
   const [templateItems, setTemplateItems] = useState<TemplateBase[]>([]);
   const [templateItemsPagination, setTemplateItemsPagination] = useState<PaginationConfig>({ current: 1, size: 10 });
   const [currentSelectedTemplate, setCurrentSelectedTemplate] = useState<TemplateBase>(undefined);
-  const [templateSelectedTemplate, setTemplateSelectedTemplate] = useState<TemplateBase>(undefined);
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateBase>(undefined);
   const [moreTemplateItems, setMoreTemplateItems] = useState<boolean>(false);
   const [templateItemsLoading, setTemplateItemsLoading] = useState<boolean>(false);
   const [summaryContent, setSummaryContent] = useState<string>('');
   const [summaryContentLoading, setSummaryContentLoading] = useState<boolean>(false);
+  const history = useHistory();
+  const location = useLocation();
 
   const fetchTemplateItems = (pagination: PaginationConfig) => {
     setTemplateItemsLoading(true);
@@ -48,13 +59,6 @@ const Summary: React.FC<SummaryPageProps> = ({
       } = res;
       setTemplateItems(pagination.current === 1 ? items : templateItems.concat(items));
       setMoreTemplateItems(total - current * size > 0);
-      if (items.length > 0 && !currentSelectedTemplate) {
-        setCurrentSelectedTemplate(items[0]);
-        setTemplateSelectedTemplate(items[0]);
-      } else if (items.length === 0) {
-        setCurrentSelectedTemplate(undefined);
-        setTemplateSelectedTemplate(undefined);
-      }
     }).finally(() => setTemplateItemsLoading(false));
   };
 
@@ -69,16 +73,42 @@ const Summary: React.FC<SummaryPageProps> = ({
   };
 
   useEffect(() => {
-    if (!currentActiveTaskIds[0]) {
+    if (!currentActiveTaskIds[0] || !dateRange || !currentTemplateId) {
       setSummaryContent('');
     } else {
       fetchSummaryContent();
     }
-  }, [dateRange, currentActiveTaskIds]);
+  }, [dateRange, currentActiveTaskIds, currentTemplateId]);
 
   useEffect(() => {
     fetchTemplateItems(templateItemsPagination);
   }, [templateItemsPagination]);
+
+  useEffect(() => {
+    if (!currentTemplateId && templateItems.length > 0) {
+      history.push({
+        ...location,
+        search: updateSearch(location.search, { templateId: templateItems[0].templateId }),
+      });
+    }
+    if (templateItems.length === 0) {
+      history.push({
+        ...location,
+        search: deleteSearch(location.search, ['templateId']),
+      });
+    }
+    if (currentTemplateId) {
+      const template = templateItems.find(templateItem => templateItem.templateId === currentTemplateId);
+      if (template) {
+        setCurrentSelectedTemplate(template);
+      } else {
+        history.push({
+          ...location,
+          search: deleteSearch(location.search, ['templateId']),
+        });
+      }
+    }
+  }, [currentTemplateId, templateItems]);
 
   return (
     <div className="app-home-summary__page">
@@ -130,10 +160,10 @@ const Summary: React.FC<SummaryPageProps> = ({
           }
           {
             templateItems.map((templateItem, index) => (
-              <div key={index} onClick={() => setTemplateSelectedTemplate(templateItem)}>
+              <div key={index} onClick={() => setSelectedTemplate(templateItem)}>
                 <MenuItem
                   className={
-                    (templateSelectedTemplate && templateSelectedTemplate.templateId) === templateItem.templateId
+                    (selectedTemplate && selectedTemplate.templateId) === templateItem.templateId
                     ? ' selected'
                     : ''
                   }
@@ -173,7 +203,10 @@ const Summary: React.FC<SummaryPageProps> = ({
               disabled={!currentSelectedTemplate}
               onClick={() => {
                 setTemplateMenuVisible(false);
-                setCurrentSelectedTemplate(templateSelectedTemplate);
+                history.push({
+                  ...location,
+                  search: updateSearch(location.search, { templateId: selectedTemplate.templateId }),
+                });
               }}
             >
               好

@@ -33,6 +33,7 @@ const GlobalModel: GlobalModelType = {
       size: 10,
     },
     fetchNotificationsLoading: false,
+    currentTemplateId: '',
   },
   effects: {
     * fetchNotifications({ payload }, { put, select }) {
@@ -124,6 +125,12 @@ const GlobalModel: GlobalModelType = {
       return {
         ...state,
         fetchNotificationsLoading: payload,
+      };
+    },
+    setCurrentTemplateId(state, { payload }) {
+      return {
+        ...state,
+        currentTemplateId: payload,
       };
     },
   },

@@ -286,12 +286,18 @@ const Home: React.FC<HomePageProps> = ({
   }, [defaultTasks, currentId]);
 
   useEffect(() => {
-    const { date = '' } = parseSearch(location.search);
+    const { date = '', templateId = '' } = parseSearch(location.search);
     if (date) {
       const [startTimestamp, endTimestamp] = date.split('_');
       modelDispatch({
         type: 'global/setDateRange',
         payload: [new Date(parseInt(startTimestamp, 10)), new Date(parseInt(endTimestamp, 10))],
+      });
+    }
+    if (templateId) {
+      modelDispatch({
+        type: 'global/setCurrentTemplateId',
+        payload: templateId,
       });
     }
   }, [location.search]);

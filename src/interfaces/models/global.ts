@@ -23,6 +23,7 @@ export interface GlobalState {
   currentActiveTaskIds: string[];
   bus: Bus<Dispatch>;
   smallWidth: boolean;
+  currentTemplateId: string;
 }
 
 export interface GlobalModelType {
@@ -40,6 +41,7 @@ export interface GlobalModelType {
     setSmallWidth: Reducer<GlobalState>;
     setNotificationPagination: Reducer<GlobalState>;
     setFetchNotificationsLoading: Reducer<GlobalState>;
+    setCurrentTemplateId: Reducer<GlobalState>;
   };
   subscriptions: {
     setup: Subscription;
