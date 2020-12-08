@@ -27,6 +27,7 @@ import idGen from '../../core/idgen';
 import {
   updateSearch,
   deleteSearch,
+  parseSearch,
 } from '../../utils/url';
 import _merge from 'lodash/merge';
 import _cloneDeep from 'lodash/cloneDeep';
@@ -284,6 +285,17 @@ const Home: React.FC<HomePageProps> = ({
     }
   }, [defaultTasks, currentId]);
 
+  useEffect(() => {
+    const { date = '' } = parseSearch(location.search);
+    if (date) {
+      const [startTimestamp, endTimestamp] = date.split('_');
+      modelDispatch({
+        type: 'global/setDateRange',
+        payload: [new Date(parseInt(startTimestamp, 10)), new Date(parseInt(endTimestamp, 10))],
+      });
+    }
+  }, [location.search]);
+
   return (
     <>
       <nav className={`app-home__nav${smallWidth ? ' small-width' : ''}`}>
@@ -400,9 +412,10 @@ const Home: React.FC<HomePageProps> = ({
             onConfirm={result => {
               if (Array.isArray(result)) {
                 const [start, end] = result;
-                modelDispatch({
-                  type: 'global/setDateRange',
-                  payload: [start, end],
+                const dateRangeSearch = [start.getTime(), end.getTime()].join('_');
+                history.push({
+                  ...location,
+                  search: updateSearch(location.search, { date: dateRangeSearch }),
                 });
               }
             }}
