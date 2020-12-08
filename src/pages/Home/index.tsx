@@ -294,12 +294,10 @@ const Home: React.FC<HomePageProps> = ({
         payload: [new Date(parseInt(startTimestamp, 10)), new Date(parseInt(endTimestamp, 10))],
       });
     }
-    if (templateId) {
-      modelDispatch({
-        type: 'global/setCurrentTemplateId',
-        payload: templateId,
-      });
-    }
+    modelDispatch({
+      type: 'global/setCurrentTemplateId',
+      payload: templateId,
+    });
   }, [location.search]);
 
   return (

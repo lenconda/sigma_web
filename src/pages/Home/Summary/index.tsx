@@ -63,17 +63,16 @@ const Summary: React.FC<SummaryPageProps> = ({
   };
 
   const fetchSummaryContent = () => {
-    if (currentActiveTaskIds[0]) {
-      setSummaryContent('');
-      setSummaryContentLoading(true);
-      getSummary(currentActiveTaskIds[0], dateRange).then(res => {
-        setSummaryContent(res);
-      }).finally(() => setSummaryContentLoading(false));
-    }
+    setSummaryContent('');
+    setSummaryContentLoading(true);
+    getSummary(currentActiveTaskIds[0], dateRange).then(res => {
+      setSummaryContent(res);
+    }).finally(() => setSummaryContentLoading(false));
   };
 
   useEffect(() => {
-    if (!currentActiveTaskIds[0] || !dateRange || !currentTemplateId) {
+    const currentTemplate = templateItems.find(item => item.templateId === currentTemplateId);
+    if (!currentActiveTaskIds[0] || !dateRange || !currentTemplateId || !currentTemplate) {
       setSummaryContent('');
     } else {
       fetchSummaryContent();
@@ -85,28 +84,22 @@ const Summary: React.FC<SummaryPageProps> = ({
   }, [templateItemsPagination]);
 
   useEffect(() => {
-    if (!currentTemplateId && templateItems.length > 0) {
-      history.push({
-        ...location,
-        search: updateSearch(location.search, { templateId: templateItems[0].templateId }),
-      });
+    setSummaryContent('');
+    if (!currentTemplateId) {
+      setSummaryContent('');
+      if (templateItems.length > 0) {
+        history.push({
+          ...location,
+          search: updateSearch(location.search, { templateId: templateItems[0].templateId }),
+        });
+        setCurrentSelectedTemplate(templateItems[0]);
+      }
     }
     if (templateItems.length === 0) {
       history.push({
         ...location,
         search: deleteSearch(location.search, ['templateId']),
       });
-    }
-    if (currentTemplateId) {
-      const template = templateItems.find(templateItem => templateItem.templateId === currentTemplateId);
-      if (template) {
-        setCurrentSelectedTemplate(template);
-      } else {
-        history.push({
-          ...location,
-          search: deleteSearch(location.search, ['templateId']),
-        });
-      }
     }
   }, [currentTemplateId, templateItems]);
 
