@@ -234,14 +234,14 @@ const Home: React.FC<HomePageProps> = ({
           return task;
         });
         setDefaultTasks(currentDefaultTasks);
+        bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
+        bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
         if (dispatch.payloads.findIndex(payload => payload.taskId === currentId) !== -1) {
           history.push({
             ...location,
             pathname: location.pathname,
             search: deleteSearch(location.search, ['id']),
           });
-          bus.emit('dispatch', { action: 'DELETE', payloads: defaultTasksToBeDeleted });
-          bus.emit('dispatch', { action: 'UPDATE', payloads: defaultTasksToBeUpdated });
         }
         break;
       }
