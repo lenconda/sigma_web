@@ -5,9 +5,11 @@
   display: flex;
   justify-content: space-between;
   padding: 0;
-  background-color: @white;
-  border: 1px solid transparent;
+  background-color: @gray-fc;
   transition: all @transition-duration;
+  border: 1px solid transparent;
+  border-left: 0;
+  border-right: 0;
 
   &:hover &__drag-control > .icon,
   &:hover &__delete-control > .icon,
@@ -18,6 +20,7 @@
   &.selected {
     transition: all @transition-duration;
     background-color: @bg-color-selected;
+    border-color: @border-color;
   }
 
   &.dragging {
@@ -25,6 +28,7 @@
     box-shadow: @box-shadow-focus;
     border: 1px solid @border-color;
     border-radius: @border-radius;
+    transform: rotate(-3deg);
   }
 
   &__content {
@@ -36,7 +40,6 @@
     margin-bottom: 0;
     align-items: center;
     position: relative;
-    border-bottom: 1px solid @border-color--secondary;
 
     &.dragging {
       border-bottom: 0;

@@ -1,7 +1,7 @@
 import { User } from '../common';
 
 export interface NotificationInfo {
-  notificationId: string;
+  notificationId: number;
   title: string;
   time: string;
   checked: boolean;
