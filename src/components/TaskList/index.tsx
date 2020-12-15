@@ -31,6 +31,9 @@ import {
 import {
   AlarmIcon,
   AddListIcon,
+  TreeIcon,
+  AddIcon,
+  CloseIcon,
 } from '../../core/icons';
 import IconButton from '../IconButton';
 import Chip from '@material-ui/core/Chip';
@@ -191,11 +194,11 @@ export default (props: TaskList) => {
     bus.emit('push', { action: 'DELETE', payloads: dispatchDeleteTasks });
   };
 
-  const handleAddTask = (content: string | number) => {
-    if (typeof content === 'string' && content !== '') {
+  const handleAddTask = () => {
+    if (typeof addTaskContent === 'string' && addTaskContent !== '') {
       const deadline = moment().add(1, 'day').startOf('day').toISOString();
       const taskToBeAdded: TaskListItem = {
-        content,
+        content: addTaskContent,
         deadline,
         finished: false,
         order: -1,
@@ -204,7 +207,6 @@ export default (props: TaskList) => {
       };
       bus.emit('push', { action: 'ADD', payloads: [taskToBeAdded] });
       setAddTaskContent('');
-      // setSelectedTasks([]);
     }
     return true;
   };
@@ -477,26 +479,10 @@ export default (props: TaskList) => {
               }
             }}
           />
-          <div className="icon-buttons">
-            {
-              selectedTasks.length !== 0 &&
-              <>
-                <IconButton
-                  type="move"
-                  style={{ marginLeft: 10 }}
-                  onClick={() => setTaskSelectorVisible(true)}
-                />
-                <IconButton
-                  type="delete-list"
-                  onClick={() => handleDeleteTasks()}
-                />
-              </>
-            }
-          </div>
         </div>
       }
       <div className="task-list__items-wrapper">
-        <div className="description">
+        <div className="task-list__items-wrapper__description">
           <DebouncedTextField
             type="textarea"
             placeholder="在这里写下任务描述..."
@@ -505,6 +491,25 @@ export default (props: TaskList) => {
             onChange={event => handleUpdateCurrentTask({ description: event.target.value })}
           />
         </div>
+        {
+          shownTasks.length !== 0
+            && <div className="task-list__items-wrapper__controls">
+              <h1><TreeIcon />子任务</h1>
+              {
+                selectedTasks.length !== 0
+                  && <div className="buttons">
+                    <IconButton
+                      type="move"
+                      onClick={() => setTaskSelectorVisible(true)}
+                    />
+                    <IconButton
+                      type="delete-list"
+                      onClick={() => handleDeleteTasks()}
+                    />
+                  </div>
+              }
+            </div>
+        }
         {
           taskListLoading || currentTaskLoading
             ? <span className="loading">请稍候...</span>
@@ -573,24 +578,48 @@ export default (props: TaskList) => {
               : null
         }
       </div>
-      <div className="task-list__controls-wrapper">
+      <div className="task-list__bottom-wrapper">
+        <div className="buttons">
+          {
+            !showAddTask
+              && <Button
+                startIcon={<AddListIcon style={{ fontSize: 12 }} />}
+                variant="text"
+                size="small"
+                fullWidth={true}
+                className={`app-button${showAddTask && ' active' || ''} add-task-control-button`}
+                onClick={() => setShowAddTask(!showAddTask)}
+              >
+                添加子任务
+              </Button>
+          }
+        </div>
         <div className={`add-task${showAddTask && ' show' || ''}`}>
           <DebouncedTextField
+            type="textarea"
             value={addTaskContent}
             className="textfield"
-            placeholder="键入 Enter 以添加新的子任务..."
-            onPressEnter={handleAddTask}
+            placeholder="键入新的子任务的内容..."
+            onChange={event => setAddTaskContent(event.target.value)}
           />
-        </div>
-        <div className="buttons">
-          <Button
-            startIcon={<AddListIcon style={{ fontSize: 12 }} />}
-            variant="outlined"
-            className={`app-button${showAddTask && ' active' || ''}`}
-            onClick={() => setShowAddTask(!showAddTask)}
-          >
-            添加子任务
-          </Button>
+          <div className="add-task__buttons">
+            <Button
+              color="primary"
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => handleAddTask()}
+            >
+              添加
+            </Button>
+            <Button
+              color="default"
+              variant="text"
+              startIcon={<CloseIcon />}
+              onClick={() => setShowAddTask(false)}
+            >
+              放弃
+            </Button>
+          </div>
         </div>
       </div>
       <TaskSelector

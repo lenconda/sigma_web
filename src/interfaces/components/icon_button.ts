@@ -18,6 +18,9 @@ import {
   CalendarIcon,
   AlarmIcon,
   AddListIcon,
+  AddIcon,
+  TreeIcon,
+  CloseIcon,
 } from '../../core/icons';
 
 export interface IconTypes {
@@ -40,6 +43,9 @@ export interface IconTypes {
   calendar: typeof CalendarIcon;
   alarm: typeof AlarmIcon;
   'add-list': typeof AddListIcon;
+  add: typeof AddIcon;
+  tree: typeof TreeIcon;
+  close: typeof CloseIcon;
 }
 
 export interface IconButtonProps {

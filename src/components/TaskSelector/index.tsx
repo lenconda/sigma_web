@@ -6,10 +6,10 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Typography from '@material-ui/core/Typography';
 import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {
   LoadingIcon,
+  ArrowRightIcon,
+  ArrowDownIcon,
 } from '../../core/icons';
 import {
   TaskSelectorProps,
@@ -100,7 +100,7 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
       }}
       icon={
         currentIndex === currentLoadingItem
-          ? <LoadingIcon spin={true} fontSize={13} style={{ color: '#c0c0c0', fontWeight: 'bold' }} />
+          ? <LoadingIcon spin={true} fontSize={12} style={{ color: '#999', fontWeight: 200 }} />
           : null
       }
     >
@@ -127,8 +127,8 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
       <DialogContent classes={{ root: 'task-selector__content' }}>
         <TreeView
           className="tree-view"
-          defaultCollapseIcon={<ExpandMoreIcon color="disabled" />}
-          defaultExpandIcon={<ChevronRightIcon color="disabled" />}
+          defaultCollapseIcon={<ArrowDownIcon fontSize={12} />}
+          defaultExpandIcon={<ArrowRightIcon fontSize={12} />}
           expanded={expanded}
           onNodeToggle={(event, nodeIds) => {
             event.preventDefault();

@@ -65,7 +65,7 @@
     overflow: scroll;
     flex-grow: 1;
 
-    .description {
+    &__description {
       box-sizing: border-box;
       padding: 0 15px;
 
@@ -81,6 +81,34 @@
         padding: 20px 5px;
         padding-bottom: 25px;
         border-radius: @border-radius;
+      }
+    }
+
+    &__controls {
+      box-sizing: border-box;
+      padding: 0 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+
+      h1 {
+        font-weight: normal;
+        font-size: 16px;
+        color: @text-color;
+        margin: 0;
+        flex-grow: 0;
+        flex-shrink: 0;
+
+        .iconfont {
+          margin-right: 10px;
+          color: @icon-color;
+        }
+      }
+
+      .icon-button {
+        padding-top: 0;
+        padding-bottom: 0;
       }
     }
 
@@ -130,13 +158,21 @@
     }
   }
 
-  &__controls-wrapper {
+  &__bottom-wrapper {
     box-sizing: border-box;
-    padding: 15px 25px;
+    padding: 15px;
     flex-grow: 0;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
+
+    .add-task-control-button {
+      padding-left: 15px;
+
+      span {
+        justify-content: flex-start;
+      }
+    }
 
     .add-task,
     .edit-description {
@@ -153,11 +189,15 @@
     }
 
     .add-task {
+      box-sizing: border-box;
+      padding-top: 10px;
+      flex-direction: column;
+
       .textfield {
         box-sizing: border-box;
         flex-grow: 1;
         font-size: 13px;
-        height: 36px;
+        min-height: 96px;
         border: 1px solid @border-color;
         border-radius: @border-radius;
         box-shadow: @box-shadow;
@@ -166,6 +206,27 @@
         &:focus {
           box-shadow: @box-shadow-focus;
           transition: all @transition-duration;
+        }
+      }
+
+      &__buttons {
+        box-sizing: border-box;
+        padding-top: 15px;
+        display: flex;
+        justify-content: space-between;
+
+        button {
+          font-size: 10px;
+          box-shadow: none;
+
+          &:hover {
+            box-shadow: none;
+          }
+
+          * {
+            justify-content: center;
+            text-align: center;
+          }
         }
       }
     }

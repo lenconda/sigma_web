@@ -39,6 +39,9 @@ const ArrowLeftIcon = generateIcon('arrow-left');
 const CalendarIcon = generateIcon('calendar');
 const AlarmIcon = generateIcon('alarm');
 const AddListIcon = generateIcon('add-list');
+const AddIcon = generateIcon('add');
+const TreeIcon = generateIcon('tree');
+const CloseIcon = generateIcon('close');
 
 export {
   DeleteIcon,
@@ -60,4 +63,7 @@ export {
   CalendarIcon,
   AlarmIcon,
   AddListIcon,
+  AddIcon,
+  TreeIcon,
+  CloseIcon,
 };
