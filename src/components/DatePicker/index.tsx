@@ -104,6 +104,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                   type="arrow-left"
                   onClick={decreaseMonth}
                   disabled={prevMonthButtonDisabled}
+                  size={11}
                 />
                 <div className="selector-control-wrapper">
                   <Button
@@ -129,6 +130,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                   type="arrow-right"
                   onClick={increaseMonth}
                   disabled={nextMonthButtonDisabled}
+                  size={11}
                 />
               </div>
               {
@@ -178,6 +180,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
             color="primary"
             onClick={handleConfirmDateSelection}
             className="app-button"
+            size="small"
           >
             好
           </Button>
