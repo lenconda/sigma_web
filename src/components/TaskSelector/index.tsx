@@ -143,7 +143,8 @@ const TaskSelector: React.FC<TaskSelectorProps> = ({
       <DialogActions classes={{ root: 'task-selector__footer' }}>
         <Button onClick={onClose} variant="outlined" className="app-button">放弃</Button>
         <Button
-          variant="outlined"
+          variant="contained"
+          color="primary"
           disabled={!selectedTask}
           onClick={event => {
             onClose(event);

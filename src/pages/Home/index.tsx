@@ -349,7 +349,7 @@ const Home: React.FC<HomePageProps> = ({
             </div>
             <div className="app-home__sidebar__input">
               <DebouncedTextField
-                className="input"
+                className="app-textfield input"
                 placeholder="键入 Enter 以新建任务清单..."
                 onPressEnter={handleAddDefaultTask}
               />

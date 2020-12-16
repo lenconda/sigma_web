@@ -598,7 +598,7 @@ export default (props: TaskList) => {
           <DebouncedTextField
             type="textarea"
             value={addTaskContent}
-            className="textfield"
+            className="app-textfield textfield"
             placeholder="键入新的子任务的内容..."
             onChange={event => setAddTaskContent(event.target.value)}
           />
