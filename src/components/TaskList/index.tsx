@@ -615,7 +615,10 @@ export default (props: TaskList) => {
               color="default"
               variant="text"
               startIcon={<CloseIcon />}
-              onClick={() => setShowAddTask(false)}
+              onClick={() => {
+                setAddTaskContent('');
+                setShowAddTask(false);
+              }}
             >
               放弃
             </Button>
