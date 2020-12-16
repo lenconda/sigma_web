@@ -20,7 +20,7 @@ type PaperPartialClassKey = Partial<Record<PaperClassKey, string>>;
 
 const Drawer: React.FC<DrawerProps> = ({
   children,
-  trigger = () => <button>trigger</button>,
+  trigger = () => <></>,
   open = false,
   anchor = 'left',
   triggerClass = '',

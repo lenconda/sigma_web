@@ -7,7 +7,8 @@
     flex-shrink: 0;
     min-height: 700px;
     overflow-y: scroll;
-    padding-top: 44px;
+    padding-top: 60px;
+    padding-bottom: 32px;
     padding-left: 320px;
 
     &.small-width {
@@ -29,9 +30,11 @@
     justify-content: center;
     align-items: center;
     z-index: 999;
-    background-color: #fff;
+    background-color: @gray-26;
+    color: @white;
     min-width: 540px;
     overflow-x: visible;
+    border-bottom: 1px solid @border-color;
 
     .nav-button {
       border: 1px solid transparent;
@@ -86,7 +89,6 @@
       padding: 2px;
       border-radius: @border-radius;
       background-color: @bg-color-selected;
-      border: 1px solid @border-color;
 
       > button {
         padding: 0;
@@ -104,7 +106,7 @@
         .nav-link {
           display: inline-block;
           box-sizing: border-box;
-          padding: 1.5px 15px;
+          padding: 0 20px;
           min-width: 75px;
           font-size: 10px;
           text-decoration: none;
@@ -316,6 +318,22 @@
         }
       }
     }
+  }
+
+  &__footer-nav {
+    box-sizing: border-box;
+    padding: 0 10px;
+    position: fixed;
+    height: 32px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-top: 1px solid @border-color;
+    z-index: 2;
+    background-color: @white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 
