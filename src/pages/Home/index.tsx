@@ -442,7 +442,6 @@ const Home: React.FC<HomePageProps> = ({
             <PopupProvider
               className="popup-menu-wrapper"
               closeOnClick={true}
-              disablePortal={true}
               closeOnClickSelf={true}
               trigger={
                 <IconButton>
