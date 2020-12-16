@@ -101,6 +101,7 @@ const Summary: React.FC<SummaryPageProps> = ({
         search: deleteSearch(location.search, ['templateId']),
       });
     }
+    setCurrentSelectedTemplate(templateItems.find(item => item.templateId === currentTemplateId) || undefined);
   }, [currentTemplateId, templateItems]);
 
   return (
