@@ -20,7 +20,7 @@
     box-sizing: border-box;
     height: 64px;
     width: 100%;
-    padding-left: 320px;
+    padding-left: 20px;
     padding-right: 20px;
     position: fixed;
     top: 0;
@@ -31,7 +31,6 @@
     align-items: center;
     z-index: 999;
     background-color: @gray-26;
-    color: @white;
     min-width: 540px;
     overflow-x: visible;
     border-bottom: 1px solid @border-color;
@@ -69,18 +68,41 @@
       display: flex;
       flex-shrink: 1;
       flex-grow: 0;
+      align-items: center;
+
+      .icon-button {
+        border-radius: @border-radius;
+        transition: all @transition-duration-more-faster;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, .2);
+          color: @white;
+          transition: all @transition-duration-more-faster;
+        }
+      }
     }
 
     &__left {
       justify-content: flex-start;
+
+      .app-logo {
+        margin-right: 10px;
+      }
     }
 
     &__right {
       justify-content: flex-end;
+
+      img.avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 14px;
+      }
     }
 
     .app-popup__trigger-wrapper > button {
       margin: 0 5px;
+      color: @white;
     }
 
     &__pills {
@@ -145,6 +167,14 @@
     background-color: #fff;
     display: flex;
     flex-direction: column;
+    padding-top: 65px;
+    position: relative;
+
+    .app-logo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+    }
 
     &.sticky {
       box-shadow: @box-shadow-focus !important;
@@ -157,12 +187,6 @@
       justify-content: space-between;
       flex-grow: 0;
       flex-shrink: 0;
-
-      img.avatar {
-        width: 32px;
-        height: 32px;
-        border-radius: 16px;
-      }
 
       .right-controls-wrapper {
         height: 100%;
@@ -369,6 +393,5 @@
 }
 
 .popup-menu-wrapper {
-  margin-top: 5px !important;
   border: 1px solid @border-color !important;
 }

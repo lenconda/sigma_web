@@ -303,13 +303,12 @@ const Home: React.FC<HomePageProps> = ({
   return (
     <>
       <nav className="app-home__nav">
-        <div className="app-home__nav__left">
-          <nav className="app-home__footer-nav">
-            <div className="app-home__footer-nav__left"></div>
-            <div className="app-home__footer-nav__right">
-              {
-                navMenus.length !== 0 &&
-                <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
+        <nav className="app-home__footer-nav">
+          <div className="app-home__footer-nav__left"></div>
+          <div className="app-home__footer-nav__right">
+            {
+                navMenus.length !== 0
+                && <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
                   {
                     navMenus.map((navMenu, index) => (
                       <Button key={index} className="app-button">
@@ -328,8 +327,17 @@ const Home: React.FC<HomePageProps> = ({
                   }
                 </ButtonGroup>
               }
-            </div>
-          </nav>
+          </div>
+        </nav>
+        <div className="app-home__nav__left">
+          <img src="/assets/images/tail.svg" width="28" className="app-logo" />
+          {
+            smallWidth && <CustomIconButton
+              type="list-expand"
+              size={18}
+              onClick={() => setMenuDrawerVisible(true)}
+            />
+          }
         </div>
         <div className="app-home__nav__center">
           <DatePicker
@@ -348,9 +356,9 @@ const Home: React.FC<HomePageProps> = ({
             }}
             customComponent={
               <Button
-                className="app-button nav-button"
                 startIcon={<CalendarIcon />}
                 endIcon={<ArrowDownIcon fontSize={12} />}
+                variant="text"
               >
                 {generateDateString((dateRange && dateRange[0]), (dateRange && dateRange[1]))}
               </Button>
@@ -358,6 +366,14 @@ const Home: React.FC<HomePageProps> = ({
           />
         </div>
         <div className="app-home__nav__right">
+          <CustomIconButton
+            size={18}
+            className="button"
+            type="refresh"
+            disabled={defaultTasksLoading || isDispatching}
+            spin={defaultTasksLoading || isDispatching}
+            onClick={fetchDefaultTasks}
+          />
           <Drawer
             open={notificationsDrawerVisible}
             onClose={() => setNotificationsDrawerVisible(false)}
@@ -421,15 +437,6 @@ const Home: React.FC<HomePageProps> = ({
                 </div>
             }
           </Drawer>
-        </div>
-      </nav>
-      <Drawer
-        open={menuDrawerVisible}
-        onClose={() => setMenuDrawerVisible(false)}
-        paperClass={{ elevation0: 'app-home__sidebar', elevation16: 'app-home__sidebar' }}
-        stickyClass="sticky"
-      >
-        <div className="app-home__sidebar__header">
           {
             userInfo &&
             <PopupProvider
@@ -439,7 +446,7 @@ const Home: React.FC<HomePageProps> = ({
               closeOnClickSelf={true}
               trigger={
                 <IconButton>
-                  <AvatarImage className="avatar" src={userInfo.avatar} width="20" />
+                  <AvatarImage className="avatar" src={userInfo.avatar} />
                 </IconButton>
               }
             >
@@ -448,17 +455,15 @@ const Home: React.FC<HomePageProps> = ({
               </MenuList>
             </PopupProvider>
           }
-          <div className="right-controls-wrapper">
-            <CustomIconButton
-              size={18}
-              className="button"
-              type="refresh"
-              disabled={defaultTasksLoading || isDispatching}
-              spin={defaultTasksLoading || isDispatching}
-              onClick={fetchDefaultTasks}
-            />
-          </div>
         </div>
+      </nav>
+      <Drawer
+        open={menuDrawerVisible}
+        onClose={() => setMenuDrawerVisible(false)}
+        paperClass={{ elevation0: 'app-home__sidebar', elevation16: 'app-home__sidebar' }}
+        stickyClass="sticky"
+      >
+        <img src="/assets/images/tail.svg" width="28" className="app-logo" />
         <div className="app-home__sidebar__input">
           <DebouncedTextField
             className="app-textfield input"
