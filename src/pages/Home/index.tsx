@@ -304,11 +304,15 @@ const Home: React.FC<HomePageProps> = ({
     <>
       <nav className="app-home__nav">
         <nav className="app-home__footer-nav">
-          <div className="app-home__footer-nav__left"></div>
+          <div className="app-home__footer-nav__left">
+            {
+              (isDispatching || defaultTasksLoading) && <span className="status-text">同步中...</span>
+            }
+          </div>
           <div className="app-home__footer-nav__right">
             {
                 navMenus.length !== 0
-                && <ButtonGroup classes={{ root: 'app-home__nav__pills' }} disableRipple={true}>
+                && <ButtonGroup classes={{ root: 'app-nav-pills' }} disableRipple={true}>
                   {
                     navMenus.map((navMenu, index) => (
                       <Button key={index} className="app-button">
@@ -374,24 +378,23 @@ const Home: React.FC<HomePageProps> = ({
             spin={defaultTasksLoading || isDispatching}
             onClick={fetchDefaultTasks}
           />
-          <Drawer
-            open={notificationsDrawerVisible}
-            onClose={() => setNotificationsDrawerVisible(false)}
-            trigger={() => (
+          <PopupProvider
+            trigger={
               <CustomIconButton
                 type="notification-bordered"
                 size={20}
                 onClick={() => setNotificationsDrawerVisible(true)}
               />
-            )}
-            variant="temporary"
-            anchor="right"
-            paperClass={{
-              elevation16: 'app-home__notifications',
-            }}
+            }
+            closeOnClick={true}
+            className="app-home__notifications"
+            zIndex={999}
           >
             <div className="app-home__notifications__header">
-              <Typography variant="h6">{notificationsLoading ? '请稍候...' : '通知'}</Typography>
+              <ButtonGroup classes={{ root: 'app-nav-pills' }} disableRipple={true}>
+                <Button className="app-nav-pills__button active">通知</Button>
+                <Button className="app-nav-pills__button">私信</Button>
+              </ButtonGroup>
             </div>
             {
               notifications.length === 0
@@ -436,7 +439,7 @@ const Home: React.FC<HomePageProps> = ({
                   </Button>
                 </div>
             }
-          </Drawer>
+          </PopupProvider>
           {
             userInfo &&
             <PopupProvider
@@ -444,7 +447,7 @@ const Home: React.FC<HomePageProps> = ({
               closeOnClick={true}
               closeOnClickSelf={true}
               trigger={
-                <IconButton>
+                <IconButton className="avatar-button">
                   <AvatarImage className="avatar" src={userInfo.avatar} />
                 </IconButton>
               }

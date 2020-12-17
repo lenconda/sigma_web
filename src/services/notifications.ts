@@ -6,7 +6,7 @@ import {
 } from '../interfaces';
 
 export const generateNotification = async (
-  notificationId: string = Math.random().toString(32),
+  notificationId: number = Math.floor(Math.random() * 10000),
 ): Promise<NotificationInfo> => {
   return new Promise(resolve => {
     setTimeout(() => {
@@ -44,7 +44,7 @@ export const getNotifications = async (
 };
 
 export const getNotificationDetailInfo = async (
-  notificationId: string,
+  notificationId: number,
 ): Promise<NotificationDetailInfo> => {
   return new Promise(resolve => {
     setTimeout(() => {

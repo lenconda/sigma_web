@@ -62,3 +62,54 @@ hr {
     transition: all @transition-duration;
   }
 }
+
+.app-nav-pills {
+  box-sizing: border-box;
+  margin: 5px;
+  padding: 2px;
+  border-radius: @border-radius;
+  background-color: @bg-color-selected;
+
+  .nav-link, & > &__button {
+    display: inline-block;
+    box-sizing: border-box;
+    padding: 0 20px;
+    min-width: 75px;
+    font-size: 10px;
+    text-decoration: none;
+    color: inherit;
+    font-weight: inherit;
+    cursor: pointer;
+    transition: all @transition-duration;
+    border-radius: 3px;
+
+    &:hover {
+      background-color: @bg-color-hover;
+      transition: all @transition-duration;
+    }
+
+    &:visited {
+      text-decoration: none;
+    }
+
+    &.active {
+      background-color: @white;
+      font-weight: bold;
+      box-shadow: @box-shadow;
+    }
+  }
+
+  > button {
+    padding: 0;
+    border: 0 !important;
+    background-color: transparent;
+
+    &:hover {
+      background-color: transparent;
+    }
+
+    &:last-child {
+      border-left: 0;
+    }
+  }
+}
