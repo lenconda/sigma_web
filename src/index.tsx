@@ -3,6 +3,7 @@ import dva from 'dva';
 import { createBrowserHistory } from 'history';
 import App from './App';
 import 'antd/dist/antd.css';
+import 'rc-tree/assets/index.less';
 import './index.less';
 
 import GlobalModel from './models/global';

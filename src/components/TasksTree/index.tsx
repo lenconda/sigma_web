@@ -2,7 +2,8 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import Tree, { DataNode, EventDataNode } from 'antd/lib/tree';
+import Tree from 'rc-tree';
+import { DataNode, EventDataNode } from 'rc-tree/es/interface';
 import { TasksTreeProps } from '../../interfaces';
 import { NodeDragEventParams } from 'rc-tree/lib/contextTypes';
 
@@ -123,25 +124,21 @@ const TasksTree: React.FC<TasksTreeProps> = ({
       draggingItem = item;
     });
 
-    // Drop directly on the task list item
-    if (!info.dropToGap) {
+    // console.log 1 => item: parent
+    // console.log 2 => item: last sibling
+    if (dropPosition === 0) {
+      // Drop on the content
       traverseTreeNodes(currentTreeData, dropKey, item => {
+        console.log(1, item);
+        // eslint-disable-next-line no-param-reassign
         item.children = item.children || [];
-        item.children.unshift(draggingItem);
-      });
-      // Drop between items
-    } else if (
-      (info.node.children || []).length > 0
-      && info.node.expanded
-      && dropPosition === 1
-    ) {
-      traverseTreeNodes(currentTreeData, dropKey, item => {
-        item.children = item.children || [];
+        // where to insert 示例添加到尾部，可以是随意位置
         item.children.unshift(draggingItem);
       });
     } else {
       traverseTreeNodes(currentTreeData, dropKey, (item, index, currentArray) => {
         currentArray.splice(dropPosition === -1 ? index : index + 1, 0, draggingItem);
+        console.log(2, item);
       });
     }
 
