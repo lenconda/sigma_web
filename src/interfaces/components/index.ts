@@ -26,3 +26,5 @@ export {
   ImageBaseProps,
   ImageProps,
 } from './image';
+export { DropContextProps } from './drop_context';
+export { TasksTreeProps } from './tasks_tree';

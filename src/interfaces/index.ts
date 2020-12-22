@@ -32,4 +32,6 @@ export {
   NotificationItemProps,
   ImageBaseProps,
   ImageProps,
+  DropContextProps,
+  TasksTreeProps,
 } from './components';

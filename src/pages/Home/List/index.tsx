@@ -4,6 +4,7 @@ import TaskList, { Empty } from '../../../components/TaskList';
 import { ListPageProps } from '../../../interfaces/pages/home/list';
 import { ConnectState } from '../../../interfaces/models';
 import { TaskListItem } from '../../../interfaces';
+import TasksTree from '../../../components/TasksTree';
 import './index.less';
 
 const List: React.FC<ListPageProps> = ({
@@ -31,6 +32,7 @@ const List: React.FC<ListPageProps> = ({
 
   return (
     <div className={`app-home-list__page${className && ` ${className}` || ''}`}>
+      <TasksTree />
       {
         currentActiveTaskIds.map(currentActiveTaskId => {
           return (
