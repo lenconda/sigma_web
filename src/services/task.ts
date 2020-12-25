@@ -20,7 +20,7 @@ export const getTaskInfo = async (
         content: isDefault ? '全部任务' : taskId,
         order,
       });
-    }, 100);
+    }, 50);
   });
 };
 

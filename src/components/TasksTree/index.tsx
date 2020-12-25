@@ -3,108 +3,106 @@ import React, {
   useEffect,
 } from 'react';
 import Tree from 'rc-tree';
-import { DataNode, EventDataNode } from 'rc-tree/es/interface';
-import { TasksTreeProps } from '../../interfaces';
-import { NodeDragEventParams } from 'rc-tree/lib/contextTypes';
-
-export type TaskTreeDropInfo = NodeDragEventParams<HTMLDivElement> & {
-  dragNode: EventDataNode;
-  dragNodesKeys: React.ReactText[];
-  dropPosition: number;
-  dropToGap: boolean;
-};
-
-export type TraverseCallbackType = (item: DataNode, index: number, currentArray: DataNode[]) => void;
+import { DataNode } from 'rc-tree/es/interface';
+import { getTaskListFromTask } from '../../services/task';
+import {
+  TasksTreeProps,
+  TraverseTreeNodeCallbackType,
+  TasksTreeDropInfo,
+  TreeNodeIdIndexMap,
+  TasksTreeNodeItem,
+} from '../../interfaces';
 
 const TasksTree: React.FC<TasksTreeProps> = ({
   className = '',
+  bus,
 }) => {
   const [treeDataNodes, setTreeDataNodes] = useState<DataNode[]>([]);
+  const [tasks, setTasks] = useState<TasksTreeNodeItem[]>([]);
+  const [tasksLoading, setTasksLoading] = useState<boolean>(false);
+  const [treeNodeMap, setTreeNodeMap] = useState<TreeNodeIdIndexMap>(undefined);
+
+  const getTreeNodeByIndex = (treeNodes: TasksTreeNodeItem[], index: string) => {
+    const indexes = index.split('-');
+    let treeNode: TasksTreeNodeItem = treeNodes[indexes.unshift()];
+    while (indexes.length !== 0) {
+      treeNode = (treeNode && treeNode.children || [])[indexes.unshift()];
+    }
+    return treeNode;
+  };
+
+  const getFirstLevelChildTasks = async (tasks: TasksTreeNodeItem[]) => {
+    const result = [];
+    for (let task of tasks) {
+      task.children = (await getTaskListFromTask(task.taskId, 6)) || [];
+      result.push(task);
+    }
+    return result;
+  };
+
+  const fetchTasks = (taskId = 'default') => {
+    setTasksLoading(true);
+    getTaskListFromTask(taskId, 6).then(items => {
+      setTasks(items);
+      // getFirstLevelChildTasks(items).then(res => {
+      //   if (taskId === 'default') {
+      //     setTasks(res);
+      //   } else {
+      //     console.log(treeNodeMap[taskId]);
+      //     const currentTasks = Array.from(tasks);
+      //     const currentTaskNode = getTreeNodeByIndex(currentTasks, treeNodeMap[taskId] || '');
+      //     if (currentTaskNode) {
+      //       currentTaskNode.children = res;
+      //     }
+      //     setTasks(currentTasks);
+      //   }
+      // }).finally(() => setTasksLoading(false));
+    });
+  };
+
+  const transformTreeDataNodes = (tasks: TasksTreeNodeItem[]) => {
+    if (!tasks) {
+      return;
+    }
+    const treeDataNodes = tasks.map(task => ({
+      title: task.content,
+      key: task.taskId,
+      children: transformTreeDataNodes(task.children),
+    }));
+    return treeDataNodes;
+  };
+
+  const transformTreeNodeMap = (tasks: TasksTreeNodeItem[], currentIndexes: number[]) => {
+    if (!tasks) { return }
+    let result = {};
+    tasks.forEach((task, index) => {
+      result[task.taskId] = currentIndexes.concat(index).join('-');
+      if (task.children && task.children.length > 0) {
+        result = {
+          ...result,
+          ...transformTreeNodeMap(task.children, currentIndexes.concat(index)),
+        };
+      }
+    });
+    return result;
+  };
 
   useEffect(() => {
-    setTreeDataNodes([
-      {
-        title: '0',
-        key: '0',
-        children: [
-          {
-            title: '0-0',
-            key: '0-0',
-            children: [
-              {
-                title: '0-0-0',
-                key: '0-0-0',
-              },
-              {
-                title: '0-0-1',
-                key: '0-0-1',
-              },
-              {
-                title: '0-0-2',
-                key: '0-0-2',
-              },
-            ],
-          },
-          {
-            title: '0-1',
-            key: '0-1',
-            children: [
-              {
-                title: '0-1-0',
-                key: '0-1-0',
-              },
-            ],
-          },
-          {
-            title: '0-2',
-            key: '0-2',
-            children: [
-              {
-                title: '0-2-0',
-                key: '0-2-0',
-              },
-              {
-                title: '0-2-1',
-                key: '0-2-1',
-              },
-            ],
-          },
-        ],
-      },
-      {
-        title: '1',
-        key: '1',
-        children: [
-          {
-            title: '1-0',
-            key: '1-0',
-            children: [
-              {
-                title: '1-0-0',
-                key: '1-0-0',
-              },
-              {
-                title: '1-0-1',
-                key: '1-0-1',
-              },
-              {
-                title: '1-0-2',
-                key: '1-0-2',
-              },
-            ],
-          },
-        ],
-      },
-    ]);
+    fetchTasks();
   }, []);
 
-  const handleDropTaskItem = (info: TaskTreeDropInfo) => {
+  useEffect(() => {
+    setTreeDataNodes(transformTreeDataNodes(tasks));
+    setTreeNodeMap(transformTreeNodeMap(tasks, []));
+  }, [tasks]);
+
+  const handleDropTaskItem = (info: TasksTreeDropInfo) => {
     const dropKey = info.node.key;
     const dragKey = info.dragNode.key;
     const dropPositionArray = info.node.pos.split('-');
     const dropPosition = info.dropPosition - Number(dropPositionArray[dropPositionArray.length - 1]);
 
-    const traverseTreeNodes = (data: DataNode[], key: React.ReactText, callback: TraverseCallbackType) => {
+    const traverseTreeNodes = (data: DataNode[], key: React.ReactText, callback: TraverseTreeNodeCallbackType) => {
       for (let i = 0; i < data.length; i += 1) {
         if (data[i].key === key) {
           return callback(data[i], i, data);
@@ -151,6 +149,12 @@ const TasksTree: React.FC<TasksTreeProps> = ({
       className={className && ` ${className}` || ''}
       draggable={true}
       onDrop={handleDropTaskItem}
+      onExpand={data => {
+        if (data.length > 0) {
+          fetchTasks(data[0].toString());
+        }
+      }}
+      onDragStart={data => console.log(data)}
     />
   );
 };

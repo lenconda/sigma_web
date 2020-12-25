@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import TaskList, { Empty } from '../../../components/TaskList';
+import TreeView from '../../../components/Tree';
 import { ListPageProps } from '../../../interfaces/pages/home/list';
 import { ConnectState } from '../../../interfaces/models';
 import { TaskListItem } from '../../../interfaces';
@@ -32,7 +33,34 @@ const List: React.FC<ListPageProps> = ({
 
   return (
     <div className={`app-home-list__page${className && ` ${className}` || ''}`}>
-      <TasksTree />
+      <TreeView
+        data={
+          [
+            {
+              key: '0',
+              children: [
+                {
+                  key: '0-0',
+                  children: [
+                    {
+                      key: '0-0-0',
+                    },
+                    {
+                      key: '0-0-1',
+                    },
+                  ],
+                },
+                {
+                  key: '0-1',
+                },
+              ],
+            },
+            {
+              key: '1',
+            },
+          ]
+        }
+      />
       {
         currentActiveTaskIds.map(currentActiveTaskId => {
           return (

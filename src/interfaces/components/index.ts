@@ -27,4 +27,10 @@ export {
   ImageProps,
 } from './image';
 export { DropContextProps } from './drop_context';
-export { TasksTreeProps } from './tasks_tree';
+export {
+  TasksTreeProps,
+  TraverseTreeNodeCallbackType,
+  TasksTreeDropInfo,
+  TreeNodeIdIndexMap,
+  TasksTreeNodeItem,
+} from './tasks_tree';

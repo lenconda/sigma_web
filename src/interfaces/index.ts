@@ -34,4 +34,8 @@ export {
   ImageProps,
   DropContextProps,
   TasksTreeProps,
+  TraverseTreeNodeCallbackType,
+  TasksTreeDropInfo,
+  TreeNodeIdIndexMap,
+  TasksTreeNodeItem,
 } from './components';
